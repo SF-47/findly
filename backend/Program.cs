@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.Services.Categories;
+using backend.Services.FoundItems;
 using backend.Services.LostItems;
 using backend.Services.Students;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IStudentServices, StudentServices>();
 builder.Services.AddScoped<ILostItemsService,LostItemsServices>();
+builder.Services.AddScoped<IFoundItemService,FoundItemsServices>();
 
 var app = builder.Build();
 
