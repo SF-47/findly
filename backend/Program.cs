@@ -1,9 +1,11 @@
 using backend.Data;
+using backend.Services.Auth;
 using backend.Services.Categories;
 using backend.Services.FoundItems;
 using backend.Services.LostItems;
 using backend.Services.Students;
 using Microsoft.EntityFrameworkCore;
+using backend.Services.Admins;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IStudentServices, StudentServices>();
 builder.Services.AddScoped<ILostItemsService, LostItemsServices>();
 builder.Services.AddScoped<IFoundItemService, FoundItemsServices>();
+builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(

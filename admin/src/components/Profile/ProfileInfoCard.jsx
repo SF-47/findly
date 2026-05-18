@@ -1,9 +1,4 @@
-import {
-  FaEnvelope,
-  FaIdBadge,
-  FaShieldAlt,
-  FaUserCircle,
-} from "react-icons/fa";
+import { FaEnvelope, FaIdBadge, FaShieldAlt } from "react-icons/fa";
 
 function ProfileInfoCard() {
   return (
@@ -11,13 +6,13 @@ function ProfileInfoCard() {
       <div className="h-32 bg-linear-to-r from-blue-500 via-indigo-500 to-purple-600" />
 
       <div className="-mt-12 px-6 pb-6">
-        <div className="flex h-24 w-24 items-center justify-center rounded-3xl border-4 border-white bg-white text-5xl text-blue-600 shadow-lg dark:border-zinc-900 dark:bg-zinc-800 dark:text-blue-400">
-          <FaUserCircle />
+        <div className="flex h-24 w-24 items-center justify-center rounded-3xl border-4 border-white bg-white text-6xl text-blue-600 shadow-lg dark:border-zinc-900 dark:bg-zinc-800 dark:text-blue-400">
+          {JSON.parse(localStorage.getItem("admin"))?.fullName.charAt(0)}
         </div>
 
         <div className="mt-5">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Admin Name
+            {JSON.parse(localStorage.getItem("admin"))?.fullName}
           </h2>
 
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -34,7 +29,7 @@ function ProfileInfoCard() {
                 Email
               </p>
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                admin@example.com
+                {JSON.parse(localStorage.getItem("admin"))?.email}
               </p>
             </div>
           </div>

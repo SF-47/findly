@@ -111,7 +111,7 @@ function Dashboard() {
       bgColor: "bg-purple-600",
     },
     {
-      label: "Possible Matches",
+      label: "Possible ",
       value: "--",
       icon: <FaSearch />,
       bgColor: "bg-purple-600",

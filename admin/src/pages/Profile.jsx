@@ -1,7 +1,13 @@
 import Appearance from "../components/Profile/Appearance";
 import ProfileInfoCard from "../components/Profile/ProfileInfoCard";
 import ProfileSecurityCard from "../components/Profile/ProfileSecurityCard";
-import { FaClipboardCheck, FaSearch, FaTags, FaUsers } from "react-icons/fa";
+import {
+  FaClipboardCheck,
+  FaSearch,
+  FaTags,
+  FaUsers,
+  FaPlus,
+} from "react-icons/fa";
 
 function ProfileStat({ icon, label, value, bgColor }) {
   return (
@@ -53,14 +59,23 @@ function Profile() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Profile
-        </h1>
+      <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Profile
+          </h1>
 
-        <p className="mt-2 max-w-2xl text-gray-500 dark:text-gray-400">
-          Manage your admin profile, security settings, and system access.
-        </p>
+          <p className="mt-2 max-w-2xl text-gray-500 dark:text-gray-400">
+            Manage your admin profile, security settings, and system access.
+          </p>
+        </div>
+
+        <div className="flex gap-3">
+          <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700  cursor-pointer">
+            <FaPlus />
+            Add Admin
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">

@@ -30,6 +30,7 @@ public class StudentServices : IStudentServices
         {
             FullName = request.FullName,
             Email = request.Email,
+            UniversityName = request.UniversityName,
             UniversityId = request.UniversityId,
             PhoneNumber = request.PhoneNumber,
             UniversityCardImageUrl = request.UniversityCardImageUrl,
@@ -51,6 +52,7 @@ public class StudentServices : IStudentServices
 
         student.FullName = request.FullName;
         student.Email = request.Email;
+        student.UniversityName = request.UniversityName;
         student.UniversityId = request.UniversityId;
         student.PhoneNumber = request.PhoneNumber;
         student.UniversityCardImageUrl = request.UniversityCardImageUrl;
@@ -100,19 +102,35 @@ public class StudentServices : IStudentServices
         return exists;
     }
 
-    public async Task<bool> UniIdExistsForAnotherStudent(string uniId, int id)
-    {
-        var exists = await _db.Students.AnyAsync(s =>
-            s.Id != id && s.UniversityId.ToLower() == uniId.Trim().ToLower()
-        );
-        return exists;
-    }
-
     public async Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, int id)
     {
         var exists = await _db.Students.AnyAsync(s =>
             s.Id != id && s.PhoneNumber == phoneNb.Trim()
         );
         return exists;
+    }
+
+    public async Task<bool> UniversityStudentIdExists(string universityName, string universityId)
+    {
+        var exists = await _db.Students.AnyAsync(s =>
+            s.UniversityName == universityName && s.UniversityId == universityId
+        );
+        return exists;
+    }
+
+    public async Task<bool> UniversityStudentIdExistsForAnotherStudent(
+        string universityName,
+        string universityId,
+        int id
+    )
+    {
+        var normalizedUniversityName = universityName.Trim().ToLower();
+        var normalizedUniversityId = universityId.Trim().ToLower();
+
+        return await _db.Students.AnyAsync(s =>
+            s.Id != id
+            && s.UniversityName.ToLower() == normalizedUniversityName
+            && s.UniversityId.ToLower() == normalizedUniversityId
+        );
     }
 }

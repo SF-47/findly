@@ -1,6 +1,8 @@
 import { FaKey, FaLock, FaSignOutAlt, FaUserShield } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function ProfileSecurityCard() {
+  const navigate = useNavigate();
   return (
     <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
       <div>
@@ -65,9 +67,16 @@ function ProfileSecurityCard() {
           </div>
 
           <div>
-            <h3 className="font-bold text-red-700 dark:text-red-300">
+            <button
+              className="font-bold text-red-700 dark:text-red-300"
+              onClick={() => {
+                localStorage.removeItem("admin");
+                sessionStorage.removeItem("admin");
+                navigate("/");
+              }}
+            >
               Logout
-            </h3>
+            </button>
             <p className="text-sm text-red-500 dark:text-red-400">
               End current admin session.
             </p>

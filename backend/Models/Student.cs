@@ -7,6 +7,8 @@ public class Student
     public string FullName { get; set; } = string.Empty;
 
     public string Email { get; set; } = string.Empty;
+    
+    public string UniversityName { get; set; } = string.Empty;
 
     public string UniversityId { get; set; } = string.Empty;
 

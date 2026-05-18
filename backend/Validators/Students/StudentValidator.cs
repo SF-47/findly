@@ -15,6 +15,10 @@ public static class StudentValidator
         {
             errors.Add("Email is required.");
         }
+        if (string.IsNullOrWhiteSpace(request.UniversityName))
+        {
+            errors.Add("University name is required.");
+        }
         if (string.IsNullOrWhiteSpace(request.UniversityId))
         {
             errors.Add("University ID is required.");
@@ -41,6 +45,10 @@ public static class StudentValidator
         if (string.IsNullOrWhiteSpace(request.Email))
         {
             errors.Add("Email is required.");
+        }
+        if (string.IsNullOrWhiteSpace(request.UniversityName))
+        {
+            errors.Add("University name is required.");
         }
         if (string.IsNullOrWhiteSpace(request.UniversityId))
         {

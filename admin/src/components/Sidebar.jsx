@@ -10,7 +10,6 @@ import {
 } from "react-icons/fa";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import ThemeButton from "./ThemeButton";
 
 function SidebarButton({
   id,
@@ -139,7 +138,7 @@ export default function Sidebar() {
         <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
           Account
         </p>
-        <ThemeButton/>
+
         <div className="flex flex-col gap-2">
           <SidebarButton
             id="profile"
@@ -150,7 +149,14 @@ export default function Sidebar() {
             destination="/profile"
           />
 
-          <button className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start font-mono text-white transition-colors hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600">
+          <button
+            className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start font-mono text-white transition-colors hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+            onClick={() => {
+              localStorage.removeItem("admin");
+              sessionStorage.removeItem("admin");
+              navigate("/");
+            }}
+          >
             <FaSignOutAlt size={20} />
             <span>Logout</span>
           </button>

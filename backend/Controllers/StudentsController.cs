@@ -50,10 +50,15 @@ public class StudentController : ControllerBase
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
         }
-        var uniIdExists = await _studentService.UniIdExists(request.UniversityId);
-        if (uniIdExists)
+        var universityStudentIdExists = await _studentService.UniversityStudentIdExists(
+            request.UniversityName,
+            request.UniversityId
+        );
+
+        if (universityStudentIdExists)
         {
-            errors.Add("University ID is already used.");
+            errors.Add("This university ID is already used in the same university.");
+
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
         }
@@ -104,13 +109,17 @@ public class StudentController : ControllerBase
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
         }
-        var uniIdExists = await _studentService.UniIdExistsForAnotherStudent(
-            student.UniversityId,
-            student.Id
-        );
-        if (uniIdExists)
+        var universityStudentIdExists =
+            await _studentService.UniversityStudentIdExistsForAnotherStudent(
+                request.UniversityName,
+                request.UniversityId,
+                id
+            );
+
+        if (universityStudentIdExists)
         {
-            errors.Add("University ID is already used.");
+            errors.Add("This university ID is already used in the same university.");
+
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
         }
@@ -146,6 +155,7 @@ public class StudentController : ControllerBase
             student.Id,
             student.FullName,
             student.Email,
+            student.UniversityName,
             student.UniversityId,
             student.PhoneNumber,
             student.UniversityCardImageUrl,
