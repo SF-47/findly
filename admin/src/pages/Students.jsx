@@ -3,13 +3,11 @@ import {
   FaUserCheck,
   FaUserClock,
   FaCalendarDay,
-  FaFilter,
   FaPlus,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axiosClient from "../api/axiosClient";
 import AddStudentModal from "../components/Students/AddStudentModal";
-import StudentFilter from "../components/Students/StudentFilters";
 import toast from "react-hot-toast";
 import StudentDetailsModal from "../components/Students/StudentDetailModal";
 import Pagination from "../components/Pagination";
@@ -46,9 +44,14 @@ function StatsCard({ title, subtitle, value, icon, bgColor, isLoading }) {
 
 function Students() {
   const [showAddStudent, setShowAddStudent] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    search: "",
+    uniName: "",
+    verificationStatus: "",
+    registeredDate: "",
+  });
   const [errors, setErrors] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [page, setPage] = useState(1);
@@ -74,7 +77,7 @@ function Students() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-  }, [students]);
+  }, [students,filters]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -82,9 +85,60 @@ function Students() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const filteredStudents = students.filter((s) => {
+    if (
+      filters.search &&
+      !s.fullName?.toLowerCase().includes(filters.search.toLowerCase()) &&
+      !s.email?.toLowerCase().includes(filters.search.toLowerCase()) &&
+      !s.universityId?.toLowerCase().includes(filters.search.toLowerCase())
+    ) {
+      return false;
+    }
+
+    if (filters.verificationStatus === "verified" && !s.isVerified) {
+      return false;
+    }
+    if (filters.verificationStatus === "pending" && s.isVerified) {
+      return false;
+    }
+    if (filters.uniName && filters.uniName !== s.universityName) {
+      return false;
+    }
+    if (filters.registeredDate) {
+      const today = new Date();
+      const studentDate = new Date(s.createdAt);
+
+      if (filters.registeredDate === "today") {
+        if (studentDate.toDateString() !== today.toDateString()) {
+          return false;
+        }
+      }
+
+      if (filters.registeredDate === "week") {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
+
+        if (studentDate < sevenDaysAgo) {
+          return false;
+        }
+      }
+
+      if (filters.registeredDate === "month") {
+        if (
+          studentDate.getMonth() !== today.getMonth() ||
+          studentDate.getFullYear() !== today.getFullYear()
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  });
+
   const start = (page - 1) * rowsPerPage;
   const end = start + rowsPerPage;
-  const paginatedStudents = students.slice(start, end);
+  const paginatedStudents = filteredStudents.slice(start, end);
 
   const verifiedStudents = students.filter((s) => {
     if (!s.isVerified) {
@@ -186,17 +240,90 @@ function Students() {
               Student records will appear here.
             </p>
           </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 border-b border-gray-200 px-5 py-4 dark:border-zinc-700 md:grid-cols-2 xl:grid-cols-4">
           <div>
-            <button
-              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 cursor-pointer"
-              onClick={() => setShowFilters((prev) => !prev)}
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Search Student
+            </label>
+
+            <input
+              type="text"
+              value={filters.search}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  search: e.target.value,
+                }))
+              }
+              placeholder="Name, email, or university ID..."
+              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              University Name
+            </label>
+
+            <select
+              value={filters.uniName}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  uniName: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             >
-              <FaFilter />
-              Filter
-            </button>
+              <option value="">All</option>
+              <option value="IUL">IUL</option>
+              <option value="Lebanese University">Lebanese University</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Verification Status
+            </label>
+
+            <select
+              value={filters.verificationStatus}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  verificationStatus: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            >
+              <option value="">All Students</option>
+              <option value="verified">Verified</option>
+              <option value="pending">Pending</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+              Registered Date
+            </label>
+
+            <select
+              value={filters.registeredDate}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  registeredDate: e.target.value,
+                }))
+              }
+              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            >
+              <option value="">All Dates</option>
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </select>
           </div>
         </div>
-
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-gray-200 text-left text-xs uppercase text-gray-500 dark:border-zinc-700 dark:text-gray-400">
@@ -244,10 +371,10 @@ function Students() {
                   </td>
                 </tr>
               ))
-            ) : students.length === 0 ? (
+            ) : filteredStudents.length === 0 ? (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="7"
                   className="px-5 py-12 text-center text-sm text-gray-500 dark:text-gray-400"
                 >
                   No student data loaded yet.
@@ -323,7 +450,7 @@ function Students() {
         </table>
         <Pagination
           page={page}
-          totalItems={students.length}
+          totalItems={filteredStudents.length}
           rowsPerPage={rowsPerPage}
           setPage={setPage}
         />
@@ -333,9 +460,6 @@ function Students() {
           onClose={() => setShowAddStudent(false)}
           onStudentAdded={fetchStudents}
         />
-      )}
-      {showFilters && (
-        <StudentFilter onClose={() => setShowFilters((prev) => !prev)} />
       )}
 
       {selectedStudent && (
