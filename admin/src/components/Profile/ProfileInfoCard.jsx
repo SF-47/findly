@@ -1,18 +1,21 @@
 import { FaEnvelope, FaIdBadge, FaShieldAlt } from "react-icons/fa";
 
 function ProfileInfoCard() {
+  const admin = JSON.parse(
+    localStorage.getItem("admin") || sessionStorage.getItem("admin") || "null",
+  );
   return (
     <div className="h-full overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
       <div className="h-32 bg-linear-to-r from-blue-500 via-indigo-500 to-purple-600" />
 
       <div className="-mt-12 px-6 pb-6">
         <div className="flex h-24 w-24 items-center justify-center rounded-3xl border-4 border-white bg-white text-6xl text-blue-600 shadow-lg dark:border-zinc-900 dark:bg-zinc-800 dark:text-blue-400">
-          {JSON.parse(localStorage.getItem("admin"))?.fullName.charAt(0)}
+          {admin?.fullName?.charAt(0).toUpperCase() || "A"}
         </div>
 
         <div className="mt-5">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {JSON.parse(localStorage.getItem("admin"))?.fullName}
+            {admin?.fullName || "Admin"}
           </h2>
 
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -29,7 +32,7 @@ function ProfileInfoCard() {
                 Email
               </p>
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                {JSON.parse(localStorage.getItem("admin"))?.email}
+                {admin?.email || "No email found"}
               </p>
             </div>
           </div>

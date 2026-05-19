@@ -1,17 +1,21 @@
+import { useEffect, useState } from "react";
+import axiosClient from "../api/axiosClient";
 import Appearance from "../components/Profile/Appearance";
 import ProfileInfoCard from "../components/Profile/ProfileInfoCard";
 import ProfileSecurityCard from "../components/Profile/ProfileSecurityCard";
+import AdminsManagement from "../components/Profile/AdminsManagement";
+
 import {
   FaClipboardCheck,
   FaSearch,
   FaTags,
   FaUsers,
-  FaPlus,
+  
 } from "react-icons/fa";
 
-function ProfileStat({ icon, label, value, bgColor }) {
+function ProfileStat({ icon, label, value, bgColor, isLoading }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="group rounded-2xl border border-gray-200 bg-white p-6 text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900 dark:text-white">
       <div
         className={`flex h-11 w-11 items-center justify-center rounded-xl text-white ${bgColor}`}
       >
@@ -19,7 +23,11 @@ function ProfileStat({ icon, label, value, bgColor }) {
       </div>
 
       <h3 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-        {value}
+        {isLoading ? (
+          <div className="h-8 w-15 rounded bg-gray-300 dark:bg-zinc-700"></div>
+        ) : (
+          <div className="text-4xl font-bold tracking-tight">{value}</div>
+        )}
       </h3>
 
       <p className="mt-1 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -30,16 +38,55 @@ function ProfileStat({ icon, label, value, bgColor }) {
 }
 
 function Profile() {
+  const [statsValues, setStatsValues] = useState({
+    allStudents: [],
+    allCategories: [],
+    reports: [],
+    matches: [],
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const [activeView, setActiveView] = useState("profile");
+
+  async function fetchData() {
+    try {
+      setIsLoading(true);
+
+      const studentsResponse = await axiosClient.get("/students");
+      const categoriesResponse = await axiosClient.get("/categories");
+
+      setStatsValues({
+        allStudents: studentsResponse.data,
+        allCategories: categoriesResponse.data,
+        reports: [],
+        matches: [],
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
+  }, []);
+
+  if (activeView === "admins") {
+    return <AdminsManagement onBack={() => setActiveView("profile")} />;
+  }
+
   const stats = [
     {
       label: "Managed Students",
-      value: "--",
+      value: statsValues.allStudents.length,
       icon: <FaUsers />,
       bgColor: "bg-blue-600",
     },
     {
       label: "Categories",
-      value: "--",
+      value: statsValues.allCategories.length,
       icon: <FaTags />,
       bgColor: "bg-indigo-600",
     },
@@ -70,12 +117,7 @@ function Profile() {
           </p>
         </div>
 
-        <div className="flex gap-3">
-          <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700  cursor-pointer">
-            <FaPlus />
-            Add Admin
-          </button>
-        </div>
+        
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -86,6 +128,7 @@ function Profile() {
             label={stat.label}
             value={stat.value}
             bgColor={stat.bgColor}
+            isLoading={isLoading}
           />
         ))}
       </div>
@@ -96,10 +139,11 @@ function Profile() {
         </div>
 
         <div className="flex h-full flex-col gap-6 xl:col-span-2">
-          <ProfileSecurityCard />
+          <ProfileSecurityCard onManageAdmins={() => setActiveView("admins")} />
           <Appearance />
         </div>
       </div>
+      
     </div>
   );
 }

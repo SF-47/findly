@@ -41,8 +41,26 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    
-    
+    [HttpPut("admin/change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+    {
+        var errors = AuthValidator.ValidateChangePasswordInputs(request);
+        if (errors.Count > 0)
+        {
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
+        var changed = await _authService.ChangePassword(request);
+
+        if (!changed)
+        {
+            errors.Add("Current password is incorrect.");
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
+        var message = "Passwrod Changed successfully.";
+        return Ok(message);
+    }
 }
-
-

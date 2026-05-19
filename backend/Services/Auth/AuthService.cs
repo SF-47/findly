@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.Models;
 using backend.Requests.Auth;
+using BCrypt;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Auth;
@@ -33,5 +34,29 @@ public class AuthService : IAuthService
         }
 
         return admin;
+    }
+
+    public async Task<bool> ChangePassword(ChangePasswordRequest request)
+    {
+        var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Id == request.AdminId);
+        if (admin is null)
+        {
+            return false;
+        }
+
+        var currentPasswordIsCorrect = BCrypt.Net.BCrypt.Verify(
+            request.CurrentPassword,
+            admin.PasswordHash
+        );
+
+        if (!currentPasswordIsCorrect)
+        {
+            return false;
+        }
+
+        admin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        await _db.SaveChangesAsync();
+
+        return true;
     }
 }
