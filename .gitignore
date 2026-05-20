@@ -33,4 +33,4 @@ Thumbs.db
 .vscode/*
 !.vscode/settings.json
 
-*.txt
+notes.txt
