@@ -12,7 +12,6 @@ public static class CategoryValidator
         {
             errors.Add("Category name is required");
         }
-
         return errors;
     }
 

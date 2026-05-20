@@ -35,7 +35,7 @@ public class CategoryService : ICategoryService
 
     public async Task<Category> Create(CreateCategoryRequest request)
     {
-        var category = new Category { Name = request.Name };
+        var category = new Category { Name = request.Name, Description = request.Description };
 
         _db.Categories.Add(category);
         await _db.SaveChangesAsync();
@@ -52,6 +52,7 @@ public class CategoryService : ICategoryService
         }
 
         category.Name = request.Name;
+        category.Description = request.Description;
         await _db.SaveChangesAsync();
         return category;
     }

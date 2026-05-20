@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { FaEllipsisV, FaTags } from "react-icons/fa";
 
-function CatCard() {
+
+function CatCard({category}) {
   const [showMenu, setShowMenu] = useState(false);
+
+  
 
   return (
     <div className="group w-full cursor-pointer rounded-3xl border border-blue-100 bg-linear-to-br from-white via-slate-50 to-blue-50 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-2xl dark:border-zinc-700 dark:bg-none dark:bg-zinc-900 dark:hover:border-blue-300">
@@ -34,11 +37,11 @@ function CatCard() {
 
       <div className="mt-7">
         <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          Category Name
+          {category.name}
         </h1>
 
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Used to classify lost and found item reports.
+          {category.description}
         </p>
 
         <span className="mt-4 inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-transparent dark:bg-blue-900/40 dark:text-blue-300">

@@ -98,7 +98,7 @@ public class CategoriesController : ControllerBase
 
     private static CategoryResponse ToCategoryResponse(Category category)
     {
-        return new CategoryResponse(category.Id, category.Name);
+        return new CategoryResponse(category.Id, category.Name, category.Description);
     }
 
     private static CategoryResponseName ToCategoryResponseName(Category category)

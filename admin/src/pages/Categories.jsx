@@ -1,10 +1,28 @@
 import CatCard from "../components/Categories/CatCard";
 import { FaFilter, FaPlus } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CategoryFilter from "../components/Categories/CatFilters";
-
+import axiosClient from "../api/axiosClient";
+import toast from "react-hot-toast";
 function Categories() {
   const [showFilters, setShowFilters] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  async function fetchData() {
+    try {
+      const response = await axiosClient.get("/categories");
+      setCategories(response.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error fetching data.");
+    }
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
+  }, []);
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -40,15 +58,10 @@ function Categories() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <CatCard />
-        <CatCard />
-        <CatCard />
-        <CatCard />
-        <CatCard />
-        <CatCard />
-        <CatCard />
-        <CatCard />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+        {categories.map((c) => (
+          <CatCard category={c} />
+        ))}
       </div>
     </div>
   );
