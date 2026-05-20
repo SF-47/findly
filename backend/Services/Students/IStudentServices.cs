@@ -10,10 +10,13 @@ public interface IStudentServices
     Task<Student> Create(CreateStudentRequest request);
     Task<Student?> Update(int id, UpdateStudentRequest request);
     Task<bool> Delete(int id);
+
+    // For CREATE
     Task<bool> EmailExists(string email);
     Task<bool> UniversityStudentIdExists(string universityName, string universityId);
     Task<bool> PhoneNbExists(string phoneNb);
 
+    // For UPDATE
     Task<bool> EmailExistsForAnotherStudent(string email, int id);
     Task<bool> UniversityStudentIdExistsForAnotherStudent(
     string universityName,

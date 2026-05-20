@@ -117,8 +117,7 @@ function AddStudentModal({ onClose, onStudentAdded }) {
     if (!formData.phoneNumber.trim()) {
       errors.phoneNumberError = "Phone number is required.";
       hasError = true;
-      // eslint-disable-next-line no-useless-escape
-    } else if (!/^[\d\s\+\(\)\-]{8,}$/.test(formData.phoneNumber)) {
+    } else if (!/^(\d{8}|\d{2} \d{3} \d{3})$/.test(formData.phoneNumber)) {
       errors.phoneNumberError = "Please enter a valid phone number.";
       hasError = true;
     }

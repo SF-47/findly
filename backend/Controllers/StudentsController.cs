@@ -87,6 +87,7 @@ public class StudentController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateStudent(int id, UpdateStudentRequest request)
     {
+        
         var errors = StudentValidator.ValidateUpdate(request);
         if (errors.Count > 0)
         {
@@ -94,14 +95,10 @@ public class StudentController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        var student = await _studentService.Update(id, request);
-        if (student is null)
-        {
-            return NotFound();
-        }
+        
         var emailExists = await _studentService.EmailExistsForAnotherStudent(
-            student.Email,
-            student.Id
+            request.Email, 
+            id
         );
         if (emailExists)
         {
@@ -109,29 +106,36 @@ public class StudentController : ControllerBase
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
         }
+
         var universityStudentIdExists =
             await _studentService.UniversityStudentIdExistsForAnotherStudent(
-                request.UniversityName,
-                request.UniversityId,
+                request.UniversityName, 
+                request.UniversityId, 
                 id
             );
-
         if (universityStudentIdExists)
         {
             errors.Add("This university ID is already used in the same university.");
-
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
         }
+
         var phoneNbExists = await _studentService.PhoneNbExistsForAnotherStudent(
-            student.PhoneNumber,
-            student.Id
+            request.PhoneNumber, 
+            id
         );
         if (phoneNbExists)
         {
             errors.Add("Phone number is already used.");
             var errorResponse = new ErrorResponse("Validation failed.", errors);
             return BadRequest(errorResponse);
+        }
+
+        
+        var student = await _studentService.Update(id, request);
+        if (student is null)
+        {
+            return NotFound();
         }
 
         var response = ToFullStudentResponse(student);

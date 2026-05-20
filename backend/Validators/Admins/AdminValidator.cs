@@ -17,7 +17,10 @@ public static class AdminValidator
         {
             errors.Add("Email is required.");
         }
-
+        if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+        {
+            errors.Add("Phone number is required.");
+        }
         if (string.IsNullOrWhiteSpace(request.Password))
         {
             errors.Add("Password is required.");

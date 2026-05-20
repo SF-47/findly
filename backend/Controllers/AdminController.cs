@@ -48,6 +48,13 @@ public class AdminsController : ControllerBase
             return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
 
+        var phoneExists = await _adminService.PhoneExists(request.PhoneNumber);
+        if (phoneExists)
+        {
+            errors.Add("Phone number is already associated to an account.");
+            return BadRequest(new ErrorResponse("Validation Error", errors));
+        }
+
         var admin = await _adminService.Create(request);
 
         var response = ToAdminResponse(admin);
@@ -57,6 +64,12 @@ public class AdminsController : ControllerBase
 
     private static AdminResponse ToAdminResponse(Admin admin)
     {
-        return new AdminResponse(admin.Id, admin.FullName, admin.Email, admin.CreatedAt);
+        return new AdminResponse(
+            admin.Id,
+            admin.FullName,
+            admin.Email,
+            admin.PhoneNumber,
+            admin.CreatedAt
+        );
     }
 }

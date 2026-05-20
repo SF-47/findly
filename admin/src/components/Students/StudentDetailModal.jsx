@@ -60,6 +60,7 @@ function FormInput({
 
 function StudentDetailsModal({ student, onClose, onStudentChanged }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: student?.fullName || "",
@@ -83,11 +84,68 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
 
   function handleChange(e) {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  }
+
+  function validateFrontend() {
+    const errors = {
+      fullNameError: "",
+      emailError: "",
+      universityNameError: "",
+      universityIdError: "",
+      phoneNumberError: "",
+      universityCardImageUrlError: "",
+    };
+
+    let hasError = false;
+
+    if (!formData.fullName.trim()) {
+      errors.fullNameError = "Full name is required.";
+      hasError = true;
+    }
+
+    if (!formData.email.trim()) {
+      errors.emailError = "Email is required.";
+      hasError = true;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.emailError =
+        "Please enter a valid email address (e.g., name@example.com).";
+      hasError = true;
+    }
+
+    if (!formData.universityName.trim()) {
+      errors.universityNameError = "University name is required.";
+      hasError = true;
+    }
+
+    if (!formData.universityId.trim()) {
+      errors.universityIdError = "University ID is required.";
+      hasError = true;
+    }
+
+    if (!formData.phoneNumber.trim()) {
+      errors.phoneNumberError = "Phone number is required.";
+      hasError = true;
+    } else if (!/^(\d{8}|\d{2} \d{3} \d{3})$/.test(formData.phoneNumber)) {
+      errors.phoneNumberError = "Please enter a valid phone number.";
+      hasError = true;
+    }
+
+    if (!formData.universityCardImageUrl.trim()) {
+      errors.universityCardImageUrlError =
+        "University card image URL is required.";
+      hasError = true;
+    } else if (!formData.universityCardImageUrl.startsWith("http")) {
+      errors.universityCardImageUrlError =
+        "Please enter a valid URL starting with http:// or https://";
+      hasError = true;
+    }
+
+    setInputErrorMessage(errors);
+    return hasError;
   }
 
   async function handleSubmit(e) {
@@ -97,6 +155,15 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
       setIsEditing(true);
       return;
     }
+
+    // Validate on frontend first
+    const hasFrontendErrors = validateFrontend();
+    if (hasFrontendErrors) {
+      toast.error("Please fix the errors before saving.");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       await axiosClient.put(`/students/${student.id}`, formData);
@@ -120,7 +187,22 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
         backendErrors.forEach((err) => {
           const lowerError = err.toLowerCase();
 
-          if (lowerError.includes("email")) {
+          // Handle unique constraint errors (backend only)
+          if (lowerError.includes("email") && lowerError.includes("already")) {
+            newErrors.emailError = err;
+          } else if (
+            lowerError.includes("phone") &&
+            lowerError.includes("already")
+          ) {
+            newErrors.phoneNumberError = err;
+          } else if (
+            lowerError.includes("university id") &&
+            lowerError.includes("already")
+          ) {
+            newErrors.universityIdError = err;
+          }
+          // Handle other validation errors (should be caught by frontend, but just in case)
+          else if (lowerError.includes("email")) {
             newErrors.emailError = err;
           } else if (lowerError.includes("phone")) {
             newErrors.phoneNumberError = err;
@@ -146,6 +228,8 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
         return;
       }
       toast.error("Failed to update student.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -158,14 +242,20 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
       phoneNumber: student.phoneNumber || "",
       universityCardImageUrl: student.universityCardImageUrl || "",
     });
-
+    setInputErrorMessage({
+      fullNameError: "",
+      emailError: "",
+      universityNameError: "",
+      universityIdError: "",
+      phoneNumberError: "",
+      universityCardImageUrlError: "",
+    });
     setIsEditing(false);
   }
 
   async function handleDelete() {
     try {
       await axiosClient.delete(`/students/${student.id}`);
-
       toast.success("Student deleted successfully.");
       await onStudentChanged();
       onClose();
@@ -323,9 +413,12 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
 
             <button
               type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700  cursor-pointer"
+              disabled={isLoading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
-              {isEditing ? (
+              {isLoading ? (
+                "Saving..."
+              ) : isEditing ? (
                 <>
                   <FaSave />
                   Save
@@ -343,7 +436,8 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
             <button
               type="button"
               onClick={cancelEditing}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+              disabled={isLoading}
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               Cancel Editing
             </button>

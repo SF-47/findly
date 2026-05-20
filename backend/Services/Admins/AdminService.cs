@@ -16,16 +16,27 @@ public class AdminService : IAdminService
 
     public async Task<List<Admin>> GetAll()
     {
-        return await _db.Admins
-            .OrderByDescending(a => a.CreatedAt)
-            .ToListAsync();
+        return await _db.Admins.OrderByDescending(a => a.CreatedAt).ToListAsync();
     }
 
     public async Task<bool> EmailExists(string email)
     {
-        return await _db.Admins.AnyAsync(a =>
-            a.Email.ToLower() == email.Trim().ToLower()
-        );
+        return await _db.Admins.AnyAsync(a => a.Email.ToLower() == email.Trim().ToLower());
+    }
+
+    public async Task<bool> PhoneExists(string phone)
+    {
+        var phoneNumberInAdminsExists = await _db.Admins.AnyAsync(a => a.PhoneNumber == phone);
+        var phoneNumberInStudentsExists = await _db.Students.AnyAsync(s => s.PhoneNumber == phone);
+        if (phoneNumberInStudentsExists)
+        {
+            return true;
+        }
+        if (phoneNumberInAdminsExists)
+        {
+            return true;
+        }
+        return false;
     }
 
     public async Task<Admin> Create(CreateAdminRequest request)
@@ -36,8 +47,9 @@ public class AdminService : IAdminService
         {
             FullName = request.FullName.Trim(),
             Email = request.Email.Trim(),
+            PhoneNumber = request.PhoneNumber.Trim(),
             PasswordHash = passwordHash,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
         };
 
         _db.Admins.Add(admin);
