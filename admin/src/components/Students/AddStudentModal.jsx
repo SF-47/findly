@@ -67,6 +67,7 @@ function AddStudentModal({ onClose, onStudentAdded }) {
     phoneNumberError: "",
     universityCardImageUrlError: "",
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -77,7 +78,7 @@ function AddStudentModal({ onClose, onStudentAdded }) {
     }));
   }
 
-  function validateForm() {
+  function validateFrontend() {
     const errors = {
       fullNameError: "",
       emailError: "",
@@ -87,52 +88,67 @@ function AddStudentModal({ onClose, onStudentAdded }) {
       universityCardImageUrlError: "",
     };
 
+    let hasError = false;
+
+    // Required fields
     if (!formData.fullName.trim()) {
       errors.fullNameError = "Full name is required.";
+      hasError = true;
     }
 
     if (!formData.email.trim()) {
       errors.emailError = "Email is required.";
+      hasError = true;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.emailError = "Please enter a valid email address.";
+      hasError = true;
     }
 
     if (!formData.universityName.trim()) {
       errors.universityNameError = "University name is required.";
+      hasError = true;
     }
 
     if (!formData.universityId.trim()) {
       errors.universityIdError = "University ID is required.";
+      hasError = true;
     }
 
     if (!formData.phoneNumber.trim()) {
       errors.phoneNumberError = "Phone number is required.";
+      hasError = true;
+      // eslint-disable-next-line no-useless-escape
+    } else if (!/^[\d\s\+\(\)\-]{8,}$/.test(formData.phoneNumber)) {
+      errors.phoneNumberError = "Please enter a valid phone number.";
+      hasError = true;
     }
 
     if (!formData.universityCardImageUrl.trim()) {
-      errors.universityCardImageUrlError = "University card image is required.";
+      errors.universityCardImageUrlError =
+        "University card image URL is required.";
+      hasError = true;
+    } else if (!formData.universityCardImageUrl.startsWith("http")) {
+      errors.universityCardImageUrlError =
+        "Please enter a valid URL starting with http:// or https://";
+      hasError = true;
     }
 
     setInputErrorMessage(errors);
-
-    return Object.values(errors).some((error) => error !== ""); //it returns bool value
-    // we have object errors above , when i write Object.values(errors) , i will have this :
-    //     [
-    //   "",
-    //   "Email is required.",
-    //   "",
-    //   "",
-    //   ""
-    // ]
-
-    //.some() checks if at least one item passes a condition.
+    return hasError; // Return true if there ARE errors
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const hasErrors = validateForm();
-    if (hasErrors) {
+    // STEP 1: Frontend validation (fast UX feedback)
+    const hasFrontendErrors = validateFrontend();
+    if (hasFrontendErrors) {
+      toast.error("Please fix the errors before submitting.");
       return;
     }
+
+    setIsLoading(true);
+
     try {
       await axiosClient.post("/students", formData);
       toast.success("Student added successfully");
@@ -141,55 +157,65 @@ function AddStudentModal({ onClose, onStudentAdded }) {
     } catch (error) {
       console.log(error);
 
-      const backendErrors = error.response?.data?.errors; //  (?) If response exists, go to data.If data exists, go to errors.If something is missing, return undefined.
+      // STEP 2: Handle backend validation errors (unique constraints, etc.)
+      const backendErrors = error.response?.data?.errors;
 
-      const newErrors = {
-        fullNameError: "",
-        emailError: "",
-        universityNameError: "",
-        universityIdError: "",
-        phoneNumberError: "",
-        universityCardImageUrlError: "",
-      };
+      if (Array.isArray(backendErrors) && backendErrors.length > 0) {
+        const newErrors = {
+          fullNameError: "",
+          emailError: "",
+          universityNameError: "",
+          universityIdError: "",
+          phoneNumberError: "",
+          universityCardImageUrlError: "",
+        };
 
-      if (Array.isArray(backendErrors)) {
-        //Only run this code if backendErrors is an array.
+        let hasBackendError = false;
+
         backendErrors.forEach((err) => {
           const lowerError = err.toLowerCase();
 
-          if (lowerError.includes("email")) {
+          // Handle unique constraint errors that frontend can't validate
+          if (lowerError.includes("email") && lowerError.includes("already")) {
+            newErrors.emailError = "This email is already registered.";
+            hasBackendError = true;
+          } else if (
+            lowerError.includes("phone") &&
+            lowerError.includes("already")
+          ) {
+            newErrors.phoneNumberError =
+              "This phone number is already registered.";
+            hasBackendError = true;
+          } else if (
+            lowerError.includes("university id") &&
+            lowerError.includes("already")
+          ) {
+            newErrors.universityIdError =
+              "This university ID is already registered.";
+            hasBackendError = true;
+          }
+          // For other validation errors (format, etc.), show them but frontend should have caught these
+          else if (lowerError.includes("email")) {
             newErrors.emailError = err;
+            hasBackendError = true;
           } else if (lowerError.includes("phone")) {
             newErrors.phoneNumberError = err;
-          } else if (
-            lowerError.includes("university id") ||
-            lowerError.includes("student id")
-          ) {
-            newErrors.universityIdError = err;
-          } else if (lowerError.includes("university name")) {
-            newErrors.universityNameError = err;
-          } else if (lowerError.includes("full name")) {
-            newErrors.fullNameError = err;
-          } else if (
-            lowerError.includes("card") ||
-            lowerError.includes("image")
-          ) {
-            newErrors.universityCardImageUrlError = err;
+            hasBackendError = true;
           } else {
+            // Show other errors as toasts
             toast.error(err);
           }
-          // If backendErrors is an array:
-          // For each error:
-          //   Convert it to lowercase
-          //   If it contains "email", show it under Email input
-          //   If it contains "phone", show it under Phone input
         });
 
-        setInputErrorMessage(newErrors);
+        if (hasBackendError) {
+          setInputErrorMessage(newErrors);
+        }
         return;
       }
 
-      toast.error("Failed to add student.");
+      toast.error("Failed to add student. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -332,9 +358,10 @@ function AddStudentModal({ onClose, onStudentAdded }) {
             <button
               type="submit"
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700"
+              disabled={isLoading}
             >
               <FaPlus />
-              Add Student
+              {isLoading ? "Adding..." : "Add Student"}
             </button>
           </div>
         </form>

@@ -17,10 +17,57 @@ function AddAdminModal({ onClose, onAdminAdded }) {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    fullNameError: "",
+    emailError: "",
+    passwordError: "",
+  });
+
+  function validateInputs() {
+    const newErrors = {
+      fullNameError: "",
+      emailError: "",
+      passwordError: "",
+    };
+
+    let hasError = false;
+
+    if (!inputs.fullName.trim()) {
+      newErrors.fullNameError = "Full Name is required";
+      hasError = true;
+    }
+    if (!inputs.email.trim()) {
+      newErrors.emailError = "Email is required";
+      hasError = true;
+    } else if (!/\S+@\S+\.\S+/.test(inputs.email)) {
+      newErrors.emailError = "Please enter a valid email address";
+      hasError = true;
+    }
+    if (!inputs.password.trim()) {
+      newErrors.passwordError = "Password is required";
+      hasError = true;
+    } else if (inputs.password.length < 6) {
+      newErrors.passwordError = "Password must be at least 6 characters";
+      hasError = true;
+    } else if (inputs.password.length > 50) {
+      newErrors.passwordError = "Password must be less than 50 characters";
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+    return hasError;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setIsLoading(true);
+
+    const hasError = validateInputs();
+    if (hasError) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       setIsLoading(true);
 
@@ -30,12 +77,27 @@ function AddAdminModal({ onClose, onAdminAdded }) {
       await onAdminAdded();
       onClose();
     } catch (error) {
-      console.log(error);
-
       const backendErrors = error.response?.data?.errors;
 
       if (Array.isArray(backendErrors) && backendErrors.length > 0) {
-        toast.error(backendErrors[0]);
+        const newErrors = {
+          fullNameError: "",
+          emailError: "",
+          passwordError: "",
+        };
+
+        backendErrors.forEach((err) => {
+          const lowerError = err.toLowerCase();
+
+          if (lowerError.includes("email") && lowerError.includes("already")) {
+            newErrors.emailError = "This email is already used.";
+          } else if (lowerError.includes("email")) {
+            newErrors.emailError = err;
+          } else {
+            toast.error(err);
+          }
+        });
+        setErrors(newErrors);
         return;
       }
 
@@ -82,15 +144,25 @@ function AddAdminModal({ onClose, onAdminAdded }) {
             <input
               type="text"
               value={inputs.fullName}
-              onChange={(e) =>
+              onChange={(e) => {
                 setInputs((prev) => ({
                   ...prev,
                   fullName: e.target.value,
-                }))
-              }
+                }));
+                setErrors((prev) => ({ ...prev, fullNameError: "" }));
+              }}
               placeholder="Enter admin full name"
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 dark:focus:bg-zinc-800"
+              className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                errors.fullNameError
+                  ? "border-red-400 dark:border-red-500"
+                  : "border-gray-200 dark:border-zinc-700"
+              }`}
             />
+            {errors.fullNameError && (
+              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                {errors.fullNameError}
+              </p>
+            )}
           </div>
 
           <div>
@@ -102,15 +174,25 @@ function AddAdminModal({ onClose, onAdminAdded }) {
             <input
               type="email"
               value={inputs.email}
-              onChange={(e) =>
+              onChange={(e) => {
                 setInputs((prev) => ({
                   ...prev,
                   email: e.target.value,
-                }))
-              }
+                }));
+                setErrors((prev) => ({ ...prev, emailError: "" }));
+              }}
               placeholder="admin@example.com"
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 dark:focus:bg-zinc-800"
+              className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                errors.emailError
+                  ? "border-red-400 dark:border-red-500"
+                  : "border-gray-200 dark:border-zinc-700"
+              }`}
             />
+            {errors.emailError && (
+              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                {errors.emailError}
+              </p>
+            )}
           </div>
 
           <div>
@@ -122,15 +204,25 @@ function AddAdminModal({ onClose, onAdminAdded }) {
             <input
               type="password"
               value={inputs.password}
-              onChange={(e) =>
+              onChange={(e) => {
                 setInputs((prev) => ({
                   ...prev,
                   password: e.target.value,
-                }))
-              }
+                }));
+                setErrors((prev) => ({ ...prev, passwordError: "" }));
+              }}
               placeholder="Enter admin password"
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 dark:focus:bg-zinc-800"
+              className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                errors.passwordError
+                  ? "border-red-400 dark:border-red-500"
+                  : "border-gray-200 dark:border-zinc-700"
+              }`}
             />
+            {errors.passwordError && (
+              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                {errors.passwordError}
+              </p>
+            )}
           </div>
 
           <div className="rounded-2xl border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/40 dark:bg-blue-950/20">
