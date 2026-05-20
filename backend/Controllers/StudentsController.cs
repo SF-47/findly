@@ -29,7 +29,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetStudentById(int id)
+    public async Task<IActionResult> GetStudentById(Guid id)
     {
         var student = await _studentService.GetById(id);
         if (student is null)
@@ -85,9 +85,8 @@ public class StudentController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateStudent(int id, UpdateStudentRequest request)
+    public async Task<IActionResult> UpdateStudent(Guid id, UpdateStudentRequest request)
     {
-        
         var errors = StudentValidator.ValidateUpdate(request);
         if (errors.Count > 0)
         {
@@ -95,11 +94,7 @@ public class StudentController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        
-        var emailExists = await _studentService.EmailExistsForAnotherStudent(
-            request.Email, 
-            id
-        );
+        var emailExists = await _studentService.EmailExistsForAnotherStudent(request.Email, id);
         if (emailExists)
         {
             errors.Add("Email is already used.");
@@ -109,8 +104,8 @@ public class StudentController : ControllerBase
 
         var universityStudentIdExists =
             await _studentService.UniversityStudentIdExistsForAnotherStudent(
-                request.UniversityName, 
-                request.UniversityId, 
+                request.UniversityName,
+                request.UniversityId,
                 id
             );
         if (universityStudentIdExists)
@@ -121,7 +116,7 @@ public class StudentController : ControllerBase
         }
 
         var phoneNbExists = await _studentService.PhoneNbExistsForAnotherStudent(
-            request.PhoneNumber, 
+            request.PhoneNumber,
             id
         );
         if (phoneNbExists)
@@ -131,7 +126,6 @@ public class StudentController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        
         var student = await _studentService.Update(id, request);
         if (student is null)
         {
@@ -143,7 +137,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteStudent(int id)
+    public async Task<IActionResult> DeleteStudent(Guid id)
     {
         var result = await _studentService.Delete(id);
         if (!result)
@@ -151,6 +145,19 @@ public class StudentController : ControllerBase
             return NotFound();
         }
         return NoContent();
+    }
+
+    [HttpPut("{id}/verify")]
+    public async Task<IActionResult> VerifyStudent(Guid id)
+    {
+        var student = await _studentService.VerifyStudent(id);
+
+        if (student is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        return Ok(ToFullStudentResponse(student));
     }
 
     private static FullStudentResponse ToFullStudentResponse(Student student)

@@ -1,3 +1,3 @@
 namespace backend.Requests.Auth;
 
-public record ChangePasswordRequest(int AdminId, string CurrentPassword, string NewPassword);
+public record ChangePasswordRequest(Guid AdminId, string CurrentPassword, string NewPassword);

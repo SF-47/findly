@@ -4,6 +4,8 @@ import {
   FaUserClock,
   FaCalendarDay,
   FaPlus,
+  FaChevronDown,
+  FaChevronRight,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import axiosClient from "../api/axiosClient";
@@ -44,6 +46,15 @@ function StatsCard({ title, subtitle, value, icon, bgColor, isLoading }) {
 
 function Students() {
   const [showAddStudent, setShowAddStudent] = useState(false);
+  // Hardcode the university options
+  const universities = [
+    "Lebanese University (LU)",
+    "Lebanese International University (LIU)",
+    "Islamic University of Lebanon (IUL)",
+    "American University of Beirut (AUB)",
+    "Lebanese American University (LAU)",
+    "Université Saint-Joseph (USJ)",
+  ];
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -54,6 +65,11 @@ function Students() {
   });
   const [errors, setErrors] = useState("");
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [clicked, setClicked] = useState({
+    uniName: false,
+    status: false,
+    date: false,
+  });
   const [page, setPage] = useState(1);
   const rowsPerPage = 7;
 
@@ -261,67 +277,92 @@ function Students() {
             />
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+          <div className="relative">
+            <label className="mb-1 block text-sm text-start font-medium text-gray-600 dark:text-gray-300">
               University Name
             </label>
 
             <select
               value={filters.uniName}
+              onClick={() =>
+                setClicked((prev) => ({ ...prev, uniName: !prev.uniName }))
+              }
               onChange={(e) =>
                 setFilters((prev) => ({
                   ...prev,
                   uniName: e.target.value,
                 }))
               }
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             >
               <option value="">All</option>
-              <option value="IUL">IUL</option>
-              <option value="Lebanese University">Lebanese University</option>
+              {universities.map((u) => (
+                <option value={u.split("(")[1].split(")")[0]}>{u}</option>
+              ))}
             </select>
+            {!clicked.uniName ? (
+              <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+            ) : (
+              <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+            )}
           </div>
-          <div>
+          <div className="relative">
             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Verification Status
             </label>
 
             <select
               value={filters.verificationStatus}
+              onClick={() =>
+                setClicked((prev) => ({ ...prev, status: !prev.status }))
+              }
               onChange={(e) =>
                 setFilters((prev) => ({
                   ...prev,
                   verificationStatus: e.target.value,
                 }))
               }
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             >
               <option value="">All Students</option>
               <option value="verified">Verified</option>
               <option value="pending">Pending</option>
             </select>
+            {!clicked.status ? (
+              <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+            ) : (
+              <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+            )}
           </div>
 
-          <div>
+          <div className="relative">
             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Registered Date
             </label>
 
             <select
               value={filters.registeredDate}
+              onClick={() =>
+                setClicked((prev) => ({ ...prev, date: !prev.date }))
+              }
               onChange={(e) =>
                 setFilters((prev) => ({
                   ...prev,
                   registeredDate: e.target.value,
                 }))
               }
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             >
               <option value="">All Dates</option>
               <option value="today">Today</option>
               <option value="week">This Week</option>
               <option value="month">This Month</option>
             </select>
+            {!clicked.date ? (
+              <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+            ) : (
+              <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+            )}
           </div>
         </div>
         <table className="w-full border-collapse">
@@ -459,6 +500,7 @@ function Students() {
         <AddStudentModal
           onClose={() => setShowAddStudent(false)}
           onStudentAdded={fetchStudents}
+          universities={universities}
         />
       )}
 

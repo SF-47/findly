@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa";
 import axiosClient from "../../api/axiosClient";
 import AddAdminModal from "./AddAdminModal";
+import ConfirmDialog from "../ConfirmDialog";
+import toast from "react-hot-toast";
 
 function StatSkeleton() {
   return (
@@ -43,6 +45,18 @@ function AdminsManagement({ onBack }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, []);
+
+  async function handleDelete(id) {
+    try {
+      await axiosClient.delete(`admins/${id}`);
+      toast.success("Admin deleted successfully.");
+
+      await fetchData();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete admin.");
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -214,13 +228,24 @@ function AdminsManagement({ onBack }) {
                         </span>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-right">
-                      <button
-                        type="button"
-                        className="rounded-lg p-2 text-red-500 transition hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950/30"
-                      >
-                        <FaTrash />
-                      </button>
+                    <td className="px-5 py-4">
+                      <div className="flex justify-end">
+                        <ConfirmDialog
+                          title="Delete admin?"
+                          description={`Are you sure you want to delete ${admin.fullName} ? This action cannot be undone.`}
+                          confirmText="Delete"
+                          cancelText="Cancel"
+                          onConfirm={() => handleDelete(admin.id)}
+                        >
+                          <button
+                            type="button"
+                            onClick={(e) => e.stopPropagation()}
+                            className="flex cursor-pointer items-center justify-center rounded-xl border border-red-200 bg-red-50 p-3 text-red-600 transition hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-950/40"
+                          >
+                            <FaTrash />
+                          </button>
+                        </ConfirmDialog>
+                      </div>
                     </td>
                   </tr>
                 ))

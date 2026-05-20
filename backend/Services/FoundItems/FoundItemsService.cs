@@ -19,7 +19,7 @@ public class FoundItemsServices : IFoundItemService
         return await _db.FoundItems.ToListAsync();
     }
 
-    public async Task<FoundItem?> GetById(int id)
+    public async Task<FoundItem?> GetById(Guid id)
     {
         return await _db.FoundItems.FirstOrDefaultAsync(f => f.Id == id);
     }
@@ -46,7 +46,7 @@ public class FoundItemsServices : IFoundItemService
         return FoundItem;
     }
 
-    public async Task<FoundItem?> Update(int id, UpdateFoundItemRequest request)
+    public async Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request)
     {
         var FoundItem = await GetById(id);
         if (FoundItem is null)
@@ -66,7 +66,7 @@ public class FoundItemsServices : IFoundItemService
         return FoundItem;
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> Delete(Guid id)
     {
         var FoundItem = await GetById(id);
         if (FoundItem is null)
@@ -79,7 +79,7 @@ public class FoundItemsServices : IFoundItemService
         return true;
     }
 
-    public async Task<bool> StudentExists(int studentId)
+    public async Task<bool> StudentExists(Guid studentId)
     {
         return await _db.Students.AnyAsync(s => s.Id == studentId);
     }

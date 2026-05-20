@@ -1,7 +1,7 @@
 namespace backend.Responses.Auth;
 
 public record AdminLoginResponse(
-    int Id,
+    Guid Id,
     string FullName,
     string Email
 );

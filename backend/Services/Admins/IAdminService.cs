@@ -11,4 +11,5 @@ public interface IAdminService
     Task<bool> PhoneExists(string phone);
 
     Task<Admin> Create(CreateAdminRequest request);
+    Task<bool> Delete(Guid id);
 }

@@ -62,6 +62,17 @@ public class AdminsController : ControllerBase
         return Created($"/admins/{admin.Id}", response);
     }
 
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAdmin(Guid id)
+    {
+        var result = await _adminService.Delete(id);
+        if (!result)
+        {
+            return NotFound();
+        }
+        return NoContent();
+    }
+
     private static AdminResponse ToAdminResponse(Admin admin)
     {
         return new AdminResponse(

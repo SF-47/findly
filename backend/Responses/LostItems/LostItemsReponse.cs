@@ -1,8 +1,8 @@
 namespace backend.Responses.LostItems;
 
 public record FullLostItemsResponse(
-    int Id,
-    int StudentId,
+    Guid Id,
+    Guid StudentId,
     int CategoryId,
     string ItemName,
     string Description,

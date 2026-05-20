@@ -1,7 +1,7 @@
 namespace backend.Requests.FoundItems;
 
 public record CreateFoundItemRequest(
-    int StudentId,
+    Guid StudentId,
     int CategoryId,
     string ItemName,
     string Description,

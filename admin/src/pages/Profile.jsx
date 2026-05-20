@@ -7,10 +7,9 @@ import AdminsManagement from "../components/Profile/AdminsManagement";
 
 import {
   FaClipboardCheck,
-  FaSearch,
   FaTags,
+  FaUser,
   FaUsers,
-  
 } from "react-icons/fa";
 
 function ProfileStat({ icon, label, value, bgColor, isLoading }) {
@@ -42,10 +41,10 @@ function Profile() {
     allStudents: [],
     allCategories: [],
     reports: [],
-    matches: [],
+    allAdmins: [],
   });
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [activeView, setActiveView] = useState("profile");
 
   async function fetchData() {
@@ -54,12 +53,13 @@ function Profile() {
 
       const studentsResponse = await axiosClient.get("/students");
       const categoriesResponse = await axiosClient.get("/categories");
+      const adminsResponse = await axiosClient.get("/admins");
 
       setStatsValues({
         allStudents: studentsResponse.data,
         allCategories: categoriesResponse.data,
         reports: [],
-        matches: [],
+        allAdmins: adminsResponse.data,
       });
     } catch (error) {
       console.log(error);
@@ -97,9 +97,9 @@ function Profile() {
       bgColor: "bg-emerald-600",
     },
     {
-      label: "Matches",
-      value: "--",
-      icon: <FaSearch />,
+      label: "Admins",
+      value: statsValues.allAdmins.length,
+      icon: <FaUser />,
       bgColor: "bg-purple-600",
     },
   ];
@@ -116,8 +116,6 @@ function Profile() {
             Manage your admin profile, security settings, and system access.
           </p>
         </div>
-
-        
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -143,7 +141,6 @@ function Profile() {
           <Appearance />
         </div>
       </div>
-      
     </div>
   );
 }

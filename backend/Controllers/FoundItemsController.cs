@@ -29,7 +29,7 @@ public class FoundItemsService : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetfoundItemById(int id)
+    public async Task<IActionResult> GetfoundItemById(Guid id)
     {
         var foundItem = await _foundItemsService.GetById(id);
         if (foundItem is null)
@@ -75,7 +75,7 @@ public class FoundItemsService : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdatefoundItem(int id, UpdateFoundItemRequest request)
+    public async Task<IActionResult> UpdatefoundItem(Guid id, UpdateFoundItemRequest request)
     {
         var errors = FoundItemsValidator.ValidateUpdate(request);
         if (errors.Count > 0)
@@ -94,7 +94,7 @@ public class FoundItemsService : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteFoundItem(int id)
+    public async Task<IActionResult> DeleteFoundItem(Guid id)
     {
         var result = await _foundItemsService.Delete(id);
         if (!result)

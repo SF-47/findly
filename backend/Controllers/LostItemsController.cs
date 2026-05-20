@@ -29,7 +29,7 @@ public class LostItemsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetLostItemById(int id)
+    public async Task<IActionResult> GetLostItemById(Guid id)
     {
         var lostItem = await _lostItemsService.GetById(id);
         if (lostItem is null)
@@ -75,7 +75,7 @@ public class LostItemsController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateLostItem(int id, UpdateLostItemRequest request)
+    public async Task<IActionResult> UpdateLostItem(Guid id, UpdateLostItemRequest request)
     {
         var errors = LostItemsValidator.ValidateUpdate(request);
         if (errors.Count > 0)
@@ -94,7 +94,7 @@ public class LostItemsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteLostItem(int id)
+    public async Task<IActionResult> DeleteLostItem(Guid id)
     {
         var result = await _lostItemsService.Delete(id);
         if (!result)

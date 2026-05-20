@@ -1,7 +1,7 @@
 namespace backend.Responses.Students;
 
 public record FullStudentResponse(
-    int Id,
+    Guid Id,
     string FullName,
     string Email,
     string UniversityName,

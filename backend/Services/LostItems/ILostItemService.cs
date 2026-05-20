@@ -6,10 +6,10 @@ namespace backend.Services.LostItems;
 public interface ILostItemsService
 {
     Task<List<LostItem>> GetAll();
-    Task<LostItem?> GetById(int id);
+    Task<LostItem?> GetById(Guid id);
     Task<LostItem> Create(CreateLostItemRequest request);
-    Task<LostItem?> Update(int id , UpdateLostItemRequest request);
-    Task<bool> Delete(int id);
-    Task<bool> StudentExists(int id);
+    Task<LostItem?> Update(Guid id , UpdateLostItemRequest request);
+    Task<bool> Delete(Guid id);
+    Task<bool> StudentExists(Guid id);
     Task<bool> CategoryExists(int id);
 }

@@ -19,7 +19,7 @@ public class StudentServices : IStudentServices
         return await _db.Students.ToListAsync();
     }
 
-    public async Task<Student?> GetById(int id)
+    public async Task<Student?> GetById(Guid id)
     {
         return await _db.Students.FirstOrDefaultAsync(s => s.Id == id);
     }
@@ -42,7 +42,7 @@ public class StudentServices : IStudentServices
         return student;
     }
 
-    public async Task<Student?> Update(int id, UpdateStudentRequest request)
+    public async Task<Student?> Update(Guid id, UpdateStudentRequest request)
     {
         var student = await GetById(id);
         if (student is null)
@@ -61,7 +61,7 @@ public class StudentServices : IStudentServices
         return student;
     }
 
-    public async Task<bool> Delete(int id)
+    public async Task<bool> Delete(Guid id)
     {
         var student = await GetById(id);
         if (student is null)
@@ -72,6 +72,22 @@ public class StudentServices : IStudentServices
         await _db.SaveChangesAsync();
 
         return true;
+    }
+
+    public async Task<Student?> VerifyStudent(Guid id)
+    {
+        var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == id);
+
+        if (student is null)
+        {
+            return null;
+        }
+
+        student.IsVerified = true;
+
+        await _db.SaveChangesAsync();
+
+        return student;
     }
 
     public async Task<bool> EmailExists(string email)
@@ -94,7 +110,7 @@ public class StudentServices : IStudentServices
         return exists;
     }
 
-    public async Task<bool> EmailExistsForAnotherStudent(string email, int id)
+    public async Task<bool> EmailExistsForAnotherStudent(string email, Guid id)
     {
         var exists = await _db.Students.AnyAsync(s =>
             s.Id != id && s.Email.ToLower() == email.Trim().ToLower()
@@ -102,7 +118,7 @@ public class StudentServices : IStudentServices
         return exists;
     }
 
-    public async Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, int id)
+    public async Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, Guid id)
     {
         var exists = await _db.Students.AnyAsync(s =>
             s.Id != id && s.PhoneNumber == phoneNb.Trim()
@@ -121,7 +137,7 @@ public class StudentServices : IStudentServices
     public async Task<bool> UniversityStudentIdExistsForAnotherStudent(
         string universityName,
         string universityId,
-        int id
+        Guid id
     )
     {
         var normalizedUniversityName = universityName.Trim().ToLower();

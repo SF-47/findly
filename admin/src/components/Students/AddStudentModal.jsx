@@ -8,6 +8,8 @@ import {
   FaTimes,
   FaUser,
   FaUniversity,
+  FaChevronRight,
+  FaChevronDown,
 } from "react-icons/fa";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
@@ -50,7 +52,7 @@ function FormInput({
   );
 }
 
-function AddStudentModal({ onClose, onStudentAdded }) {
+function AddStudentModal({ onClose, onStudentAdded, universities }) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -68,6 +70,7 @@ function AddStudentModal({ onClose, onStudentAdded }) {
     universityCardImageUrlError: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -117,7 +120,7 @@ function AddStudentModal({ onClose, onStudentAdded }) {
     if (!formData.phoneNumber.trim()) {
       errors.phoneNumberError = "Phone number is required.";
       hasError = true;
-    } else if (!/^(\d{8}|\d{2} \d{3} \d{3})$/.test(formData.phoneNumber)) {
+    } else if (!/^(03|70|71|76|78|79|81)\d{6}$/.test(formData.phoneNumber)) {
       errors.phoneNumberError = "Please enter a valid phone number.";
       hasError = true;
     }
@@ -279,22 +282,35 @@ function AddStudentModal({ onClose, onStudentAdded }) {
               placeholder="xxxx@example.com"
               errorMessage={inputErrorMessage.emailError}
             />
-
-            <FormInput
-              icon={<FaUniversity />}
-              label="University"
-              name="universityName"
-              value={formData.universityName}
-              onChange={(e) => {
-                handleChange(e);
-                setInputErrorMessage((prev) => ({
-                  ...prev,
-                  universityNameError: "",
-                }));
-              }}
-              placeholder="University name"
-              errorMessage={inputErrorMessage.universityNameError}
-            />
+            <div className="relative flex flex-col">
+              <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                <span className="text-blue-600 dark:text-blue-400">
+                  <FaUniversity />
+                </span>
+                University
+              </label>
+              <select
+                value={formData.universityName}
+                onClick={() =>setClicked((prev) => !prev)}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    universityName: e.target.value,
+                  }))
+                }
+                className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              >
+                <option value="">Select university name</option>
+                {universities.map((u) => (
+                  <option key={u.id} value={u.split("(")[1].split(")")[0]}>{u}</option>
+                ))}
+              </select>
+              {!clicked ? (
+                <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              ) : (
+                <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              )}
+            </div>
 
             <FormInput
               icon={<FaIdCard />}

@@ -22,10 +22,7 @@ public static class AuthValidator
     public static List<string> ValidateChangePasswordInputs(ChangePasswordRequest request)
     {
         var errors = new List<String>();
-        if (request.AdminId <= 0)
-        {
-            errors.Add("Admin ID is required");
-        }
+        
         if (string.IsNullOrWhiteSpace(request.CurrentPassword))
         {
             errors.Add("Old password is required");

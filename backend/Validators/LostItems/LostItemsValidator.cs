@@ -7,10 +7,7 @@ public static class LostItemsValidator
     public static List<string> ValidateCreate(CreateLostItemRequest request)
     {
         var errors = new List<string>();
-        if (request.StudentId <= 0)
-        {
-            errors.Add("Student ID is required");
-        }
+        
         if (request.CategoryId <= 0)
         {
             errors.Add("Category ID is required");

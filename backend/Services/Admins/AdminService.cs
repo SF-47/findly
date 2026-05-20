@@ -58,4 +58,18 @@ public class AdminService : IAdminService
 
         return admin;
     }
+
+    public async Task<bool> Delete(Guid id)
+    {
+        var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Id == id);
+        if (admin is null)
+        {
+            return false;
+        }
+
+        _db.Admins.Remove(admin);
+        await _db.SaveChangesAsync();
+
+        return true;
+    }
 }

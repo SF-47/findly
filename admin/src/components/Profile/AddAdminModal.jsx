@@ -8,18 +8,21 @@ import {
   FaTimes,
   FaUserShield,
   FaUser,
+  FaPhone,
 } from "react-icons/fa";
 
 function AddAdminModal({ onClose, onAdminAdded }) {
   const [inputs, setInputs] = useState({
     fullName: "",
     email: "",
+    phoneNumber: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({
     fullNameError: "",
     emailError: "",
+    phoneError: "",
     passwordError: "",
   });
 
@@ -27,6 +30,7 @@ function AddAdminModal({ onClose, onAdminAdded }) {
     const newErrors = {
       fullNameError: "",
       emailError: "",
+      phoneError: "",
       passwordError: "",
     };
 
@@ -41,6 +45,13 @@ function AddAdminModal({ onClose, onAdminAdded }) {
       hasError = true;
     } else if (!/\S+@\S+\.\S+/.test(inputs.email)) {
       newErrors.emailError = "Please enter a valid email address";
+      hasError = true;
+    }
+    if (!inputs.phoneNumber.trim()) {
+      newErrors.phoneError = "Phone number is required.";
+      hasError = true;
+    } else if (!/^(03|70|71|76|78|79|81)\d{6}$/.test(inputs.phoneNumber)) {
+      newErrors.phoneError = "Please enter a valid phone number.";
       hasError = true;
     }
     if (!inputs.password.trim()) {
@@ -60,17 +71,14 @@ function AddAdminModal({ onClose, onAdminAdded }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setIsLoading(true);
 
     const hasError = validateInputs();
     if (hasError) {
       setIsLoading(false);
       return;
     }
-
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-
       await axiosClient.post("/admins", inputs);
 
       toast.success("Admin added successfully.");
@@ -83,6 +91,7 @@ function AddAdminModal({ onClose, onAdminAdded }) {
         const newErrors = {
           fullNameError: "",
           emailError: "",
+          phoneError: "",
           passwordError: "",
         };
 
@@ -95,6 +104,11 @@ function AddAdminModal({ onClose, onAdminAdded }) {
             newErrors.emailError = err;
           } else {
             toast.error(err);
+          }
+          if (lowerError.includes("phone") && lowerError.includes("already")) {
+            newErrors.phoneError = "This phone number is already used.";
+          } else if (lowerError.includes("phone")) {
+            newErrors.phoneError = err;
           }
         });
         setErrors(newErrors);
@@ -194,6 +208,35 @@ function AddAdminModal({ onClose, onAdminAdded }) {
               </p>
             )}
           </div>
+          <div>
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+              <FaPhone className="text-blue-600 dark:text-blue-400" />
+              Phone
+            </label>
+
+            <input
+              type="text"
+              value={inputs.phoneNumber}
+              onChange={(e) => {
+                setInputs((prev) => ({
+                  ...prev,
+                  phoneNumber: e.target.value,
+                }));
+                setErrors((prev) => ({ ...prev, phoneError: "" }));
+              }}
+              placeholder="01 234 567"
+              className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                errors.phoneError
+                  ? "border-red-400 dark:border-red-500"
+                  : "border-gray-200 dark:border-zinc-700"
+              }`}
+            />
+            {errors.phoneError && (
+              <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                {errors.phoneError}
+              </p>
+            )}
+          </div>
 
           <div>
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
@@ -248,7 +291,7 @@ function AddAdminModal({ onClose, onAdminAdded }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             >
               <FaPlus />
               {isLoading ? "Adding..." : "Add admin"}

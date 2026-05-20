@@ -1,7 +1,7 @@
 namespace backend.Responses.Admins;
 
 public record AdminResponse(
-    int Id,
+    Guid Id,
     string FullName,
     string Email,
     string PhoneNumber,

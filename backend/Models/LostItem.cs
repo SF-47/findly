@@ -2,8 +2,8 @@ namespace backend.Models;
 
 public class LostItem
 {
-    public int Id { get; set; }
-    public int StudentId { get; set; }
+    public Guid Id { get; set; }
+    public Guid StudentId { get; set; }
     public int CategoryId { get; set; }
     public string ItemName { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

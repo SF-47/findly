@@ -1,7 +1,7 @@
 namespace backend.Requests.LostItems;
 
 public record CreateLostItemRequest(
-    int StudentId,
+    Guid StudentId,
     int CategoryId,
     string ItemName,
     string Description,

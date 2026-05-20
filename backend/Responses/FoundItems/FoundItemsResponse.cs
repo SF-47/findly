@@ -1,8 +1,8 @@
 namespace backend.Responses.FoundItems;
 
 public record FullFoundItemsResponse(
-    int Id,
-    int StudentId,
+    Guid Id,
+    Guid StudentId,
     int CategoryId,
     string ItemName,
     string Description,

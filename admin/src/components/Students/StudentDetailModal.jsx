@@ -10,6 +10,7 @@ import {
   FaUniversity,
   FaUser,
   FaEdit,
+  FaCheckCircle,
 } from "react-icons/fa";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
@@ -62,6 +63,8 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const isPending = !student?.isVerified;
+
   const [formData, setFormData] = useState({
     fullName: student?.fullName || "",
     email: student?.email || "",
@@ -84,10 +87,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   function validateFrontend() {
@@ -129,7 +129,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
     if (!formData.phoneNumber.trim()) {
       errors.phoneNumberError = "Phone number is required.";
       hasError = true;
-    } else if (!/^(\d{8}|\d{2} \d{3} \d{3})$/.test(formData.phoneNumber)) {
+    } else if (!/^(03|70|71|76|78|79|81)\d{6}$/.test(formData.phoneNumber)) {
       errors.phoneNumberError = "Please enter a valid phone number.";
       hasError = true;
     }
@@ -156,7 +156,6 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
       return;
     }
 
-    // Validate on frontend first
     const hasFrontendErrors = validateFrontend();
     if (hasFrontendErrors) {
       toast.error("Please fix the errors before saving.");
@@ -186,8 +185,6 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
       if (Array.isArray(backendErrors)) {
         backendErrors.forEach((err) => {
           const lowerError = err.toLowerCase();
-
-          // Handle unique constraint errors (backend only)
           if (lowerError.includes("email") && lowerError.includes("already")) {
             newErrors.emailError = err;
           } else if (
@@ -200,9 +197,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
             lowerError.includes("already")
           ) {
             newErrors.universityIdError = err;
-          }
-          // Handle other validation errors (should be caught by frontend, but just in case)
-          else if (lowerError.includes("email")) {
+          } else if (lowerError.includes("email")) {
             newErrors.emailError = err;
           } else if (lowerError.includes("phone")) {
             newErrors.phoneNumberError = err;
@@ -258,11 +253,18 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
       await axiosClient.delete(`/students/${student.id}`);
       toast.success("Student deleted successfully.");
       await onStudentChanged();
-      onClose();
+      
     } catch (error) {
       console.log(error);
       toast.error("Failed to delete student.");
     }
+  }
+
+  async function handleVerify() {
+    await axiosClient.put(`/students/${student.id}/verify`);
+    toast.success("Student verified successfully.");
+    await onStudentChanged();
+    onClose();
   }
 
   return (
@@ -286,13 +288,43 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
               Student Details
             </h1>
 
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {isEditing
-                ? "Edit student information."
-                : "View student information."}
-            </p>
+            <div className="mt-1 flex items-center gap-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {isEditing
+                  ? "Edit student information."
+                  : "View student information."}
+              </p>
+              {/* Status badge based on isVerified boolean */}
+              {student.isVerified ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-950/40 dark:text-green-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                  Verified
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-950/40 dark:text-amber-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                  Pending
+                </span>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Pending banner — only shown when student is not verified and not editing */}
+        {isPending && !isEditing && (
+          <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/40 dark:bg-amber-950/20">
+            <FaCheckCircle className="mt-0.5 shrink-0 text-amber-500" />
+            <div>
+              <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
+                Pending Verification
+              </p>
+              <p className="text-xs text-amber-600 dark:text-amber-500">
+                This student is awaiting review. Verify their university card
+                image before approving.
+              </p>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -320,10 +352,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
               value={formData.email}
               onChange={(e) => {
                 handleChange(e);
-                setInputErrorMessage((prev) => ({
-                  ...prev,
-                  emailError: "",
-                }));
+                setInputErrorMessage((prev) => ({ ...prev, emailError: "" }));
               }}
               disabled={!isEditing}
               errorMessage={inputErrorMessage.emailError}
@@ -395,9 +424,10 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
           </div>
 
           <div className="flex gap-3 pt-2">
+            <div></div>
             <ConfirmDialog
-              title="Delete student ?"
-              description={`Are you sure you want to delete ${student.fullName} ? This action cannot be undone.`}
+              title="Delete student?"
+              description={`Are you sure you want to delete ${student.fullName}? This action cannot be undone.`}
               confirmText="Delete"
               cancelText="Cancel"
               onConfirm={handleDelete}
@@ -410,6 +440,24 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
                 Delete
               </button>
             </ConfirmDialog>
+
+            {isPending && !isEditing && (
+              <ConfirmDialog
+                title="Verify student?"
+                description={`Are you sure you want to verify ${student.fullName}? This will approve their account.`}
+                confirmText="Verify"
+                cancelText="Cancel"
+                onConfirm={handleVerify}
+              >
+                <button
+                  type="button"
+                  className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 font-semibold text-green-600 transition hover:bg-green-100 dark:border-green-900/40 dark:bg-green-950/20 dark:text-green-400 dark:hover:bg-green-950/40"
+                >
+                  <FaCheckCircle />
+                  Verify
+                </button>
+              </ConfirmDialog>
+            )}
 
             <button
               type="submit"
