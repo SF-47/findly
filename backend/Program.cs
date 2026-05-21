@@ -6,6 +6,7 @@ using backend.Services.LostItems;
 using backend.Services.Students;
 using Microsoft.EntityFrameworkCore;
 using backend.Services.Admins;
+using backend.Services.Universities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,7 @@ builder.Services.AddScoped<ILostItemsService, LostItemsServices>();
 builder.Services.AddScoped<IFoundItemService, FoundItemsServices>();
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IUniversityService,UniversityService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(

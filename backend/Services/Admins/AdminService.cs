@@ -24,6 +24,12 @@ public class AdminService : IAdminService
         return await _db.Admins.AnyAsync(a => a.Email.ToLower() == email.Trim().ToLower());
     }
 
+    public async Task<List<Admin>> GetAllExcept(Guid id)
+    {
+        var admin = await _db.Admins.Where(a => a.Id != id).ToListAsync();
+        return admin;
+    }
+
     public async Task<bool> PhoneExists(string phone)
     {
         var phoneNumberInAdminsExists = await _db.Admins.AnyAsync(a => a.PhoneNumber == phone);

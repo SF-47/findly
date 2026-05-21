@@ -5,5 +5,7 @@ public record AdminResponse(
     string FullName,
     string Email,
     string PhoneNumber,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    string Role,
+    Guid? UniversityId 
 );

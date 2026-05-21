@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<LostItem> LostItems { get; set; }
     public DbSet<FoundItem> FoundItems { get; set; }
     public DbSet<Admin> Admins { get; set; }
+    public DbSet<University> Universities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

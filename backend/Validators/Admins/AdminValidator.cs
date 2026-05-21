@@ -30,6 +30,10 @@ public static class AdminValidator
         {
             errors.Add("Password must be at least 6 characters.");
         }
+        if (request.Role == "UniversityAdmin" && request.UniversityId is null)
+        {
+            errors.Add("University is required for university admin.");
+        }
 
         return errors;
     }

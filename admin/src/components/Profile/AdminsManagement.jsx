@@ -29,10 +29,14 @@ function AdminsManagement({ onBack }) {
   const [showAddAdmin, setShowAddAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const adminLoggedIn = JSON.parse(
+    localStorage.getItem("admin") || sessionStorage.getItem("admin") || "null",
+  );
+
   async function fetchData() {
     try {
       setIsLoading(true);
-      const response = await axiosClient.get("/admins");
+      const response = await axiosClient.get(`/admins/${adminLoggedIn?.id}`);
       setAdmins(response.data);
     } catch (error) {
       console.log(error);
@@ -44,6 +48,7 @@ function AdminsManagement({ onBack }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleDelete(id) {

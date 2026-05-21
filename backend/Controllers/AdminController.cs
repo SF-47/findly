@@ -29,6 +29,14 @@ public class AdminsController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetAllAdminsExcept(Guid id)
+    {
+        var admins = await _adminService.GetAllExcept(id);
+        var response = admins.Select(ToAdminResponse);
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<IActionResult> CreateAdmin(CreateAdminRequest request)
     {
@@ -80,7 +88,9 @@ public class AdminsController : ControllerBase
             admin.FullName,
             admin.Email,
             admin.PhoneNumber,
-            admin.CreatedAt
+            admin.CreatedAt,
+            admin.Role,
+            admin.UniversityId
         );
     }
 }

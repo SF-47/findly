@@ -6,7 +6,7 @@ namespace backend.Services.Admins;
 public interface IAdminService
 {
     Task<List<Admin>> GetAll();
-
+    Task<List<Admin>> GetAllExcept(Guid id);
     Task<bool> EmailExists(string email);
     Task<bool> PhoneExists(string phone);
 
