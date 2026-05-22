@@ -53,6 +53,7 @@ function LoginPage() {
     try {
       setIsLoading(true);
       const response = await axiosClient.post("/auth/admin/login", formInputs);
+
       if (rememberMe) {
         localStorage.setItem("admin", JSON.stringify(response.data));
         sessionStorage.removeItem("admin");

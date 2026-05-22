@@ -52,6 +52,12 @@ export default function Sidebar() {
     return "";
   }
 
+  function handleLogout() {
+    localStorage.removeItem("admin");
+    sessionStorage.removeItem("admin");
+    navigate("/", { replace: true });//replace: true so after logout the user cannot click browser Back and visually return to the dashboard page
+  }
+
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-72 flex-col justify-between border-r border-gray-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
       <div>
@@ -151,11 +157,7 @@ export default function Sidebar() {
 
           <button
             className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start font-mono text-white transition-colors hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
-            onClick={() => {
-              localStorage.removeItem("admin");
-              sessionStorage.removeItem("admin");
-              navigate("/");
-            }}
+            onClick={handleLogout}
           >
             <FaSignOutAlt size={20} />
             <span>Logout</span>
