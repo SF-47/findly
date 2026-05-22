@@ -4,12 +4,14 @@ using backend.Responses.Admins;
 using backend.Responses.Errors;
 using backend.Services.Admins;
 using backend.Validators.Admins;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
 [ApiController]
 [Route("admins")]
+[Authorize] //This means : admins now requires a valid JWT token.
 public class AdminsController : ControllerBase
 {
     private readonly IAdminService _adminService;
@@ -88,9 +90,12 @@ public class AdminsController : ControllerBase
             admin.FullName,
             admin.Email,
             admin.PhoneNumber,
-            admin.CreatedAt,
             admin.Role,
-            admin.UniversityId
+            admin.UniversityId,
+            admin.University?.ShortName,
+            admin.University?.FullName,
+            admin.University?.Branch,
+            admin.CreatedAt
         );
     }
 }

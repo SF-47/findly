@@ -48,22 +48,24 @@ public class FoundItemsServices : IFoundItemService
 
     public async Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request)
     {
-        var FoundItem = await GetById(id);
-        if (FoundItem is null)
+        var foundItem = await GetById(id);
+
+        if (foundItem is null)
         {
             return null;
         }
-        FoundItem.CategoryId = request.CategoryId;
-        FoundItem.ItemName = request.ItemName;
-        FoundItem.Description = request.Description;
-        FoundItem.Color = request.Color;
-        FoundItem.Location = request.Location;
-        FoundItem.FoundDate = DateTime.SpecifyKind(request.FoundDate, DateTimeKind.Utc);
-        FoundItem.ImageUrl = request.ImageUrl;
-        FoundItem.Status = "open";
-        FoundItem.CreatedAt = DateTime.UtcNow;
 
-        return FoundItem;
+        foundItem.CategoryId = request.CategoryId;
+        foundItem.ItemName = request.ItemName.Trim();
+        foundItem.Description = request.Description.Trim();
+        foundItem.Color = request.Color.Trim();
+        foundItem.Location = request.Location.Trim();
+        foundItem.FoundDate = DateTime.SpecifyKind(request.FoundDate, DateTimeKind.Utc);
+        foundItem.ImageUrl = request.ImageUrl.Trim();
+
+        await _db.SaveChangesAsync();
+
+        return foundItem;
     }
 
     public async Task<bool> Delete(Guid id)

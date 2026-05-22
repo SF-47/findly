@@ -2,6 +2,7 @@ using backend.Requests.Auth;
 using backend.Responses.Auth;
 using backend.Responses.Errors;
 using backend.Services.Auth;
+using backend.Services.Jwt;
 using backend.Validators.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,16 +13,19 @@ namespace backend.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IJwtService _jwtService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, IJwtService jwtService)
     {
         _authService = authService;
+        _jwtService = jwtService;
     }
 
     [HttpPost("admin/login")]
     public async Task<IActionResult> AdminLogin(AdminLoginRequest request)
     {
         var errors = AuthValidator.ValidateLoginInputs(request);
+
         if (errors.Count > 0)
         {
             var errorResponse = new ErrorResponse("Validation failed", errors);
@@ -29,14 +33,22 @@ public class AuthController : ControllerBase
         }
 
         var admin = await _authService.Login(request);
+
         if (admin is null)
         {
             errors.Add("Invalid email or password.");
-            var errRes = new ErrorResponse("Validation failed", errors);
-            return BadRequest(errRes);
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
         }
-
-        var response = new AdminLoginResponse(admin.Id, admin.FullName, admin.Email);
+        var token = _jwtService.GenerateToken(admin);
+        var response = new AdminLoginResponse(
+            admin.Id,
+            admin.FullName,
+            admin.Email,
+            admin.Role,
+            admin.UniversityId,
+            token
+        );
 
         return Ok(response);
     }
@@ -45,6 +57,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
     {
         var errors = AuthValidator.ValidateChangePasswordInputs(request);
+
         if (errors.Count > 0)
         {
             var errorResponse = new ErrorResponse("Validation failed", errors);
@@ -60,7 +73,7 @@ public class AuthController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        var message = "Passwrod Changed successfully.";
+        var message = "Password changed successfully.";
         return Ok(message);
     }
 }

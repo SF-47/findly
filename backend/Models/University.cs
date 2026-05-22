@@ -2,9 +2,13 @@ namespace backend.Models;
 
 public class University
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public string ShortName { get; set; } = string.Empty;
+
+    public string FullName { get; set; } = string.Empty;
+
     public string Branch { get; set; } = string.Empty;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public DateTime CreatedAt { get; set; }
 }

@@ -18,6 +18,15 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
+        modelBuilder
+            .Entity<University>()
+            .HasIndex(u => new
+            {
+                u.ShortName,
+                u.FullName,
+                u.Branch,
+            })
+            .IsUnique();
     }
 
     //This tells EF Core:

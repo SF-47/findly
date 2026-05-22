@@ -49,19 +49,21 @@ public class LostItemsServices : ILostItemsService
     public async Task<LostItem?> Update(Guid id, UpdateLostItemRequest request)
     {
         var lostItem = await GetById(id);
+
         if (lostItem is null)
         {
             return null;
         }
+
         lostItem.CategoryId = request.CategoryId;
-        lostItem.ItemName = request.ItemName;
-        lostItem.Description = request.Description;
-        lostItem.Color = request.Color;
-        lostItem.Location = request.Location;
+        lostItem.ItemName = request.ItemName.Trim();
+        lostItem.Description = request.Description.Trim();
+        lostItem.Color = request.Color.Trim();
+        lostItem.Location = request.Location.Trim();
         lostItem.LostDate = DateTime.SpecifyKind(request.LostDate, DateTimeKind.Utc);
-        lostItem.ImageUrl = request.ImageUrl;
-        lostItem.Status = "open";
-        lostItem.CreatedAt = DateTime.UtcNow;
+        lostItem.ImageUrl = request.ImageUrl.Trim();
+
+        await _db.SaveChangesAsync();
 
         return lostItem;
     }

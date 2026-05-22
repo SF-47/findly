@@ -10,11 +10,11 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("found-items")]
-public class FoundItemsService : ControllerBase
+public class FoundItemsController : ControllerBase
 {
     private readonly IFoundItemService _foundItemsService;
 
-    public FoundItemsService(IFoundItemService foundItemsServices)
+    public FoundItemsController(IFoundItemService foundItemsServices)
     {
         _foundItemsService = foundItemsServices;
     }

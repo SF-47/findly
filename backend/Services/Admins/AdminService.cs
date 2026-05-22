@@ -16,7 +16,10 @@ public class AdminService : IAdminService
 
     public async Task<List<Admin>> GetAll()
     {
-        return await _db.Admins.OrderByDescending(a => a.CreatedAt).ToListAsync();
+        return await _db
+            .Admins.Include(a => a.University)
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
     }
 
     public async Task<bool> EmailExists(string email)
@@ -26,8 +29,11 @@ public class AdminService : IAdminService
 
     public async Task<List<Admin>> GetAllExcept(Guid id)
     {
-        var admin = await _db.Admins.Where(a => a.Id != id).ToListAsync();
-        return admin;
+        return await _db
+            .Admins.Include(a => a.University)
+            .Where(a => a.Id != id)
+            .OrderByDescending(a => a.CreatedAt)
+            .ToListAsync();
     }
 
     public async Task<bool> PhoneExists(string phone)
@@ -55,6 +61,8 @@ public class AdminService : IAdminService
             Email = request.Email.Trim(),
             PhoneNumber = request.PhoneNumber.Trim(),
             PasswordHash = passwordHash,
+            Role = request.Role.Trim(),
+            UniversityId = request.UniversityId,
             CreatedAt = DateTime.UtcNow,
         };
 
