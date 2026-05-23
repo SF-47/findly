@@ -28,10 +28,16 @@ function AdminsManagement({ onBack }) {
   const [admins, setAdmins] = useState([]);
   const [showAddAdmin, setShowAddAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [universities, setUniversities] = useState([]);
 
   const adminLoggedIn = JSON.parse(
     localStorage.getItem("admin") || sessionStorage.getItem("admin") || "null",
   );
+
+  async function fetchUniversities() {
+    const response = await axiosClient.get("/universities");
+    setUniversities(response.data);
+  }
 
   async function fetchData() {
     try {
@@ -48,6 +54,7 @@ function AdminsManagement({ onBack }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
+    fetchUniversities();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -274,6 +281,7 @@ function AdminsManagement({ onBack }) {
         <AddAdminModal
           onClose={() => setShowAddAdmin(false)}
           onAdminAdded={fetchData}
+          universities={universities}
         />
       )}
     </div>

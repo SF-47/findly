@@ -6,5 +6,8 @@ public record AdminLoginResponse(
     string Email,
     string Role,
     Guid? UniversityId,
+    string? UniversityShortName,
+    string? UniversityFullName,
+    string? UniversityBranch,
     string Token
 );

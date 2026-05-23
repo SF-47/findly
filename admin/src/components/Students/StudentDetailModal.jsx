@@ -11,6 +11,8 @@ import {
   FaUser,
   FaEdit,
   FaCheckCircle,
+  FaChevronRight,
+  FaChevronDown,
 } from "react-icons/fa";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
@@ -59,17 +61,28 @@ function FormInput({
   );
 }
 
-function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }) {
+function StudentDetailsModal({
+  student,
+  onClose,
+  onStudentChanged,
+  setFilters,
+  universities,
+  owner,
+  admin,
+}) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [clicked, setClicked] = useState(false);
 
   const isPending = !student?.isVerified;
 
   const [formData, setFormData] = useState({
     fullName: student?.fullName || "",
     email: student?.email || "",
-    universityName: student?.universityName || "",
     universityId: student?.universityId || "",
+    universityShortName: student?.universityShortName || "",
+    universityBranch: student?.universityBranch || "",
+    universityStudentId: student?.universityStudentId || "",
     phoneNumber: student?.phoneNumber || "",
     universityCardImageUrl: student?.universityCardImageUrl || "",
   });
@@ -77,8 +90,8 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
   const [inputErrorMessage, setInputErrorMessage] = useState({
     fullNameError: "",
     emailError: "",
-    universityNameError: "",
     universityIdError: "",
+    universityStudentIdError: "",
     phoneNumberError: "",
     universityCardImageUrlError: "",
   });
@@ -87,15 +100,19 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   }
 
   function validateFrontend() {
     const errors = {
       fullNameError: "",
       emailError: "",
-      universityNameError: "",
       universityIdError: "",
+      universityStudentIdError: "",
       phoneNumberError: "",
       universityCardImageUrlError: "",
     };
@@ -116,13 +133,13 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
       hasError = true;
     }
 
-    if (!formData.universityName.trim()) {
-      errors.universityNameError = "University name is required.";
+    if (!formData.universityId.trim()) {
+      errors.universityIdError = "University is required.";
       hasError = true;
     }
 
-    if (!formData.universityId.trim()) {
-      errors.universityIdError = "University ID is required.";
+    if (!formData.universityStudentId.trim()) {
+      errors.universityStudentIdError = "Student university ID is required.";
       hasError = true;
     }
 
@@ -157,6 +174,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
     }
 
     const hasFrontendErrors = validateFrontend();
+
     if (hasFrontendErrors) {
       toast.error("Please fix the errors before saving.");
       return;
@@ -166,18 +184,21 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
 
     try {
       await axiosClient.put(`/students/${student.id}`, formData);
+
       toast.success("Student updated successfully.");
+
       await onStudentChanged();
       onClose();
     } catch (error) {
       console.log(error);
+
       const backendErrors = error.response?.data?.errors;
 
       const newErrors = {
         fullNameError: "",
         emailError: "",
-        universityNameError: "",
         universityIdError: "",
+        universityStudentIdError: "",
         phoneNumberError: "",
         universityCardImageUrlError: "",
       };
@@ -185,6 +206,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
       if (Array.isArray(backendErrors)) {
         backendErrors.forEach((err) => {
           const lowerError = err.toLowerCase();
+
           if (lowerError.includes("email") && lowerError.includes("already")) {
             newErrors.emailError = err;
           } else if (
@@ -193,21 +215,29 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
           ) {
             newErrors.phoneNumberError = err;
           } else if (
-            lowerError.includes("university id") &&
+            lowerError.includes("university student id") &&
             lowerError.includes("already")
           ) {
-            newErrors.universityIdError = err;
+            newErrors.universityStudentIdError = err;
           } else if (lowerError.includes("email")) {
             newErrors.emailError = err;
           } else if (lowerError.includes("phone")) {
             newErrors.phoneNumberError = err;
           } else if (
-            lowerError.includes("university id") ||
-            lowerError.includes("student id")
+            lowerError.includes("university") &&
+            lowerError.includes("exist")
           ) {
             newErrors.universityIdError = err;
-          } else if (lowerError.includes("university name")) {
-            newErrors.universityNameError = err;
+          } else if (
+            lowerError.includes("university") &&
+            lowerError.includes("required")
+          ) {
+            newErrors.universityIdError = err;
+          } else if (
+            lowerError.includes("university student id") ||
+            lowerError.includes("student university id")
+          ) {
+            newErrors.universityStudentIdError = err;
           } else if (lowerError.includes("full name")) {
             newErrors.fullNameError = err;
           } else if (
@@ -219,9 +249,11 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
             toast.error(err);
           }
         });
+
         setInputErrorMessage(newErrors);
         return;
       }
+
       toast.error("Failed to update student.");
     } finally {
       setIsLoading(false);
@@ -232,30 +264,37 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
     setFormData({
       fullName: student.fullName || "",
       email: student.email || "",
-      universityName: student.universityName || "",
       universityId: student.universityId || "",
+      universityStudentId: student.universityStudentId || "",
       phoneNumber: student.phoneNumber || "",
       universityCardImageUrl: student.universityCardImageUrl || "",
     });
+
     setInputErrorMessage({
       fullNameError: "",
       emailError: "",
-      universityNameError: "",
       universityIdError: "",
+      universityStudentIdError: "",
       phoneNumberError: "",
       universityCardImageUrlError: "",
     });
+
     setIsEditing(false);
   }
 
   async function handleDelete() {
     try {
       await axiosClient.delete(`/students/${student.id}`);
+
       toast.success("Student deleted successfully.");
+
       onClose();
-      setFilters();
+
+      if (setFilters) {
+        setFilters();
+      }
+
       await onStudentChanged();
-      
     } catch (error) {
       console.log(error);
       toast.error("Failed to delete student.");
@@ -263,11 +302,22 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
   }
 
   async function handleVerify() {
-    await axiosClient.put(`/students/${student.id}/verify`);
-    toast.success("Student verified successfully.");
-    await onStudentChanged();
-    onClose();
+    try {
+      await axiosClient.put(`/students/${student.id}/verify`);
+
+      toast.success("Student verified successfully.");
+
+      await onStudentChanged();
+      onClose();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to verify student.");
+    }
   }
+
+  const selectedUniversity = universities.find(
+    (u) => u.id === formData.universityId,
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
@@ -296,7 +346,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
                   ? "Edit student information."
                   : "View student information."}
               </p>
-              {/* Status badge based on isVerified boolean */}
+
               {student.isVerified ? (
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-950/40 dark:text-green-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
@@ -312,7 +362,6 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
           </div>
         </div>
 
-        {/* Pending banner — only shown when student is not verified and not editing */}
         {isPending && !isEditing && (
           <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/40 dark:bg-amber-950/20">
             <FaCheckCircle className="mt-0.5 shrink-0 text-amber-500" />
@@ -320,6 +369,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
               <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
                 Pending Verification
               </p>
+
               <p className="text-xs text-amber-600 dark:text-amber-500">
                 This student is awaiting review. Verify their university card
                 image before approving.
@@ -354,42 +404,113 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
               value={formData.email}
               onChange={(e) => {
                 handleChange(e);
-                setInputErrorMessage((prev) => ({ ...prev, emailError: "" }));
+                setInputErrorMessage((prev) => ({
+                  ...prev,
+                  emailError: "",
+                }));
               }}
               disabled={!isEditing}
               errorMessage={inputErrorMessage.emailError}
             />
+            {owner ? (
+              <div className="relative">
+                <label className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="text-blue-600 dark:text-blue-400">
+                    <FaUniversity />
+                  </span>
+                  University
+                </label>
 
-            <FormInput
-              icon={<FaUniversity />}
-              label="University"
-              name="universityName"
-              value={formData.universityName}
-              onChange={(e) => {
-                handleChange(e);
-                setInputErrorMessage((prev) => ({
-                  ...prev,
-                  universityNameError: "",
-                }));
-              }}
-              disabled={!isEditing}
-              errorMessage={inputErrorMessage.universityNameError}
-            />
+                <select
+                  value={formData.universityId}
+                  disabled={!isEditing}
+                  onClick={() => setClicked((prev) => !prev)}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      universityId: e.target.value,
+                    }));
+
+                    setInputErrorMessage((prev) => ({
+                      ...prev,
+                      universityIdError: "",
+                    }));
+                  }}
+                  className={`w-full appearance-none rounded-xl border px-3 py-2.5 text-sm text-gray-900 outline-none transition dark:text-white ${
+                    inputErrorMessage.universityIdError
+                      ? "border-red-500 bg-red-50 dark:border-red-500 dark:bg-red-950/20"
+                      : !isEditing
+                        ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-400"
+                        : "border-gray-200 bg-gray-50 focus:border-blue-500 dark:border-zinc-700 dark:bg-zinc-800"
+                  }`}
+                >
+                  <option value="">Select university</option>
+
+                  {universities.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.shortName} - {u.branch}
+                    </option>
+                  ))}
+                </select>
+
+                {!clicked ? (
+                  <FaChevronRight className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
+                ) : (
+                  <FaChevronDown className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
+                )}
+
+                {inputErrorMessage.universityIdError && (
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                    {inputErrorMessage.universityIdError}
+                  </p>
+                )}
+
+                {!isEditing && selectedUniversity && (
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {selectedUniversity.fullName}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="relative flex flex-col">
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="text-blue-600 dark:text-blue-400">
+                    <FaUniversity />
+                  </span>
+                  University
+                </label>
+
+                <input
+                  type="text"
+                  disabled
+                  value={
+                    admin.universityShortName + " - " + admin.universityBranch
+                  }
+                  className="w-full cursor-not-allowed rounded-xl border border-gray-300 bg-gray-100 p-3 text-sm text-gray-500 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-400"
+                />
+
+                {inputErrorMessage.universityIdError && (
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                    {inputErrorMessage.universityIdError}
+                  </p>
+                )}
+              </div>
+            )}
 
             <FormInput
               icon={<FaIdCard />}
-              label="University ID"
-              name="universityId"
-              value={formData.universityId}
+              label="Student University ID"
+              name="universityStudentId"
+              value={formData.universityStudentId}
               onChange={(e) => {
                 handleChange(e);
                 setInputErrorMessage((prev) => ({
                   ...prev,
-                  universityIdError: "",
+                  universityStudentIdError: "",
                 }));
               }}
               disabled={!isEditing}
-              errorMessage={inputErrorMessage.universityIdError}
+              errorMessage={inputErrorMessage.universityStudentIdError}
             />
 
             <FormInput
@@ -426,7 +547,6 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
           </div>
 
           <div className="flex gap-3 pt-2">
-            <div></div>
             <ConfirmDialog
               title="Delete student?"
               description={`Are you sure you want to delete ${student.fullName}? This action cannot be undone.`}
@@ -464,7 +584,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? (
                 "Saving..."
@@ -487,7 +607,7 @@ function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }
               type="button"
               onClick={cancelEditing}
               disabled={isLoading}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
             >
               Cancel Editing
             </button>

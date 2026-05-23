@@ -41,12 +41,16 @@ public class AuthController : ControllerBase
             return BadRequest(errorResponse);
         }
         var token = _jwtService.GenerateToken(admin);
+
         var response = new AdminLoginResponse(
             admin.Id,
             admin.FullName,
             admin.Email,
             admin.Role,
             admin.UniversityId,
+            admin.University?.ShortName,
+            admin.University?.FullName,
+            admin.University?.Branch,
             token
         );
 

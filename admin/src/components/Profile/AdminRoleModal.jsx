@@ -4,15 +4,38 @@ import {
   FaTimes,
   FaUserShield,
 } from "react-icons/fa";
+import { isOwner } from "../../../utils/auth";
 
 function AdminRoleModal({ onClose }) {
-  const permissions = [
-    "Manage students and verification status",
-    "Create and update categories",
-    "Review lost and found item records",
-    "View possible matches",
+  const ownerPermissions = [
+    "Manage all universities and branches",
+    "Create and manage university admins",
+    "Manage all students across all universities",
+    "Verify or reject student accounts",
+    "Create and update item categories",
+    "Review all lost and found item records",
+    "View and manage possible item matches",
     "Access profile and security settings",
   ];
+
+  const universityAdminPermissions = [
+    "Manage students from assigned university only",
+    "Verify or reject students from assigned university only",
+    "Review lost and found records from assigned university only",
+    "View possible matches related to assigned university",
+    "Use existing item categories when reviewing reports",
+    "Access profile and security settings",
+  ];
+
+  const owner = isOwner();
+
+  const currentRole = owner ? "Owner" : "University Admin";
+
+  const roleDescription = owner
+    ? "This account can manage global platform settings, universities, admins, students, reports, and categories."
+    : "This account can manage students and records that belong only to its assigned university.";
+
+  const permissions = owner ? ownerPermissions : universityAdminPermissions;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
@@ -53,13 +76,13 @@ function AdminRoleModal({ onClose }) {
               </p>
 
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-                Admin
+                {currentRole}
               </h2>
             </div>
           </div>
 
           <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
-            This account has access to the main dashboard management tools.
+            {roleDescription}
           </p>
         </div>
 

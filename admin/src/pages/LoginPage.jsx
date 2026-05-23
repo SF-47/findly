@@ -63,7 +63,7 @@ function LoginPage() {
       }
 
       toast.success("Logged in successfully.");
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.log(error);
 

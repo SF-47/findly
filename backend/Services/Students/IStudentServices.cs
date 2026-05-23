@@ -7,23 +7,23 @@ public interface IStudentServices
 {
     Task<List<Student>> GetAll();
     Task<Student?> GetById(Guid id);
+    Task<List<Student>> GetByUniversityId(Guid universityId);
     Task<Student> Create(CreateStudentRequest request);
     Task<Student?> Update(Guid id, UpdateStudentRequest request);
     Task<bool> Delete(Guid id);
 
     Task<Student?> VerifyStudent(Guid id);
 
-    // For CREATE
     Task<bool> EmailExists(string email);
-    Task<bool> UniversityStudentIdExists(string universityName, string universityId);
     Task<bool> PhoneNbExists(string phoneNb);
+    Task<bool> UniversityExists(Guid universityId);
+    Task<bool> UniversityStudentIdExists(Guid universityId, string universityStudentId);
 
-    // For UPDATE
     Task<bool> EmailExistsForAnotherStudent(string email, Guid id);
+    Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, Guid id);
     Task<bool> UniversityStudentIdExistsForAnotherStudent(
-        string universityName,
-        string universityId,
+        Guid universityId,
+        string universityStudentId,
         Guid id
     );
-    Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, Guid id);
 }

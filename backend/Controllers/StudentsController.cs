@@ -4,10 +4,12 @@ using backend.Responses.Errors;
 using backend.Responses.Students;
 using backend.Services.Students;
 using backend.Validators.Students;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("students")]
 public class StudentController : ControllerBase
@@ -22,9 +24,30 @@ public class StudentController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllStudents()
     {
-        var students = await _studentService.GetAll();
+        List<Student> students;
 
-        var response = students.Select(student => ToFullStudentResponse(student));
+        if (IsOwner())
+        {
+            students = await _studentService.GetAll();
+        }
+        else if (IsUniversityAdmin())
+        {
+            var adminUniversityId = GetAdminUniversityId();
+
+            if (adminUniversityId is null)
+            {
+                return Forbid();
+            }
+
+            students = await _studentService.GetByUniversityId(adminUniversityId.Value);
+        }
+        else
+        {
+            return Forbid();
+        }
+
+        var response = students.Select(ToFullStudentResponse);
+
         return Ok(response);
     }
 
@@ -32,12 +55,21 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> GetStudentById(Guid id)
     {
         var student = await _studentService.GetById(id);
+
         if (student is null)
         {
             return NotFound("Student not found.");
         }
 
+        var accessResult = CheckStudentAccess(student);
+
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
         var response = ToFullStudentResponse(student);
+
         return Ok(response);
     }
 
@@ -45,36 +77,52 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> CreateNewStudent(CreateStudentRequest request)
     {
         var errors = StudentValidator.ValidateCreate(request);
+
         if (errors.Count > 0)
         {
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
+
+        var requestAccessResult = CheckRequestUniversityAccess(request.UniversityId);
+
+        if (requestAccessResult is not null)
+        {
+            return requestAccessResult;
+        }
+
+        var universityExists = await _studentService.UniversityExists(request.UniversityId);
+
+        if (!universityExists)
+        {
+            errors.Add("University doesn't exist.");
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
+        }
+
         var universityStudentIdExists = await _studentService.UniversityStudentIdExists(
-            request.UniversityName,
-            request.UniversityId
+            request.UniversityId,
+            request.UniversityStudentId
         );
 
         if (universityStudentIdExists)
         {
-            errors.Add("This university ID is already used in the same university.");
-
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            errors.Add("This university student ID is already used in this university.");
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
+
         var emailExists = await _studentService.EmailExists(request.Email);
+
         if (emailExists)
         {
             errors.Add("Email is already used.");
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
+
         var phoneNbExists = await _studentService.PhoneNbExists(request.PhoneNumber);
+
         if (phoneNbExists)
         {
             errors.Add("Phone number is already used.");
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
 
         var student = await _studentService.Create(request);
@@ -88,68 +136,129 @@ public class StudentController : ControllerBase
     public async Task<IActionResult> UpdateStudent(Guid id, UpdateStudentRequest request)
     {
         var errors = StudentValidator.ValidateUpdate(request);
+
         if (errors.Count > 0)
         {
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
 
-        var emailExists = await _studentService.EmailExistsForAnotherStudent(request.Email, id);
-        if (emailExists)
+        var existingStudent = await _studentService.GetById(id);
+
+        if (existingStudent is null)
         {
-            errors.Add("Email is already used.");
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            return NotFound("Student not found.");
+        }
+
+        var studentAccessResult = CheckStudentAccess(existingStudent);
+
+        if (studentAccessResult is not null)
+        {
+            return studentAccessResult;
+        }
+
+        var requestAccessResult = CheckRequestUniversityAccess(request.UniversityId);
+
+        if (requestAccessResult is not null)
+        {
+            return requestAccessResult;
+        }
+
+        var universityExists = await _studentService.UniversityExists(request.UniversityId);
+
+        if (!universityExists)
+        {
+            errors.Add("University doesn't exist.");
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
 
         var universityStudentIdExists =
             await _studentService.UniversityStudentIdExistsForAnotherStudent(
-                request.UniversityName,
                 request.UniversityId,
+                request.UniversityStudentId,
                 id
             );
+
         if (universityStudentIdExists)
         {
-            errors.Add("This university ID is already used in the same university.");
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            errors.Add("This university student ID is already used in this university.");
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
+        }
+
+        var emailExists = await _studentService.EmailExistsForAnotherStudent(request.Email, id);
+
+        if (emailExists)
+        {
+            errors.Add("Email is already used.");
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
 
         var phoneNbExists = await _studentService.PhoneNbExistsForAnotherStudent(
             request.PhoneNumber,
             id
         );
+
         if (phoneNbExists)
         {
             errors.Add("Phone number is already used.");
-            var errorResponse = new ErrorResponse("Validation failed.", errors);
-            return BadRequest(errorResponse);
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
         }
 
         var student = await _studentService.Update(id, request);
+
         if (student is null)
         {
-            return NotFound();
+            return NotFound("Student not found.");
         }
 
         var response = ToFullStudentResponse(student);
+
         return Ok(response);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteStudent(Guid id)
     {
+        var student = await _studentService.GetById(id);
+
+        if (student is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        var accessResult = CheckStudentAccess(student);
+
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
         var result = await _studentService.Delete(id);
+
         if (!result)
         {
             return NotFound();
         }
+
         return NoContent();
     }
 
     [HttpPut("{id}/verify")]
     public async Task<IActionResult> VerifyStudent(Guid id)
     {
+        var existingStudent = await _studentService.GetById(id);
+
+        if (existingStudent is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        var accessResult = CheckStudentAccess(existingStudent);
+
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
         var student = await _studentService.VerifyStudent(id);
 
         if (student is null)
@@ -160,14 +269,98 @@ public class StudentController : ControllerBase
         return Ok(ToFullStudentResponse(student));
     }
 
+    private bool IsOwner()
+    {
+        return User.IsInRole("Owner");
+    }
+
+    private bool IsUniversityAdmin()
+    {
+        return User.IsInRole("UniversityAdmin");
+    }
+
+    private Guid? GetAdminUniversityId()
+    {
+        var universityIdValue = User.FindFirst("universityId")?.Value;
+
+        if (string.IsNullOrWhiteSpace(universityIdValue))
+        {
+            return null;
+        }
+
+        if (!Guid.TryParse(universityIdValue, out var universityId))
+        {
+            return null;
+        }
+
+        return universityId;
+    }
+
+    private IActionResult? CheckRequestUniversityAccess(Guid requestUniversityId)
+    {
+        if (IsOwner())
+        {
+            return null;
+        }
+
+        if (IsUniversityAdmin())
+        {
+            var adminUniversityId = GetAdminUniversityId();
+
+            if (adminUniversityId is null)
+            {
+                return Forbid();
+            }
+
+            if (requestUniversityId != adminUniversityId.Value)
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+
+        return Forbid();
+    }
+
+    private IActionResult? CheckStudentAccess(Student student)
+    {
+        if (IsOwner())
+        {
+            return null;
+        }
+
+        if (IsUniversityAdmin())
+        {
+            var adminUniversityId = GetAdminUniversityId();
+
+            if (adminUniversityId is null)
+            {
+                return Forbid();
+            }
+
+            if (student.UniversityId != adminUniversityId.Value)
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+
+        return Forbid();
+    }
+
     private static FullStudentResponse ToFullStudentResponse(Student student)
     {
         return new FullStudentResponse(
             student.Id,
             student.FullName,
             student.Email,
-            student.UniversityName,
             student.UniversityId,
+            student.UniversityStudentId,
+            student.University?.ShortName,
+            student.University?.FullName,
+            student.University?.Branch,
             student.PhoneNumber,
             student.UniversityCardImageUrl,
             student.IsVerified,

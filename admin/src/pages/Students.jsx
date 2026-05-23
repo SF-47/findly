@@ -13,6 +13,7 @@ import AddStudentModal from "../components/Students/AddStudentModal";
 import toast from "react-hot-toast";
 import StudentDetailsModal from "../components/Students/StudentDetailModal";
 import Pagination from "../components/Pagination";
+import { getStoredAdmin, isOwner } from "../../utils/auth";
 
 function StatsCard({ title, subtitle, value, icon, bgColor, isLoading }) {
   return (
@@ -47,44 +48,44 @@ function StatsCard({ title, subtitle, value, icon, bgColor, isLoading }) {
 function Students() {
   const [showAddStudent, setShowAddStudent] = useState(false);
   // Hardcode the university options
-  const universities = [
-    "Lebanese University (LU)",
-    "Lebanese International University (LIU)",
-    "Islamic University of Lebanon (IUL)",
-    "American University of Beirut (AUB)",
-    "Lebanese American University (LAU)",
-    "Université Saint-Joseph (USJ)",
-  ];
+  const [universities, setUniversities] = useState([]);
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
-    uniName: "",
+    uniId: "",
     verificationStatus: "",
     registeredDate: "",
   });
-  const [errors, setErrors] = useState("");
+
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [clicked, setClicked] = useState({
-    uniName: false,
+    uniId: false,
     status: false,
     date: false,
   });
   const [page, setPage] = useState(1);
   const rowsPerPage = 7;
 
+  const owner = isOwner();
+  const admin = getStoredAdmin();
+
   async function fetchStudents() {
     try {
       setIsLoading(true);
-      setErrors("");
 
       const response = await axiosClient.get("/students");
-      console.log(response.data);
       setStudents(response.data);
+      if (owner) {
+        const responseUni = await axiosClient.get("/universities");
+
+        setUniversities(responseUni.data);
+      } else {
+        setUniversities([]);
+      }
     } catch (error) {
       console.log(error);
-      setErrors("Failed to load students.");
-      toast.error(errors);
+      toast.error("Failed to load students.");
     } finally {
       setIsLoading(false);
     }
@@ -106,7 +107,9 @@ function Students() {
       filters.search &&
       !s.fullName?.toLowerCase().includes(filters.search.toLowerCase()) &&
       !s.email?.toLowerCase().includes(filters.search.toLowerCase()) &&
-      !s.universityId?.toLowerCase().includes(filters.search.toLowerCase())
+      !s.universityStudentId
+        ?.toLowerCase()
+        .includes(filters.search.toLowerCase())
     ) {
       return false;
     }
@@ -117,7 +120,7 @@ function Students() {
     if (filters.verificationStatus === "pending" && s.isVerified) {
       return false;
     }
-    if (filters.uniName && filters.uniName !== s.universityName) {
+    if (filters.uniId && filters.uniId !== s.universityId) {
       return false;
     }
     if (filters.registeredDate) {
@@ -176,6 +179,7 @@ function Students() {
 
     return studentCreatedDate === today;
   });
+
   const stats = [
     {
       title: "Total Students",
@@ -276,36 +280,40 @@ function Students() {
               className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             />
           </div>
+          {owner && (
+            <div className="relative">
+              <label className="mb-1 block text-sm text-start font-medium text-gray-600 dark:text-gray-300">
+                University Name
+              </label>
 
-          <div className="relative">
-            <label className="mb-1 block text-sm text-start font-medium text-gray-600 dark:text-gray-300">
-              University Name
-            </label>
+              <select
+                value={filters.uniId}
+                onClick={() =>
+                  setClicked((prev) => ({ ...prev, uniId: !prev.uniId }))
+                }
+                onChange={(e) =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    uniId: e.target.value,
+                  }))
+                }
+                className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              >
+                <option value="">All</option>
+                {universities.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.shortName} - {u.branch}
+                  </option>
+                ))}
+              </select>
+              {!clicked.uniId ? (
+                <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              ) : (
+                <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              )}
+            </div>
+          )}
 
-            <select
-              value={filters.uniName}
-              onClick={() =>
-                setClicked((prev) => ({ ...prev, uniName: !prev.uniName }))
-              }
-              onChange={(e) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  uniName: e.target.value,
-                }))
-              }
-              className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">All</option>
-              {universities.map((u) => (
-                <option value={u.split("(")[1].split(")")[0]}>{u}</option>
-              ))}
-            </select>
-            {!clicked.uniName ? (
-              <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-            ) : (
-              <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-            )}
-          </div>
           <div className="relative">
             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Verification Status
@@ -370,7 +378,7 @@ function Students() {
             <tr className="border-b border-gray-200 text-left text-xs uppercase text-gray-500 dark:border-zinc-700 dark:text-gray-400">
               <th className="px-5 py-4">Student</th>
               <th className="px-5 py-4">University</th>
-              <th className="px-5 py-4">University ID</th>
+              <th className="px-5 py-4">Student university ID</th>
               <th className="px-5 py-4">Phone</th>
               <th className="px-5 py-4">Status</th>
               <th className="px-5 py-4">Registered Date</th>
@@ -446,11 +454,11 @@ function Students() {
                     </div>
                   </td>
                   <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
-                    {s.universityName}
+                    {s.universityShortName} - {s.universityBranch}
                   </td>
 
                   <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
-                    {s.universityId}
+                    {s.universityStudentId}
                   </td>
 
                   <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
@@ -500,6 +508,8 @@ function Students() {
         <AddStudentModal
           onClose={() => setShowAddStudent(false)}
           onStudentAdded={fetchStudents}
+          owner={owner}
+          admin={admin}
           universities={universities}
         />
       )}
@@ -507,12 +517,15 @@ function Students() {
       {selectedStudent && (
         <StudentDetailsModal
           student={selectedStudent}
+          universities={universities}
           onClose={() => setSelectedStudent(null)}
           onStudentChanged={fetchStudents}
+          owner={owner}
+          admin={admin}
           setFilters={() =>
             setFilters({
               search: "",
-              uniName: "",
+              uniId: "",
               verificationStatus: "",
               registeredDate: "",
             })

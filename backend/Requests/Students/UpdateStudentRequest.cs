@@ -3,8 +3,8 @@ namespace backend.Requests.Students;
 public record UpdateStudentRequest(
     string FullName,
     string Email,
-    string UniversityName,
-    string UniversityId,
+    Guid UniversityId,
+    string UniversityStudentId,
     string PhoneNumber,
     string UniversityCardImageUrl
 );

@@ -214,15 +214,17 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UniversityId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("UniversityId")
+                        .HasColumnType("uuid");
 
-                    b.Property<string>("UniversityName")
+                    b.Property<string>("UniversityStudentId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UniversityId", "UniversityStudentId")
+                        .IsUnique();
 
                     b.ToTable("Students");
                 });
@@ -301,6 +303,17 @@ namespace backend.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("backend.Models.Student", b =>
+                {
+                    b.HasOne("backend.Models.University", "University")
+                        .WithMany()
+                        .HasForeignKey("UniversityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("University");
                 });
 #pragma warning restore 612, 618
         }

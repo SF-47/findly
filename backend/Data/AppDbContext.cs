@@ -27,6 +27,17 @@ public class AppDbContext : DbContext
                 u.Branch,
             })
             .IsUnique();
+        modelBuilder
+            .Entity<Student>()
+            .HasOne(s => s.University)
+            .WithMany()
+            .HasForeignKey(s => s.UniversityId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder
+            .Entity<Student>()
+            .HasIndex(s => new { s.UniversityId, s.UniversityStudentId })
+            .IsUnique();
     }
 
     //This tells EF Core:

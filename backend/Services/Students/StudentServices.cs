@@ -16,24 +16,32 @@ public class StudentServices : IStudentServices
 
     public async Task<List<Student>> GetAll()
     {
-        return await _db.Students.ToListAsync();
+        return await _db.Students.Include(s => s.University).ToListAsync();
     }
 
     public async Task<Student?> GetById(Guid id)
     {
-        return await _db.Students.FirstOrDefaultAsync(s => s.Id == id);
+        return await _db.Students.Include(s => s.University).FirstOrDefaultAsync(s => s.Id == id);
+    }
+
+    public async Task<List<Student>> GetByUniversityId(Guid uniId)
+    {
+        return await _db
+            .Students.Include(s => s.University)
+            .Where(s => s.UniversityId == uniId)
+            .ToListAsync();
     }
 
     public async Task<Student> Create(CreateStudentRequest request)
     {
         var student = new Student
         {
-            FullName = request.FullName,
-            Email = request.Email,
-            UniversityName = request.UniversityName,
+            FullName = request.FullName.Trim(),
+            Email = request.Email.Trim().ToLower(),
             UniversityId = request.UniversityId,
-            PhoneNumber = request.PhoneNumber,
-            UniversityCardImageUrl = request.UniversityCardImageUrl,
+            UniversityStudentId = request.UniversityStudentId.Trim(),
+            PhoneNumber = request.PhoneNumber.Trim(),
+            UniversityCardImageUrl = request.UniversityCardImageUrl.Trim(),
         };
 
         _db.Students.Add(student);
@@ -45,29 +53,33 @@ public class StudentServices : IStudentServices
     public async Task<Student?> Update(Guid id, UpdateStudentRequest request)
     {
         var student = await GetById(id);
+
         if (student is null)
         {
             return null;
         }
 
-        student.FullName = request.FullName;
-        student.Email = request.Email;
-        student.UniversityName = request.UniversityName;
+        student.FullName = request.FullName.Trim();
+        student.Email = request.Email.Trim().ToLower();
         student.UniversityId = request.UniversityId;
-        student.PhoneNumber = request.PhoneNumber;
-        student.UniversityCardImageUrl = request.UniversityCardImageUrl;
+        student.UniversityStudentId = request.UniversityStudentId.Trim();
+        student.PhoneNumber = request.PhoneNumber.Trim();
+        student.UniversityCardImageUrl = request.UniversityCardImageUrl.Trim();
 
         await _db.SaveChangesAsync();
+
         return student;
     }
 
     public async Task<bool> Delete(Guid id)
     {
         var student = await GetById(id);
+
         if (student is null)
         {
             return false;
         }
+
         _db.Students.Remove(student);
         await _db.SaveChangesAsync();
 
@@ -92,61 +104,48 @@ public class StudentServices : IStudentServices
 
     public async Task<bool> EmailExists(string email)
     {
-        var exists = await _db.Students.AnyAsync(s => s.Email.ToLower() == email.Trim().ToLower());
-        return exists;
-    }
-
-    public async Task<bool> UniIdExists(string uniId)
-    {
-        var exists = await _db.Students.AnyAsync(s =>
-            s.UniversityId.ToLower() == uniId.Trim().ToLower()
-        );
-        return exists;
+        return await _db.Students.AnyAsync(s => s.Email.ToLower() == email.Trim().ToLower());
     }
 
     public async Task<bool> PhoneNbExists(string phoneNb)
     {
-        var exists = await _db.Students.AnyAsync(s => s.PhoneNumber == phoneNb.Trim());
-        return exists;
+        return await _db.Students.AnyAsync(s => s.PhoneNumber == phoneNb.Trim());
+    }
+
+    public async Task<bool> UniversityExists(Guid universityId)
+    {
+        return await _db.Universities.AnyAsync(u => u.Id == universityId);
+    }
+
+    public async Task<bool> UniversityStudentIdExists(Guid universityId, string universityStudentId)
+    {
+        return await _db.Students.AnyAsync(s =>
+            s.UniversityId == universityId && s.UniversityStudentId == universityStudentId.Trim()
+        );
     }
 
     public async Task<bool> EmailExistsForAnotherStudent(string email, Guid id)
     {
-        var exists = await _db.Students.AnyAsync(s =>
+        return await _db.Students.AnyAsync(s =>
             s.Id != id && s.Email.ToLower() == email.Trim().ToLower()
         );
-        return exists;
     }
 
     public async Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, Guid id)
     {
-        var exists = await _db.Students.AnyAsync(s =>
-            s.Id != id && s.PhoneNumber == phoneNb.Trim()
-        );
-        return exists;
-    }
-
-    public async Task<bool> UniversityStudentIdExists(string universityName, string universityId)
-    {
-        var exists = await _db.Students.AnyAsync(s =>
-            s.UniversityName == universityName && s.UniversityId == universityId
-        );
-        return exists;
+        return await _db.Students.AnyAsync(s => s.Id != id && s.PhoneNumber == phoneNb.Trim());
     }
 
     public async Task<bool> UniversityStudentIdExistsForAnotherStudent(
-        string universityName,
-        string universityId,
+        Guid universityId,
+        string universityStudentId,
         Guid id
     )
     {
-        var normalizedUniversityName = universityName.Trim().ToLower();
-        var normalizedUniversityId = universityId.Trim().ToLower();
-
         return await _db.Students.AnyAsync(s =>
             s.Id != id
-            && s.UniversityName.ToLower() == normalizedUniversityName
-            && s.UniversityId.ToLower() == normalizedUniversityId
+            && s.UniversityId == universityId
+            && s.UniversityStudentId == universityStudentId.Trim()
         );
     }
 }

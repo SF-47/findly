@@ -52,20 +52,26 @@ function FormInput({
   );
 }
 
-function AddStudentModal({ onClose, onStudentAdded, universities }) {
+function AddStudentModal({
+  onClose,
+  onStudentAdded,
+  universities,
+  owner,
+  admin,
+}) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    universityName: "",
-    universityId: "",
+    universityId: owner ? "" : admin?.universityId || "",
+    universityStudentId: "",
     phoneNumber: "",
     universityCardImageUrl: "",
   });
   const [inputErrorMessage, setInputErrorMessage] = useState({
     fullNameError: "",
     emailError: "",
-    universityNameError: "",
     universityIdError: "",
+    universityStudentIdError: "",
     phoneNumberError: "",
     universityCardImageUrlError: "",
   });
@@ -85,8 +91,8 @@ function AddStudentModal({ onClose, onStudentAdded, universities }) {
     const errors = {
       fullNameError: "",
       emailError: "",
-      universityNameError: "",
       universityIdError: "",
+      universityStudentIdError: "",
       phoneNumberError: "",
       universityCardImageUrlError: "",
     };
@@ -107,13 +113,13 @@ function AddStudentModal({ onClose, onStudentAdded, universities }) {
       hasError = true;
     }
 
-    if (!formData.universityName.trim()) {
-      errors.universityNameError = "University name is required.";
+    if (!formData.universityId.trim()) {
+      errors.universityIdError = "University is required.";
       hasError = true;
     }
 
-    if (!formData.universityId.trim()) {
-      errors.universityIdError = "University ID is required.";
+    if (!formData.universityStudentId.trim()) {
+      errors.universityStudentIdError = "Student university ID is required.";
       hasError = true;
     }
 
@@ -166,8 +172,8 @@ function AddStudentModal({ onClose, onStudentAdded, universities }) {
         const newErrors = {
           fullNameError: "",
           emailError: "",
-          universityNameError: "",
           universityIdError: "",
+          universityStudentIdError: "",
           phoneNumberError: "",
           universityCardImageUrlError: "",
         };
@@ -189,22 +195,19 @@ function AddStudentModal({ onClose, onStudentAdded, universities }) {
               "This phone number is already registered.";
             hasBackendError = true;
           } else if (
-            lowerError.includes("university id") &&
+            lowerError.includes("university student id") &&
             lowerError.includes("already")
           ) {
-            newErrors.universityIdError =
-              "This university ID is already registered.";
+            newErrors.universityStudentIdError =
+              "This student university ID is already used in this university.";
             hasBackendError = true;
-          }
-          // For other validation errors (format, etc.), show them but frontend should have caught these
-          else if (lowerError.includes("email")) {
+          } else if (lowerError.includes("email")) {
             newErrors.emailError = err;
             hasBackendError = true;
           } else if (lowerError.includes("phone")) {
             newErrors.phoneNumberError = err;
             hasBackendError = true;
           } else {
-            // Show other errors as toasts
             toast.error(err);
           }
         });
@@ -282,50 +285,85 @@ function AddStudentModal({ onClose, onStudentAdded, universities }) {
               placeholder="xxxx@example.com"
               errorMessage={inputErrorMessage.emailError}
             />
-            <div className="relative flex flex-col">
-              <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                <span className="text-blue-600 dark:text-blue-400">
-                  <FaUniversity />
-                </span>
-                University
-              </label>
-              <select
-                value={formData.universityName}
-                onClick={() =>setClicked((prev) => !prev)}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    universityName: e.target.value,
-                  }))
-                }
-                className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-              >
-                <option value="">Select university name</option>
-                {universities.map((u) => (
-                  <option key={u.id} value={u.split("(")[1].split(")")[0]}>{u}</option>
-                ))}
-              </select>
-              {!clicked ? (
-                <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-              ) : (
-                <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-              )}
-            </div>
+
+            {owner ? (
+              <div className="relative flex flex-col">
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="text-blue-600 dark:text-blue-400">
+                    <FaUniversity />
+                  </span>
+                  University
+                </label>
+                <select
+                  value={formData.universityId}
+                  onClick={() => setClicked((prev) => !prev)}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      universityId: e.target.value,
+                    }));
+
+                    setInputErrorMessage((prev) => ({
+                      ...prev,
+                      universityIdError: "",
+                    }));
+                  }}
+                  className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                >
+                  <option value="">Select university</option>
+
+                  {universities.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.shortName} ({u.branch})
+                    </option>
+                  ))}
+                </select>
+                {!clicked ? (
+                  <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                ) : (
+                  <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                )}
+              </div>
+            ) : (
+              <div className="relative flex flex-col">
+                <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="text-blue-600 dark:text-blue-400">
+                    <FaUniversity />
+                  </span>
+                  University
+                </label>
+
+                <input
+                  type="text"
+                  disabled
+                  value={
+                    admin.universityShortName + " - " + admin.universityBranch
+                  }
+                  className="w-full cursor-not-allowed rounded-xl border border-gray-300 bg-gray-100 p-3 text-sm text-gray-500 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-400"
+                />
+
+                {inputErrorMessage.universityIdError && (
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                    {inputErrorMessage.universityIdError}
+                  </p>
+                )}
+              </div>
+            )}
 
             <FormInput
               icon={<FaIdCard />}
-              label="University ID"
-              name="universityId"
-              value={formData.universityId}
+              label="Student University ID"
+              name="universityStudentId"
+              value={formData.universityStudentId}
               onChange={(e) => {
                 handleChange(e);
                 setInputErrorMessage((prev) => ({
                   ...prev,
-                  universityIdError: "",
+                  universityStudentIdError: "",
                 }));
               }}
-              placeholder="University ID"
-              errorMessage={inputErrorMessage.universityIdError}
+              placeholder="Example: 20231234"
+              errorMessage={inputErrorMessage.universityStudentIdError}
             />
 
             <FormInput

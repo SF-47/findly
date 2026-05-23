@@ -17,9 +17,9 @@ public class AuthService : IAuthService
 
     public async Task<Admin?> Login(AdminLoginRequest request)
     {
-        var admin = await _db.Admins.FirstOrDefaultAsync(a =>
-            a.Email.ToLower() == request.Email.Trim().ToLower()
-        );
+        var admin = await _db
+            .Admins.Include(a => a.University)
+            .FirstOrDefaultAsync(a => a.Email.ToLower() == request.Email.Trim().ToLower());
 
         if (admin is null)
         {

@@ -11,6 +11,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("universities")]
+[Authorize(Roles = "Owner")]
 public class UniversityController : ControllerBase
 {
     private readonly IUniversityService _universityService;
@@ -19,7 +20,7 @@ public class UniversityController : ControllerBase
     {
         _universityService = universityService;
     }
-    [Authorize(Roles = "Owner")]
+
     [HttpGet]
     public async Task<IActionResult> GetAllUniversities()
     {
@@ -44,7 +45,7 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-    [Authorize(Roles = "Owner")]
+
     [HttpPost]
     public async Task<IActionResult> CreateNewUniversity(CreateUniversityRequest request)
     {
@@ -68,7 +69,7 @@ public class UniversityController : ControllerBase
                 "University already exists.",
                 new List<string>
                 {
-                    "A university with the same short name, full name, and branch already exists."
+                    "A university with the same short name, full name, and branch already exists.",
                 }
             );
 
@@ -81,7 +82,7 @@ public class UniversityController : ControllerBase
 
         return Created($"/universities/{university.Id}", response);
     }
-    [Authorize(Roles = "Owner")]
+
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityRequest request)
     {
@@ -106,7 +107,7 @@ public class UniversityController : ControllerBase
                 "University already exists.",
                 new List<string>
                 {
-                    "Another university with the same short name, full name, and branch already exists."
+                    "Another university with the same short name, full name, and branch already exists.",
                 }
             );
 
@@ -124,7 +125,7 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-    [Authorize(Roles = "Owner")]
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUniversity(Guid id)
     {
