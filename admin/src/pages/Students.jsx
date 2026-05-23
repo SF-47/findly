@@ -509,6 +509,14 @@ function Students() {
           student={selectedStudent}
           onClose={() => setSelectedStudent(null)}
           onStudentChanged={fetchStudents}
+          setFilters={() =>
+            setFilters({
+              search: "",
+              uniName: "",
+              verificationStatus: "",
+              registeredDate: "",
+            })
+          }
         />
       )}
     </div>

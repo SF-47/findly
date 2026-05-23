@@ -10,6 +10,9 @@ import Profile from "./pages/Profile";
 import LoginPage from "./pages/LoginPage";
 import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Universities from "./pages/Universities";
+import OwnerRoute from "./components/OwnerRoute";
+import Forbidden from "./pages/Forbidden";
 
 function AdminLayout() {
   return (
@@ -31,11 +34,29 @@ function AdminLayout() {
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/students" element={<Students />} />
+            <Route
+              path="universities"
+              element={
+                <ProtectedRoute>
+                  <OwnerRoute>
+                    <Universities />
+                  </OwnerRoute>
+                </ProtectedRoute>
+              }
+            />
             <Route path="/categories" element={<Categories />} />
             <Route path="/lost-items" element={<LostItems />} />
             <Route path="/found-items" element={<FoundItems />} />
             <Route path="/matches" element={<Matches />} />
             <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/404"
+              element={
+                <ProtectedRoute>
+                  <Forbidden />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
       </div>

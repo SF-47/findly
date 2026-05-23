@@ -8,6 +8,7 @@ function ConfirmDialog({
   confirmText = "Delete",
   cancelText = "Cancel",
   onConfirm,
+  onCancel,
 }) {
   return (
     <AlertDialog.Root>
@@ -31,7 +32,10 @@ function ConfirmDialog({
 
           <div className="mt-5 flex gap-3">
             <AlertDialog.Cancel asChild>
-              <button className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
+              <button
+                onClick={onCancel}
+                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+              >
                 {cancelText}
               </button>
             </AlertDialog.Cancel>

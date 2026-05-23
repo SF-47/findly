@@ -4,11 +4,14 @@ import ChangePasswordModal from "./ChangePasswordModal";
 import LoginStatusModal from "./LoginStatusModal";
 import AdminRoleModal from "./AdminRoleModal";
 import AdminsModal from "./AdminsManagement";
-function ProfileSecurityCard({onManageAdmins}) {
+import { isOwner } from "../../../utils/auth";
+function ProfileSecurityCard({ onManageAdmins }) {
   const [showPassModal, setShowPassModal] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [showLoginStatusModal, setShowLoginStatusModal] = useState(false);
   const [showAdminsModal, setShowAdminsModal] = useState(false);
+
+  const owner = isOwner();
   return (
     <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
       <div>
@@ -75,26 +78,27 @@ function ProfileSecurityCard({onManageAdmins}) {
             </p>
           </div>
         </button>
+        {owner && (
+          <button
+            type="button"
+            onClick={onManageAdmins}
+            className="flex items-center gap-4 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left transition hover:border-blue-400 hover:bg-blue-100 dark:border-blue-900/40 dark:bg-blue-950/20 dark:hover:bg-blue-950/40 cursor-pointer"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white cursor-pointer">
+              <FaUsers />
+            </div>
 
-        <button
-          type="button"
-          onClick={onManageAdmins}
-          className="flex items-center gap-4 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left transition hover:border-blue-400 hover:bg-blue-100 dark:border-blue-900/40 dark:bg-blue-950/20 dark:hover:bg-blue-950/40 cursor-pointer"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white cursor-pointer">
-            <FaUsers />
-          </div>
+            <div>
+              <h1 className="font-bold text-blue-700 dark:text-blue-300 cursor-pointer">
+                Manage Admins
+              </h1>
 
-          <div>
-            <h1 className="font-bold text-blue-700 dark:text-blue-300 cursor-pointer">
-              Manage Admins
-            </h1>
-
-            <p className="text-sm text-blue-500 dark:text-blue-400 cursor-pointer">
-              View and manage administrator accounts.
-            </p>
-          </div>
-        </button>
+              <p className="text-sm text-blue-500 dark:text-blue-400 cursor-pointer">
+                View and manage administrator accounts.
+              </p>
+            </div>
+          </button>
+        )}
       </div>
       {showPassModal && (
         <ChangePasswordModal onClose={() => setShowPassModal(false)} />

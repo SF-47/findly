@@ -4,6 +4,7 @@ using backend.Responses.Errors;
 using backend.Responses.Universities;
 using backend.Services.Universities;
 using backend.Validators.Universities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -18,7 +19,7 @@ public class UniversityController : ControllerBase
     {
         _universityService = universityService;
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpGet]
     public async Task<IActionResult> GetAllUniversities()
     {
@@ -43,7 +44,7 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> CreateNewUniversity(CreateUniversityRequest request)
     {
@@ -80,7 +81,7 @@ public class UniversityController : ControllerBase
 
         return Created($"/universities/{university.Id}", response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityRequest request)
     {
@@ -123,7 +124,7 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUniversity(Guid id)
     {

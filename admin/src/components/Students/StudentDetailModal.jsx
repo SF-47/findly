@@ -59,7 +59,7 @@ function FormInput({
   );
 }
 
-function StudentDetailsModal({ student, onClose, onStudentChanged }) {
+function StudentDetailsModal({ student, onClose, onStudentChanged , setFilters }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -252,6 +252,8 @@ function StudentDetailsModal({ student, onClose, onStudentChanged }) {
     try {
       await axiosClient.delete(`/students/${student.id}`);
       toast.success("Student deleted successfully.");
+      onClose();
+      setFilters();
       await onStudentChanged();
       
     } catch (error) {

@@ -5,11 +5,13 @@ import {
   FaList,
   FaSearch,
   FaSignOutAlt,
+  FaUniversity,
   FaUserCircle,
   FaUsers,
 } from "react-icons/fa";
 
 import { useLocation, useNavigate } from "react-router-dom";
+import { isOwner } from "../../utils/auth";
 
 function SidebarButton({
   id,
@@ -37,6 +39,7 @@ function SidebarButton({
 export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const owner = isOwner();
 
   const activeButton = getActiveButton(location.pathname);
 
@@ -44,6 +47,7 @@ export default function Sidebar() {
     if (pathname === "/dashboard") return "dashboard";
     if (pathname === "/students") return "students";
     if (pathname === "/categories") return "categories";
+    if (pathname === "/universities") return "universities";
     if (pathname === "/lost-items") return "lost";
     if (pathname === "/found-items") return "found";
     if (pathname === "/matches") return "matches";
@@ -55,7 +59,7 @@ export default function Sidebar() {
   function handleLogout() {
     localStorage.removeItem("admin");
     sessionStorage.removeItem("admin");
-    navigate("/", { replace: true });//replace: true so after logout the user cannot click browser Back and visually return to the dashboard page
+    navigate("/", { replace: true }); //replace: true so after logout the user cannot click browser Back and visually return to the dashboard page
   }
 
   return (
@@ -100,6 +104,16 @@ export default function Sidebar() {
               navigate={navigate}
               destination="/students"
             />
+            {owner && (
+              <SidebarButton
+                id="universities"
+                icon={<FaUniversity size={20} />}
+                label="Universities"
+                activeButton={activeButton}
+                navigate={navigate}
+                destination="/universities"
+              />
+            )}
 
             <SidebarButton
               id="categories"
@@ -140,7 +154,7 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <div className="border-t border-gray-200 px-4 py-5 dark:border-zinc-700">
+      <div className="border-t border-gray-200 px-4 py-4 dark:border-zinc-700">
         <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
           Account
         </p>

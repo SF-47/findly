@@ -11,7 +11,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("admins")]
-[Authorize] //This means : admins now requires a valid JWT token.
+[Authorize(Roles = "Owner")] //This means : admins now requires a valid JWT token.
 public class AdminsController : ControllerBase
 {
     private readonly IAdminService _adminService;
@@ -39,6 +39,7 @@ public class AdminsController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> CreateAdmin(CreateAdminRequest request)
     {
