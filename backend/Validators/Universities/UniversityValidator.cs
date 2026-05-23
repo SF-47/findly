@@ -12,7 +12,10 @@ public static class UniversityValidator
         {
             errors.Add("University short name is required.");
         }
-
+        else if (request.ShortName.Trim().Length > 4)
+        {
+            errors.Add("Short name should not exceed 4 letters.");
+        }
         if (string.IsNullOrWhiteSpace(request.FullName))
         {
             errors.Add("University full name is required.");
@@ -33,6 +36,10 @@ public static class UniversityValidator
         if (string.IsNullOrWhiteSpace(request.ShortName))
         {
             errors.Add("University short name is required.");
+        }
+        else if (request.ShortName.Trim().Length > 4)
+        {
+            errors.Add("Short name should not exceed 4 letters.");
         }
 
         if (string.IsNullOrWhiteSpace(request.FullName))
