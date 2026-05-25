@@ -1,31 +1,82 @@
-import { Clock, MapPin, PackageOpen, Plus, Search, SlidersHorizontal } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  PackageOpen,
+  Plus,
+  Search,
+  SlidersHorizontal,
+} from "lucide-react";
 import ItemCard from "../components/Items/ItemCard";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
 import { useEffect, useState } from "react";
 import LostItemsFilter from "../components/Items/LostItemsFilters";
 import axiosClient from "../api/axiosClient";
+import CreateLostItemModal from "../components/Items/CreateNewItem";
+import toast from "react-hot-toast";
 
 function LostItems() {
   const [lostItems, setlostItems] = useState([]);
-  async function fetchData() {
-    const response = await axiosClient.get("lost-items");
-
-    setlostItems(response.data);
-  }
+  const [students, setStudents] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    let isMounted = true;
+
+    async function fetchData() {
+      try {
+        const [studentResponse, lostItemsResponse, categoryResponse] =
+          await Promise.all([
+            axiosClient.get("/students"),
+            axiosClient.get("/lost-items"),
+            axiosClient.get("/categories"),
+          ]);
+
+        if (isMounted) {
+          setStudents(studentResponse.data);
+          setlostItems(lostItemsResponse.data);
+          setCategories(categoryResponse.data);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to load lost items.");
+      }
+    }
+
     fetchData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const [showFilters, setShowFilters] = useState(false);
 
   const openStatusItems = lostItems.filter((item) => {
-    if (item.status != "open") {
+    if (item.status?.toLowerCase() !== "open") {
       return false;
     }
     return true;
   });
+
+  async function handleCreateLostItem(requestBody) {
+    try {
+      setIsSubmitting(true);
+      await axiosClient.post("/lost-items", requestBody);
+
+      const response = await axiosClient.get("/lost-items");
+      setlostItems(response.data);
+      setShowCreateModal(false);
+      toast.success("Lost item created successfully.");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to create lost item.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   const stats = [
     {
       title: "Total Lost Items",
@@ -85,7 +136,11 @@ function LostItems() {
             )}
           </div>
 
-          <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 via-indigo-500 to-red-500 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 via-indigo-500 to-red-500 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700"
+          >
             <Plus />
             Add Lost Item
           </button>
@@ -128,17 +183,23 @@ function LostItems() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <ItemCard type="lost" lostItems={lostItems}/>
-        <ItemCard type="lost" />
-        <ItemCard type="lost" />
+        {lostItems.map((item) => (
+          <span id={item.id} key={item.id}>
+            <ItemCard type="lost" item={item} students={students} />
+          </span>
+        ))}
       </div>
+
+      <CreateLostItemModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateLostItem}
+        students={students}
+        categories={categories}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }
 
 export default LostItems;
-
-
-
-
-

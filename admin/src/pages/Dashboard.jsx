@@ -1,4 +1,14 @@
-import { ClipboardCheck, PackageOpen, RefreshCw, Search, Tags, University, UserCheck, Clock3, Users } from "lucide-react";
+import {
+  ClipboardCheck,
+  PackageOpen,
+  RefreshCw,
+  Search,
+  Tags,
+  University,
+  UserCheck,
+  Clock3,
+  Users,
+} from "lucide-react";
 
 import DashCard from "../components/Dashboard/DashCard";
 import TableSkeleton from "../components/Dashboard/TableSkeleton";
@@ -6,8 +16,6 @@ import axiosClient from "../api/axiosClient";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import DashCardSkeleton from "../components/Dashboard/DashCardSkeleton";
-
-
 
 function Dashboard() {
   const [statsData, setStatsData] = useState({
@@ -111,7 +119,7 @@ function Dashboard() {
             Dashboard
           </h1>
 
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
+          <p className="mt-2 text-gray-500 dark:text-zinc-400">
             Overview of students, lost items, found items, categories, and
             possible matches.
           </p>

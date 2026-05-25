@@ -1,9 +1,20 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Calendar, Crown, Mail, Phone, Plus, ShieldUser, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Crown,
+  LucideUniversity,
+  Mail,
+  Phone,
+  Plus,
+  ShieldUser,
+  Trash2,
+} from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import AddAdminModal from "./AddAdminModal";
 import ConfirmDialog from "../ConfirmDialog";
 import toast from "react-hot-toast";
+import Pagination from "../Pagination";
 
 function StatSkeleton() {
   return (
@@ -20,6 +31,8 @@ function AdminsManagement({ onBack }) {
   const [showAddAdmin, setShowAddAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [universities, setUniversities] = useState([]);
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 4;
 
   const adminLoggedIn = JSON.parse(
     localStorage.getItem("admin") || sessionStorage.getItem("admin") || "null",
@@ -49,9 +62,18 @@ function AdminsManagement({ onBack }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+  }, [admins]);
+
+  const start = (page - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const paginatedAdmins = admins.slice(start, end);
+
   async function handleDelete(id) {
     try {
-      await axiosClient.delete(`admins/${id}`);
+      await axiosClient.delete(`/admins/${id}`);
       toast.success("Admin deleted successfully.");
 
       await fetchData();
@@ -157,6 +179,7 @@ function AdminsManagement({ onBack }) {
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50 text-left text-xs font-bold uppercase text-gray-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-400">
                 <th className="px-5 py-4 w-[30%]">Admin</th>
+                <th className="px-5 py-4 w-[30%]">University</th>
                 <th className="px-5 py-4 w-[20%]">Phone</th>
                 <th className="px-5 py-4 w-[15%]">Role</th>
                 <th className="px-5 py-4 w-[20%]">Created</th>
@@ -166,7 +189,7 @@ function AdminsManagement({ onBack }) {
             <tbody className="divide-y divide-gray-200 dark:divide-zinc-700">
               {isLoading ? (
                 <tr>
-                  <td colSpan="5" className="px-5 py-4">
+                  <td colSpan="6" className="px-5 py-4">
                     <div className="flex justify-center">
                       <div className="animate-pulse text-gray-500">
                         Loading...
@@ -177,14 +200,14 @@ function AdminsManagement({ onBack }) {
               ) : admins.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="6"
                     className="px-5 py-12 text-center text-sm text-gray-500 dark:text-gray-400"
                   >
                     No admins loaded yet.
                   </td>
                 </tr>
               ) : (
-                admins.map((admin) => (
+                paginatedAdmins.map((admin) => (
                   <tr
                     key={admin.id}
                     className="transition hover:bg-gray-50 dark:hover:bg-zinc-800"
@@ -203,6 +226,20 @@ function AdminsManagement({ onBack }) {
                             <span className="truncate">{admin.email}</span>
                           </div>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <LucideUniversity className="shrink-0" />
+                        <span>
+                          {admin.universityShortName
+                            ? `${admin.universityShortName}${
+                                admin.universityBranch
+                                  ? ` (${admin.universityBranch})`
+                                  : ""
+                              }`
+                            : "Not assigned"}
+                        </span>
                       </div>
                     </td>
                     <td className="px-5 py-4">
@@ -256,6 +293,12 @@ function AdminsManagement({ onBack }) {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          totalItems={admins.length}
+          rowsPerPage={rowsPerPage}
+          setPage={setPage}
+        />
       </div>
 
       <div className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 dark:border-blue-900/40 dark:bg-blue-950/20">
@@ -273,6 +316,7 @@ function AdminsManagement({ onBack }) {
           onClose={() => setShowAddAdmin(false)}
           onAdminAdded={fetchData}
           universities={universities}
+          admins={admins}
         />
       )}
     </div>
@@ -280,8 +324,3 @@ function AdminsManagement({ onBack }) {
 }
 
 export default AdminsManagement;
-
-
-
-
-

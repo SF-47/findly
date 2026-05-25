@@ -28,7 +28,7 @@ function AdminLayout() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-100 dark:bg-zinc-950">
+      <div className="admin-animated-bg relative isolate min-h-screen overflow-hidden bg-gray-100 dark:bg-zinc-950">
         <Toaster
           position="top-center"
           toastOptions={{
@@ -44,7 +44,7 @@ function AdminLayout() {
 
         <main
           key={location.pathname}
-          className="animate-page-fade-in ml-72 p-8 text-gray-900 dark:text-white"
+          className="animate-page-fade-in relative z-10 ml-72 min-h-screen p-8 text-gray-900 dark:text-white"
         >
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />

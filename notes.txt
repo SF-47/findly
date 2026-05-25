@@ -83,3 +83,43 @@ then pass them to EF Core DbContext.
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+selectedUniversity : 
+
+"id": "019e52cb-c964-7f2f-9cdf-563530cf1833",
+"shortName": "AUB",
+"fullName": "American University of Beirut",
+"branch": "Beirut",
+"createdAt": "2026-05-23T03:05:47.620355Z"
+
+
+students : 
+
+"id": "019e5471-f000-7e3f-b4fd-38d44a161a6b",
+"fullName": "Ali Farhat",
+"email": "af00403@gmail.com",
+"universityId": "019e52cb-c964-7f2f-9cdf-563530cf1833",
+"universityStudentId": "2025147958",
+"universityShortName": "AUB",
+"universityFullName": "American University of Beirut",
+"universityBranch": "Beirut",
+"phoneNumber": "81823567",
+"universityCardImageUrl": "https://af-card",
+"isVerified": true,
+"createdAt": "2026-05-23T10:46:53.680931Z"
+
+
+admins : 
+
+"id": "195ff4b1-f481-4c64-9ff9-c2cd10de93cd",
+"fullName": "momo",
+"email": "admin@gmail.com",
+"phoneNumber": "71444444",
+"role": "UniversityAdmin",
+"universityId": "019e52cc-2855-74ca-b67c-e7620895c672",
+"universityShortName": "USEK",
+"universityFullName": "Holy Spirit University of Kaslik",
+"universityBranch": "Kaslik",
+"createdAt": "2026-05-23T15:37:37.735963Z"

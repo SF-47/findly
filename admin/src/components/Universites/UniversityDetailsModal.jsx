@@ -3,182 +3,154 @@ import {
   Clock3,
   Mail,
   MapPin,
-  ShieldUser,
   Users,
   X,
   Building2,
 } from "lucide-react";
+import axiosClient from "../../api/axiosClient";
+import { useEffect, useState } from "react";
 
-function StatPill({ icon, label, value, className }) {
+function StatPill({ icon, label, value, iconClass }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-      <div className="flex items-center gap-2.5">
-        <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${className}`}
-        >
-          {icon}
-        </div>
-
-        <div>
-          <p className="text-xl font-bold leading-none text-gray-900 dark:text-white">
-            {value}
-          </p>
-
-          <p className="mt-1 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
-            {label}
-          </p>
-        </div>
+    <div className="rounded-2xl border border-white/[0.07] bg-zinc-800 p-4">
+      <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl ${iconClass}`}>
+        {icon}
       </div>
+      <p className="text-2xl font-bold leading-none text-zinc-100">{value}</p>
+      <p className="mt-1.5 text-xs font-medium text-zinc-500">{label}</p>
     </div>
   );
 }
 
 function UniversityDetailsModal({ isOpen, onClose, university }) {
+  const [students, setStudents] = useState([]);
+  const [admins, setAdmins] = useState([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let isMounted = true;
+
+    async function fetchData() {
+      try {
+        const [studentResponse, adminResponse] = await Promise.all([
+          axiosClient.get("/students"),
+          axiosClient.get("/admins"),
+        ]);
+        if (isMounted) {
+          setStudents(studentResponse.data);
+          setAdmins(adminResponse.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchData();
+    return () => { isMounted = false; };
+  }, [isOpen]);
+
   if (!isOpen || !university) return null;
 
-  const previewStats = {
-    totalStudents: 128,
-    verifiedStudents: 94,
-    pendingStudents: 34,
-  };
+  const filteredStudents = students.filter((s) => s.universityId === university.id);
+  const verifiedStudents = filteredStudents.filter((s) => s.isVerified);
+  const pendingStudents = filteredStudents.filter((s) => !s.isVerified);
 
-  const previewAdmin = {
-    name: "Maya Khoury",
-    email: "maya.khoury@example.com",
-    role: "UniversityAdmin",
-  };
+  const filteredAdmin = admins.find((a) => a.universityId === university.id);
+  const adminFullName = filteredAdmin?.fullName;
+  const adminEmail = filteredAdmin?.email;
+  const adminRole = filteredAdmin?.role;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm lg:left-72">
-      <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
-        <div className="relative overflow-hidden border-b border-gray-200 bg-linear-to-r from-blue-500 via-indigo-500 to-purple-600 px-5 py-4 dark:border-zinc-700">
-          <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm lg:left-72">
+      <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-white/[0.07] bg-zinc-900 shadow-2xl">
 
-          <div className="relative flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 text-white shadow-lg ring-1 ring-white/25 backdrop-blur-sm">
-                <Building2 size={22} />
-              </div>
-
-              <div>
-                <h2 className="text-xl font-bold text-white">
-                  University Details
-                </h2>
-
-                <p className="mt-0.5 text-xs text-blue-50">
-                  Summary, admin, and student status.
-                </p>
-              </div>
+        {/* Header */}
+        <div className="flex items-center justify-between bg-linear-to-br from-blue-600 to-violet-600 px-6 py-5">
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
+              <Building2 size={22} className="text-white" />
             </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl bg-white/15 p-2 text-white transition hover:bg-white/25"
-            >
-              <X size={18} />
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-4 p-5">
-          <div className="rounded-3xl border border-blue-100 bg-linear-to-br from-white via-slate-50 to-blue-50 p-4 shadow-sm dark:border-zinc-700 dark:bg-none dark:bg-zinc-800">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 text-xl font-bold text-white shadow-lg ring-2 ring-white/20">
-                {university.shortName}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                  {university.shortName}
-                </h3>
-
-                <p className="mt-1 line-clamp-2 text-xs font-medium text-gray-600 dark:text-gray-300">
-                  {university.fullName}
-                </p>
-
-                <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300">
-                  <MapPin size={12} />
-                  {university.branch} Branch
-                </div>
-              </div>
+            <div>
+              <p className="text-lg font-semibold text-white">University Details</p>
+              <p className="text-xs text-white/60">Summary, admin, and student status</p>
             </div>
           </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <StatPill
-              icon={<Users size={17} />}
-              label="Students"
-              value={previewStats.totalStudents}
-              className="bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300"
-            />
-
-            <StatPill
-              icon={<CircleCheck size={17} />}
-              label="Verified"
-              value={previewStats.verifiedStudents}
-              className="bg-green-100 text-green-600 dark:bg-green-900/40 dark:text-green-300"
-            />
-
-            <StatPill
-              icon={<Clock3 size={17} />}
-              label="Pending"
-              value={previewStats.pendingStudents}
-              className="bg-yellow-100 text-yellow-600 dark:bg-yellow-900/40 dark:text-yellow-300"
-            />
-          </div>
-
-          <div className="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300">
-                  <ShieldUser size={17} />
-                </div>
-
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900 dark:text-white">
-                    Assigned Admin
-                  </h3>
-
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                    Responsible administrator.
-                  </p>
-                </div>
-              </div>
-
-              <span className="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300">
-                Active
-              </span>
-            </div>
-
-            <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 dark:border-zinc-700 dark:bg-zinc-800">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 font-bold text-white shadow-md">
-                {previewAdmin.name.charAt(0)}
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-gray-900 dark:text-white">
-                  {previewAdmin.name}
-                </p>
-
-                <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
-                  <Mail size={12} />
-                  {previewAdmin.email}
-                </p>
-              </div>
-
-              <span className="hidden rounded-full bg-purple-100 px-2.5 py-1 text-[11px] font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 sm:inline-flex">
-                {previewAdmin.role}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end border-t border-gray-200 bg-gray-50 px-5 py-3 dark:border-zinc-700 dark:bg-zinc-950/40">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 text-white transition hover:bg-white/25"
+          >
+            <X size={17} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-col gap-3 p-5">
+
+          {/* University card */}
+          <div className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-zinc-800 p-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-blue-600 to-violet-600 text-sm font-bold tracking-wide text-white">
+              {university.shortName}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-lg font-bold text-zinc-100">{university.shortName}</p>
+              <p className="mt-0.5 truncate text-sm text-zinc-400">{university.fullName}</p>
+              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-indigo-500/25 bg-indigo-500/15 px-3 py-1 text-xs font-medium text-indigo-400">
+                <MapPin size={11} />
+                {university.branch} Branch
+              </span>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3">
+            <StatPill
+              icon={<Users size={18} />}
+              label="Students"
+              value={filteredStudents.length}
+              iconClass="bg-indigo-500/20 text-indigo-400"
+            />
+            <StatPill
+              icon={<CircleCheck size={18} />}
+              label="Verified"
+              value={verifiedStudents.length}
+              iconClass="bg-green-500/20 text-green-400"
+            />
+            <StatPill
+              icon={<Clock3 size={18} />}
+              label="Pending"
+              value={pendingStudents.length}
+              iconClass="bg-yellow-500/20 text-yellow-400"
+            />
+          </div>
+
+          {/* Admin row */}
+          <div className="flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-zinc-800 px-4 py-3.5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-base font-bold text-white">
+              {adminFullName?.charAt(0)?.toUpperCase() || "A"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-bold text-zinc-100">
+                {adminFullName || "No assigned admin"}
+              </p>
+              <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-zinc-500">
+                <Mail size={12} />
+                {adminEmail || "No email available"}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border border-indigo-500/20 bg-indigo-500/15 px-3 py-1 text-xs font-medium text-indigo-400">
+              {adminRole || "Admin"}
+            </span>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end border-t border-white/6 px-5 py-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-xl border border-white/10 bg-zinc-800 px-5 py-2 text-sm font-medium text-zinc-300 transition hover:bg-zinc-700"
           >
             Close
           </button>

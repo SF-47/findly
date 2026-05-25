@@ -26,12 +26,15 @@ function SidebarButton({
   return (
     <button
       onClick={() => navigate(destination)}
-      className={`flex w-full items-center gap-3 rounded-lg p-3 text-start transition-colors  cursor-pointer ${
+      className={`relative flex w-full items-center gap-3 overflow-hidden rounded-lg p-3 text-start transition-colors cursor-pointer ${
         activeButton === id
           ? "bg-blue-600 text-white dark:bg-blue-500 dark:text-white"
           : "text-gray-700 hover:bg-gray-200 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white"
       }`}
     >
+      {activeButton === id && (
+        <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-r-full bg-white/80 dark:bg-white" />
+      )}
       {icon}
       <span>{label}</span>
     </button>
@@ -65,14 +68,16 @@ export default function Sidebar() {
     sessionStorage.removeItem("admin");
 
     setTimeout(() => {
-      navigate("/", { replace: true }); 
+      navigate("/", { replace: true });
     }, 250);
   }
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-72 flex-col justify-between border-r border-gray-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-      <div>
-        <div className="flex items-center gap-4 border-b border-gray-200 px-5 py-6 dark:border-zinc-700">
+    <aside className="admin-animated-bg fixed left-0 top-0 z-40 isolate flex h-screen w-72 flex-col justify-between overflow-hidden border-r border-blue-100/80 shadow-sm dark:border-zinc-700">
+      <div className="absolute inset-0 z-0 bg-white/70 backdrop-blur-[1px] dark:bg-zinc-950/70" />
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-4 border-b border-blue-100/80 px-5 py-6 dark:border-zinc-700">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/40">
             <Search size={32} className="text-blue-600 dark:text-blue-400" />
           </div>
@@ -161,7 +166,7 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <div className="border-t border-gray-200 px-4 py-4 dark:border-zinc-700">
+      <div className="relative z-10 border-t border-blue-100/80 px-4 py-4 dark:border-zinc-700">
         <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
           Account
         </p>

@@ -1,17 +1,28 @@
 import { useState } from "react";
-import { Calendar, ClipboardCheck, Eye, MapPin, MoreVertical, PackageOpen, Palette, Trash2, User } from "lucide-react";
+import {
+  Calendar,
+  ClipboardCheck,
+  Eye,
+  MapPin,
+  MoreVertical,
+  PackageOpen,
+  Palette,
+  Trash2,
+  User,
+} from "lucide-react";
 
-function ItemCard({ type }) {
+function ItemCard({ type, item, students }) {
   const [showMenu, setShowMenu] = useState(false);
 
   const isLost = type === "lost";
+  const studentName = students.find((student) => student.id == item.studentId);
 
   const accent = isLost
     ? {
         header: "from-blue-500 via-indigo-500 to-red-500",
         badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
         icon: <PackageOpen />,
-        label: "Lost Item",
+
         focus: "focus:border-red-400 dark:focus:border-red-500",
       }
     : {
@@ -19,7 +30,7 @@ function ItemCard({ type }) {
         badge:
           "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
         icon: <ClipboardCheck />,
-        label: "Found Item",
+
         focus: "focus:border-emerald-400 dark:focus:border-emerald-500",
       };
 
@@ -35,11 +46,9 @@ function ItemCard({ type }) {
             </div>
 
             <div>
-              <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-                {accent.label}
-              </span>
-
-              <h2 className="mt-3 text-xl font-bold text-white">Item Name</h2>
+              <h2 className="mt-3 text-xl font-bold text-white">
+                {item.itemName}
+              </h2>
             </div>
           </div>
 
@@ -77,12 +86,13 @@ function ItemCard({ type }) {
             </p>
 
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
-              Item description will appear here. This area shows short details
-              about the report.
+              {item.description}
             </p>
           </div>
 
-          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${accent.badge}`}>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${accent.badge}`}
+          >
             Open
           </span>
         </div>
@@ -90,22 +100,22 @@ function ItemCard({ type }) {
         <div className="mt-5 space-y-3 text-sm text-gray-600 dark:text-gray-300">
           <div className="flex items-center gap-3">
             <User className="text-blue-500" />
-            <span>Student Name</span>
+            <span>{studentName.fullName}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <MapPin className="text-blue-500" />
-            <span>Location</span>
+            <span>{item.location}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Palette className="text-blue-500" />
-            <span>Color</span>
+            <span>{item.color}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Calendar className="text-blue-500" />
-            <span>{isLost ? "Lost Date" : "Found Date"}</span>
+            <span>{isLost ? item.lostDate : "Found Date"}</span>
           </div>
         </div>
 
@@ -121,7 +131,3 @@ function ItemCard({ type }) {
 }
 
 export default ItemCard;
-
-
-
-

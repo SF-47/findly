@@ -1,7 +1,7 @@
 function TableSkeleton({ title, subtitle, columns }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-      <div className="border-b border-gray-200 px-5 py-4 dark:border-zinc-700">
+    <div className="overflow-hidden rounded-2xl border border-white/80 bg-white/90 shadow-sm backdrop-blur-sm dark:border-zinc-700/80 dark:bg-zinc-900/90">
+      <div className="border-b border-gray-200/80 px-5 py-4 dark:border-zinc-700/80">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">
           {title}
         </h2>
@@ -13,7 +13,7 @@ function TableSkeleton({ title, subtitle, columns }) {
 
       <table className="w-full border-collapse">
         <thead>
-          <tr className="border-b border-gray-200 text-left text-xs uppercase text-gray-500 dark:border-zinc-700 dark:text-gray-400">
+          <tr className="border-b border-gray-200/80 bg-white/45 text-left text-xs uppercase text-gray-500 dark:border-zinc-700/80 dark:bg-zinc-950/20 dark:text-gray-400">
             {columns.map((column) => (
               <th key={column} className="px-5 py-4">
                 {column}

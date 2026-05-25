@@ -1,9 +1,20 @@
 import axiosClient from "../../api/axiosClient";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { ChevronDown, ChevronRight, LockKeyhole, Mail, Phone, Plus, ShieldUser, University, User, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  LockKeyhole,
+  Mail,
+  Phone,
+  Plus,
+  ShieldUser,
+  University,
+  User,
+  X,
+} from "lucide-react";
 
-function AddAdminModal({ onClose, onAdminAdded, universities }) {
+function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
   const [inputs, setInputs] = useState({
     fullName: "",
     email: "",
@@ -12,6 +23,10 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
     role: "UniversityAdmin",
     universityId: "",
   });
+
+  const availableUniversities = universities.filter(
+    (uni) => !admins.some((admin) => admin.universityId === uni.id),
+  );
 
   const [isLoading, setIsLoading] = useState(false);
   const [clickedUniversity, setClickedUniversity] = useState(false);
@@ -354,7 +369,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
                 >
                   <option value="">Select university</option>
 
-                  {universities.map((u) => (
+                  {availableUniversities.map((u) => (
                     <option key={u.id} value={u.id}>
                       {u.shortName} - {u.fullName} ({u.branch})
                     </option>
@@ -414,8 +429,3 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
 }
 
 export default AddAdminModal;
-
-
-
-
-

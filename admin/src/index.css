@@ -83,6 +83,19 @@ button:disabled,
   }
 }
 
+@keyframes admin-grid-move {
+  from {
+    background-position:
+      0 0,
+      0 0;
+  }
+  to {
+    background-position:
+      56px 56px,
+      56px 56px;
+  }
+}
+
 .animate-slide-in-left {
   animation: slide-in-left 0.65s ease-out both;
 }
@@ -99,3 +112,75 @@ button:disabled,
   animation: page-fade-in 0.35s ease-out both;
 }
 
+.admin-animated-bg {
+  background:
+    radial-gradient(circle at 16% 14%, rgba(37, 99, 235, 0.18), transparent 30%),
+    radial-gradient(circle at 86% 76%, rgba(147, 197, 253, 0.34), transparent 34%),
+    linear-gradient(115deg, transparent 0%, rgba(59, 130, 246, 0.12) 44%, transparent 64%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 44%, #eef5ff 100%);
+  background-size:
+    120% 120%,
+    120% 120%,
+    160% 160%,
+    100% 100%;
+}
+
+.admin-animated-bg::before,
+.admin-animated-bg::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.admin-animated-bg::before {
+  inset: -20%;
+  background: linear-gradient(
+    105deg,
+    transparent 18%,
+    rgba(37, 99, 235, 0.12) 42%,
+    rgba(191, 219, 254, 0.5) 52%,
+    transparent 66%
+  );
+}
+
+.admin-animated-bg::after {
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.18) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black 0%, black 64%, transparent 100%);
+  opacity: 0.72;
+  animation: admin-grid-move 28s linear infinite;
+}
+
+.dark .admin-animated-bg {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(108, 113, 123, 0.2), transparent 32%),
+    radial-gradient(circle at 82% 72%, rgba(24, 24, 27, 0.96), transparent 36%),
+    linear-gradient(115deg, transparent 0%, rgba(108, 113, 123, 0.12) 44%, transparent 62%),
+    linear-gradient(135deg, rgb(9, 9, 11), rgb(24, 24, 27));
+  background-size:
+    120% 120%,
+    120% 120%,
+    160% 160%,
+    100% 100%;
+}
+
+.dark .admin-animated-bg::before {
+  background: linear-gradient(
+    105deg,
+    transparent 18%,
+    rgba(108, 113, 123, 0.18) 42%,
+    rgba(24, 24, 27, 0.75) 52%,
+    transparent 66%
+  );
+}
+
+.dark .admin-animated-bg::after {
+  background-image:
+    linear-gradient(rgba(108, 113, 123, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108, 113, 123, 0.1) 1px, transparent 1px);
+  opacity: 0.42;
+}
