@@ -1,5 +1,5 @@
 
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function Pagination({ page, totalItems, rowsPerPage, setPage }) {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
@@ -23,7 +23,7 @@ function Pagination({ page, totalItems, rowsPerPage, setPage }) {
           onClick={() => setPage(page - 1)}
           className="w-10 h-10 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          <FaChevronLeft size={14} />
+          <ChevronLeft size={14} />
         </button>
 
         <button
@@ -31,7 +31,7 @@ function Pagination({ page, totalItems, rowsPerPage, setPage }) {
           onClick={() => setPage(page + 1)}
           className="w-10 h-10 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 transition disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          <FaChevronRight size={14} />
+          <ChevronRight size={14} />
         </button>
       </div>
     </div>
@@ -39,3 +39,4 @@ function Pagination({ page, totalItems, rowsPerPage, setPage }) {
 }
 
 export default Pagination;
+

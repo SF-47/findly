@@ -1,16 +1,5 @@
 import { useState } from "react";
-import {
-  FaEnvelope,
-  FaIdCard,
-  FaImage,
-  FaPhone,
-  FaPlus,
-  FaTimes,
-  FaUser,
-  FaUniversity,
-  FaChevronRight,
-  FaChevronDown,
-} from "react-icons/fa";
+import { ChevronDown, ChevronRight, IdCard, Image, Mail, Phone, Plus, University, User, X } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 
@@ -232,12 +221,12 @@ function AddStudentModal({
           onClick={onClose}
           className="absolute right-4 top-4 rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
         >
-          <FaTimes />
+          <X />
         </button>
 
         <div className="mb-5 flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-r from-blue-500 to-indigo-600 text-xl text-white shadow-md">
-            <FaUser />
+            <User />
           </div>
 
           <div>
@@ -254,7 +243,7 @@ function AddStudentModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormInput
-              icon={<FaUser />}
+              icon={<User />}
               label="Full Name"
               name="fullName"
               value={formData.fullName}
@@ -270,7 +259,7 @@ function AddStudentModal({
             />
 
             <FormInput
-              icon={<FaEnvelope />}
+              icon={<Mail />}
               label="Email"
               name="email"
               type="email"
@@ -290,7 +279,7 @@ function AddStudentModal({
               <div className="relative flex flex-col">
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="text-blue-600 dark:text-blue-400">
-                    <FaUniversity />
+                    <University />
                   </span>
                   University
                 </label>
@@ -319,16 +308,16 @@ function AddStudentModal({
                   ))}
                 </select>
                 {!clicked ? (
-                  <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                  <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
                 ) : (
-                  <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                  <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
                 )}
               </div>
             ) : (
               <div className="relative flex flex-col">
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="text-blue-600 dark:text-blue-400">
-                    <FaUniversity />
+                    <University />
                   </span>
                   University
                 </label>
@@ -351,7 +340,7 @@ function AddStudentModal({
             )}
 
             <FormInput
-              icon={<FaIdCard />}
+              icon={<IdCard />}
               label="Student University ID"
               name="universityStudentId"
               value={formData.universityStudentId}
@@ -367,7 +356,7 @@ function AddStudentModal({
             />
 
             <FormInput
-              icon={<FaPhone />}
+              icon={<Phone />}
               label="Phone"
               name="phoneNumber"
               value={formData.phoneNumber}
@@ -383,7 +372,7 @@ function AddStudentModal({
             />
 
             <FormInput
-              icon={<FaImage />}
+              icon={<Image />}
               label="Card Image URL"
               name="universityCardImageUrl"
               value={formData.universityCardImageUrl}
@@ -413,7 +402,7 @@ function AddStudentModal({
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700"
               disabled={isLoading}
             >
-              <FaPlus />
+              <Plus />
               {isLoading ? "Adding..." : "Add Student"}
             </button>
           </div>
@@ -424,3 +413,5 @@ function AddStudentModal({
 }
 
 export default AddStudentModal;
+
+

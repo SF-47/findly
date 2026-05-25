@@ -1,11 +1,4 @@
-import {
-  FaClipboardCheck,
-  FaClock,
-  FaFilter,
-  FaMapMarkerAlt,
-  FaPlus,
-  FaSearch,
-} from "react-icons/fa";
+import { ClipboardCheck, Clock, MapPin, Plus, Search, SlidersHorizontal } from "lucide-react";
 import ItemCard from "../components/Items/ItemCard";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
 import { useState } from "react";
@@ -18,28 +11,28 @@ function FoundItems() {
       title: "Total Found Items",
       subtitle: "Reports",
       value: "--",
-      icon: <FaClipboardCheck />,
+      icon: <ClipboardCheck />,
       bgColor: "bg-teal-500",
     },
     {
       title: "Open Reports",
       subtitle: "Active",
       value: "--",
-      icon: <FaClock />,
+      icon: <Clock />,
       bgColor: "bg-emerald-500",
     },
     {
       title: "Locations",
       subtitle: "Campus",
       value: "--",
-      icon: <FaMapMarkerAlt />,
+      icon: <MapPin />,
       bgColor: "bg-teal-500",
     },
     {
       title: "Possible Matches",
       subtitle: "Smart",
       value: "--",
-      icon: <FaSearch />,
+      icon: <Search />,
       bgColor: "bg-emerald-500",
     },
   ];
@@ -63,7 +56,7 @@ function FoundItems() {
               onClick={() => setShowFilters((prev) => !prev)}
               className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
             >
-              <FaFilter />
+              <SlidersHorizontal />
               Filter
             </button>
 
@@ -73,7 +66,7 @@ function FoundItems() {
           </div>
 
           <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 via-indigo-500 to-emerald-500 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-bemerald-500 hover:to-blue-500 cursor-pointer">
-            <FaPlus />
+            <Plus />
             Add Found Item
           </button>
         </div>
@@ -104,7 +97,7 @@ function FoundItems() {
           </div>
 
           <div className="relative w-full md:w-80">
-            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search found items..."
@@ -124,3 +117,5 @@ function FoundItems() {
 }
 
 export default FoundItems;
+
+

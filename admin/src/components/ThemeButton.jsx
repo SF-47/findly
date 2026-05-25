@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaMoon, FaSun } from "react-icons/fa";
+import { Moon, Sun } from "lucide-react";
 
 function ThemeButton() {
   const [dark, setDark] = useState(false);
@@ -43,10 +43,12 @@ function ThemeButton() {
             : "left-1 bg-white text-orange-500"
         }`}
       >
-        {dark ? <FaMoon size={12} /> : <FaSun size={12} />}
+        {dark ? <Moon size={12} /> : <Sun size={12} />}
       </span>
     </button>
   );
 }
 
 export default ThemeButton;
+
+

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { FaBan, FaHome } from "react-icons/fa";
+import { Ban, House } from "lucide-react";
 
 function Forbidden() {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ function Forbidden() {
     <div className="flex min-h-[70vh] items-center justify-center">
       <div className="w-full max-w-xl rounded-3xl border border-gray-200 bg-white p-10 text-center shadow-md dark:border-zinc-700 dark:bg-zinc-900">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400">
-          <FaBan size={28} />
+          <Ban size={28} />
         </div>
 
         <h1 className="mt-6 text-4xl font-bold text-gray-900 dark:text-white">
@@ -27,7 +27,7 @@ function Forbidden() {
           onClick={() => navigate("/dashboard", { replace: true })}
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700"
         >
-          <FaHome />
+          <House />
           Back to Dashboard
         </button>
       </div>
@@ -36,3 +36,4 @@ function Forbidden() {
 }
 
 export default Forbidden;
+

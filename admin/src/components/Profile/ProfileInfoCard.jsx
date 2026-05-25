@@ -1,4 +1,4 @@
-import { FaEnvelope, FaIdBadge, FaShieldAlt } from "react-icons/fa";
+import { Badge, Mail, Shield } from "lucide-react";
 import { isOwner } from "../../../utils/auth";
 
 function ProfileInfoCard() {
@@ -41,7 +41,7 @@ function ProfileInfoCard() {
 
         <div className="mt-6 space-y-4">
           <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 dark:bg-zinc-800">
-            <FaEnvelope className="text-blue-500" />
+            <Mail className="text-blue-500" />
 
             <div>
               <p className="text-xs font-semibold uppercase text-gray-400">
@@ -55,7 +55,7 @@ function ProfileInfoCard() {
           </div>
 
           <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 dark:bg-zinc-800">
-            <FaIdBadge className="text-purple-500" />
+            <Badge className="text-purple-500" />
 
             <div>
               <p className="text-xs font-semibold uppercase text-gray-400">
@@ -69,7 +69,7 @@ function ProfileInfoCard() {
           </div>
 
           <div className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 dark:bg-zinc-800">
-            <FaShieldAlt className="text-green-500" />
+            <Shield className="text-green-500" />
 
             <div>
               <p className="text-xs font-semibold uppercase text-gray-400">
@@ -88,3 +88,4 @@ function ProfileInfoCard() {
 }
 
 export default ProfileInfoCard;
+

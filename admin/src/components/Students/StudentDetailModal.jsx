@@ -1,19 +1,5 @@
 import { useState } from "react";
-import {
-  FaEnvelope,
-  FaIdCard,
-  FaImage,
-  FaPhone,
-  FaSave,
-  FaTimes,
-  FaTrash,
-  FaUniversity,
-  FaUser,
-  FaEdit,
-  FaCheckCircle,
-  FaChevronRight,
-  FaChevronDown,
-} from "react-icons/fa";
+import { ChevronDown, ChevronRight, CircleCheck, IdCard, Image, Mail, Pencil, Phone, Save, Trash2, University, User, X } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../ConfirmDialog";
@@ -327,7 +313,7 @@ function StudentDetailsModal({
           onClick={onClose}
           className="absolute right-4 top-4 rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
         >
-          <FaTimes />
+          <X />
         </button>
 
         <div className="mb-5 flex items-center gap-4">
@@ -364,7 +350,7 @@ function StudentDetailsModal({
 
         {isPending && !isEditing && (
           <div className="mb-4 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-900/40 dark:bg-amber-950/20">
-            <FaCheckCircle className="mt-0.5 shrink-0 text-amber-500" />
+            <CircleCheck className="mt-0.5 shrink-0 text-amber-500" />
             <div>
               <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">
                 Pending Verification
@@ -381,7 +367,7 @@ function StudentDetailsModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <FormInput
-              icon={<FaUser />}
+              icon={<User />}
               label="Full Name"
               name="fullName"
               value={formData.fullName}
@@ -397,7 +383,7 @@ function StudentDetailsModal({
             />
 
             <FormInput
-              icon={<FaEnvelope />}
+              icon={<Mail />}
               label="Email"
               name="email"
               type="email"
@@ -416,7 +402,7 @@ function StudentDetailsModal({
               <div className="relative">
                 <label className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
                   <span className="text-blue-600 dark:text-blue-400">
-                    <FaUniversity />
+                    <University />
                   </span>
                   University
                 </label>
@@ -454,9 +440,9 @@ function StudentDetailsModal({
                 </select>
 
                 {!clicked ? (
-                  <FaChevronRight className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
+                  <ChevronRight className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
                 ) : (
-                  <FaChevronDown className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
+                  <ChevronDown className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
                 )}
 
                 {inputErrorMessage.universityIdError && (
@@ -475,7 +461,7 @@ function StudentDetailsModal({
               <div className="relative flex flex-col">
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="text-blue-600 dark:text-blue-400">
-                    <FaUniversity />
+                    <University />
                   </span>
                   University
                 </label>
@@ -498,7 +484,7 @@ function StudentDetailsModal({
             )}
 
             <FormInput
-              icon={<FaIdCard />}
+              icon={<IdCard />}
               label="Student University ID"
               name="universityStudentId"
               value={formData.universityStudentId}
@@ -514,7 +500,7 @@ function StudentDetailsModal({
             />
 
             <FormInput
-              icon={<FaPhone />}
+              icon={<Phone />}
               label="Phone"
               name="phoneNumber"
               value={formData.phoneNumber}
@@ -530,7 +516,7 @@ function StudentDetailsModal({
             />
 
             <FormInput
-              icon={<FaImage />}
+              icon={<Image />}
               label="Card Image URL"
               name="universityCardImageUrl"
               value={formData.universityCardImageUrl}
@@ -558,7 +544,7 @@ function StudentDetailsModal({
                 type="button"
                 className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 font-semibold text-red-600 transition hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-950/40"
               >
-                <FaTrash />
+                <Trash2 />
                 Delete
               </button>
             </ConfirmDialog>
@@ -575,7 +561,7 @@ function StudentDetailsModal({
                   type="button"
                   className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 font-semibold text-green-600 transition hover:bg-green-100 dark:border-green-900/40 dark:bg-green-950/20 dark:text-green-400 dark:hover:bg-green-950/40"
                 >
-                  <FaCheckCircle />
+                  <CircleCheck />
                   Verify
                 </button>
               </ConfirmDialog>
@@ -590,12 +576,12 @@ function StudentDetailsModal({
                 "Saving..."
               ) : isEditing ? (
                 <>
-                  <FaSave />
+                  <Save />
                   Save
                 </>
               ) : (
                 <>
-                  <FaEdit />
+                  <Pencil />
                   Edit
                 </>
               )}
@@ -619,3 +605,5 @@ function StudentDetailsModal({
 }
 
 export default StudentDetailsModal;
+
+

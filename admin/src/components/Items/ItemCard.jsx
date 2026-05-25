@@ -1,17 +1,7 @@
 import { useState } from "react";
-import {
-  FaCalendarAlt,
-  FaEllipsisV,
-  FaEye,
-  FaMapMarkerAlt,
-  FaPalette,
-  FaTrash,
-  FaUser,
-  FaBoxOpen,
-  FaClipboardCheck,
-} from "react-icons/fa";
+import { Calendar, ClipboardCheck, Eye, MapPin, MoreVertical, PackageOpen, Palette, Trash2, User } from "lucide-react";
 
-function ItemCard({ type = "lost" }) {
+function ItemCard({ type }) {
   const [showMenu, setShowMenu] = useState(false);
 
   const isLost = type === "lost";
@@ -20,7 +10,7 @@ function ItemCard({ type = "lost" }) {
     ? {
         header: "from-blue-500 via-indigo-500 to-red-500",
         badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-        icon: <FaBoxOpen />,
+        icon: <PackageOpen />,
         label: "Lost Item",
         focus: "focus:border-red-400 dark:focus:border-red-500",
       }
@@ -28,7 +18,7 @@ function ItemCard({ type = "lost" }) {
         header: "from-blue-500 via-indigo-500 to-emerald-500",
         badge:
           "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-        icon: <FaClipboardCheck />,
+        icon: <ClipboardCheck />,
         label: "Found Item",
         focus: "focus:border-emerald-400 dark:focus:border-emerald-500",
       };
@@ -59,18 +49,18 @@ function ItemCard({ type = "lost" }) {
               onClick={() => setShowMenu((prev) => !prev)}
               className="rounded-lg bg-white/20 p-2 text-white backdrop-blur-sm transition hover:bg-white/30"
             >
-              <FaEllipsisV size={14} />
+              <MoreVertical size={14} />
             </button>
 
             {showMenu && (
               <div className="absolute right-0 top-10 z-50 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                 <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700">
-                  <FaEye size={13} />
+                  <Eye size={13} />
                   View
                 </button>
 
                 <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
-                  <FaTrash size={13} />
+                  <Trash2 size={13} />
                   Delete
                 </button>
               </div>
@@ -99,22 +89,22 @@ function ItemCard({ type = "lost" }) {
 
         <div className="mt-5 space-y-3 text-sm text-gray-600 dark:text-gray-300">
           <div className="flex items-center gap-3">
-            <FaUser className="text-blue-500" />
+            <User className="text-blue-500" />
             <span>Student Name</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <FaMapMarkerAlt className="text-blue-500" />
+            <MapPin className="text-blue-500" />
             <span>Location</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <FaPalette className="text-blue-500" />
+            <Palette className="text-blue-500" />
             <span>Color</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <FaCalendarAlt className="text-blue-500" />
+            <Calendar className="text-blue-500" />
             <span>{isLost ? "Lost Date" : "Found Date"}</span>
           </div>
         </div>
@@ -131,3 +121,4 @@ function ItemCard({ type = "lost" }) {
 }
 
 export default ItemCard;
+

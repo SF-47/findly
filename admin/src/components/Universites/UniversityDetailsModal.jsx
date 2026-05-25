@@ -1,10 +1,4 @@
-import {
-  FaTimes,
-  FaUniversity,
-  FaUsers,
-  FaUserShield,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+import { MapPin, ShieldUser, University, Users, X } from "lucide-react";
 
 function UniversityDetailsModal({ isOpen, onClose, university }) {
   if (!isOpen) return null;
@@ -24,7 +18,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
               </h2>
 
               <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <FaMapMarkerAlt className="text-blue-500" />
+                <MapPin className="text-blue-500" />
                 {university.branch} Branch
               </p>
             </div>
@@ -34,7 +28,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
             onClick={onClose}
             className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
           >
-            <FaTimes />
+            <X />
           </button>
         </div>
 
@@ -42,7 +36,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-zinc-700 dark:bg-zinc-800">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-blue-100 p-3 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300">
-                <FaUniversity />
+                <University />
               </div>
 
               <div>
@@ -59,7 +53,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-zinc-700 dark:bg-zinc-800">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-blue-100 p-3 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300">
-                <FaUsers />
+                <Users />
               </div>
 
               <div>
@@ -76,7 +70,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-zinc-700 dark:bg-zinc-800">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-blue-100 p-3 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300">
-                <FaUserShield />
+                <ShieldUser />
               </div>
 
               <div>
@@ -94,7 +88,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
         <div className="grid gap-5 px-5 pb-5 md:grid-cols-2">
           <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
-              <FaUsers className="text-blue-500" />
+              <Users className="text-blue-500" />
               Students
             </h3>
 
@@ -108,7 +102,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
 
           <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
-              <FaUserShield className="text-blue-500" />
+              <ShieldUser className="text-blue-500" />
               Admins
             </h3>
 
@@ -135,3 +129,4 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
 }
 
 export default UniversityDetailsModal;
+

@@ -1,11 +1,4 @@
-import {
-  FaCheckCircle,
-  FaClock,
-  FaDatabase,
-  FaEnvelope,
-  FaLock,
-  FaTimes,
-} from "react-icons/fa";
+import { CircleCheck, Clock, Database, LockKeyhole, Mail, X } from "lucide-react";
 
 function LoginStatusModal({ onClose }) {
   const admin = JSON.parse(
@@ -18,22 +11,22 @@ function LoginStatusModal({ onClose }) {
     {
       label: "Signed In As",
       value: admin?.email || "No email found",
-      icon: <FaEnvelope />,
+      icon: <Mail />,
     },
     {
       label: "Session Status",
       value: "Active",
-      icon: <FaCheckCircle />,
+      icon: <CircleCheck />,
     },
     {
       label: "Storage Type",
       value: isRemembered ? "Remembered session" : "Temporary session",
-      icon: <FaDatabase />,
+      icon: <Database />,
     },
     {
       label: "Session Duration",
       value: isRemembered ? "Saved after closing browser" : "Ends with session",
-      icon: <FaClock />,
+      icon: <Clock />,
     },
   ];
 
@@ -45,12 +38,12 @@ function LoginStatusModal({ onClose }) {
           onClick={onClose}
           className="absolute right-5 top-5 rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
         >
-          <FaTimes />
+          <X />
         </button>
 
         <div className="mb-6 flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-r from-green-500 to-emerald-600 text-xl text-white shadow-md">
-            <FaLock />
+            <LockKeyhole />
           </div>
 
           <div>
@@ -67,7 +60,7 @@ function LoginStatusModal({ onClose }) {
         <div className="rounded-2xl border border-green-200 bg-green-50 p-4 dark:border-green-900/40 dark:bg-green-950/20">
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-600 text-white">
-              <FaCheckCircle />
+              <CircleCheck />
             </div>
 
             <div>
@@ -119,3 +112,4 @@ function LoginStatusModal({ onClose }) {
 }
 
 export default LoginStatusModal;
+

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaKey, FaLock, FaUsers, FaUserShield } from "react-icons/fa";
+import { KeyRound, LockKeyhole, ShieldUser, Users } from "lucide-react";
 import ChangePasswordModal from "./ChangePasswordModal";
 import LoginStatusModal from "./LoginStatusModal";
 import AdminRoleModal from "./AdminRoleModal";
@@ -30,7 +30,7 @@ function ProfileSecurityCard({ onManageAdmins }) {
           className="flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-5 text-left transition hover:border-blue-300 hover:bg-blue-50 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-blue-500 dark:hover:bg-blue-950/30  cursor-pointer"
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white cursor-pointer">
-            <FaKey />
+            <KeyRound />
           </div>
 
           <div>
@@ -48,7 +48,7 @@ function ProfileSecurityCard({ onManageAdmins }) {
           onClick={() => setShowRoleModal(true)}
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-600 text-white cursor-pointer">
-            <FaUserShield />
+            <ShieldUser />
           </div>
 
           <div>
@@ -66,7 +66,7 @@ function ProfileSecurityCard({ onManageAdmins }) {
           onClick={() => setShowLoginStatusModal(true)}
         >
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-600 text-white cursor-pointer">
-            <FaLock />
+            <LockKeyhole />
           </div>
 
           <div>
@@ -85,7 +85,7 @@ function ProfileSecurityCard({ onManageAdmins }) {
             className="flex items-center gap-4 rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left transition hover:border-blue-400 hover:bg-blue-100 dark:border-blue-900/40 dark:bg-blue-950/20 dark:hover:bg-blue-950/40 cursor-pointer"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-600 text-white cursor-pointer">
-              <FaUsers />
+              <Users />
             </div>
 
             <div>
@@ -118,3 +118,5 @@ function ProfileSecurityCard({ onManageAdmins }) {
 }
 
 export default ProfileSecurityCard;
+
+

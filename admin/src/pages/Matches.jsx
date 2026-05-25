@@ -1,11 +1,4 @@
-import {
-  FaCheckCircle,
-  FaFilter,
-  FaPlus,
-  FaSearch,
-  FaSyncAlt,
-  FaTimesCircle,
-} from "react-icons/fa";
+import { CircleCheck, CircleX, Plus, RefreshCw, Search, SlidersHorizontal } from "lucide-react";
 import MatchCard from "../components/Matches/MatchCard";
 import MatchStatsCard from "../components/Matches/MatchStatsCard";
 import { useState } from "react";
@@ -18,28 +11,28 @@ function Matches() {
       title: "Total Matches",
       subtitle: "Generated",
       value: "--",
-      icon: <FaSearch />,
+      icon: <Search />,
       bgColor: "bg-purple-500",
     },
     {
       title: "Pending Matches",
       subtitle: "Review",
       value: "--",
-      icon: <FaSyncAlt />,
+      icon: <RefreshCw />,
       bgColor: "bg-yellow-500",
     },
     {
       title: "Confirmed",
       subtitle: "Accepted",
       value: "--",
-      icon: <FaCheckCircle />,
+      icon: <CircleCheck />,
       bgColor: "bg-green-500",
     },
     {
       title: "Rejected",
       subtitle: "Closed",
       value: "--",
-      icon: <FaTimesCircle />,
+      icon: <CircleX />,
       bgColor: "bg-red-500",
     },
   ];
@@ -63,7 +56,7 @@ function Matches() {
               onClick={() => setShowFilters((prev) => !prev)}
               className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
             >
-              <FaFilter />
+              <SlidersHorizontal />
               Filter
             </button>
 
@@ -73,7 +66,7 @@ function Matches() {
           </div>
 
           <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-purple-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-purple-600 hover:to-indigo-700">
-            <FaPlus />
+            <Plus />
             Generate Matches
           </button>
         </div>
@@ -105,7 +98,7 @@ function Matches() {
           </div>
 
           <div className="relative w-full md:w-80">
-            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
 
             <input
               type="text"
@@ -125,3 +118,5 @@ function Matches() {
 }
 
 export default Matches;
+
+

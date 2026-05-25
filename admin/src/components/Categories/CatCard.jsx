@@ -1,17 +1,58 @@
 import { useState } from "react";
-import { FaEllipsisV, FaTags } from "react-icons/fa";
+import {
+  Briefcase,
+  FileText,
+  Gem,
+  KeyRound,
+  Laptop,
+  MoreVertical,
+  PackageOpen,
+  Shirt,
+  Tags,
+} from "lucide-react";
 
-
-function CatCard({category}) {
+function CatCard({ category }) {
   const [showMenu, setShowMenu] = useState(false);
 
-  
+  function getCategoryIcon(categoryName) {
+    const name = categoryName?.toLowerCase() || "";
+
+    if (name.includes("electronic")) {
+      return <Laptop size={24} strokeWidth={2.2} />;
+    }
+
+    if (name.includes("bag") || name.includes("luggage")) {
+      return <Briefcase size={24} strokeWidth={2.2} />;
+    }
+
+    if (name.includes("clothing") || name.includes("accessories")) {
+      return <Shirt size={24} strokeWidth={2.2} />;
+    }
+
+    if (name.includes("document") || name.includes("stationery")) {
+      return <FileText size={24} strokeWidth={2.2} />;
+    }
+
+    if (name.includes("personal")) {
+      return <KeyRound size={24} strokeWidth={2.2} />;
+    }
+
+    if (name.includes("valuable")) {
+      return <Gem size={24} strokeWidth={2.2} />;
+    }
+
+    if (name.includes("miscellaneous")) {
+      return <PackageOpen size={24} strokeWidth={2.2} />;
+    }
+
+    return <Tags size={24} strokeWidth={2.2} />;
+  }
 
   return (
     <div className="group w-full cursor-pointer rounded-3xl border border-blue-100 bg-linear-to-br from-white via-slate-50 to-blue-50 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-2xl dark:border-zinc-700 dark:bg-none dark:bg-zinc-900 dark:hover:border-blue-300">
       <div className="relative flex items-start justify-between">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 text-xl font-bold text-white shadow-lg ring-2 ring-white/20">
-          <FaTags size={22} />
+          {getCategoryIcon(category.name)}
         </div>
 
         <button
@@ -19,7 +60,7 @@ function CatCard({category}) {
           className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
           onClick={() => setShowMenu((prev) => !prev)}
         >
-          <FaEllipsisV size={14} />
+          <MoreVertical size={16} strokeWidth={2.2} />
         </button>
 
         {showMenu && (
@@ -60,3 +101,5 @@ function CatCard({category}) {
 }
 
 export default CatCard;
+
+

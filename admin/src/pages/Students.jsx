@@ -1,12 +1,4 @@
-import {
-  FaUsers,
-  FaUserCheck,
-  FaUserClock,
-  FaCalendarDay,
-  FaPlus,
-  FaChevronDown,
-  FaChevronRight,
-} from "react-icons/fa";
+import { CalendarDays, ChevronDown, ChevronRight, Plus, UserCheck, Clock3, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import axiosClient from "../api/axiosClient";
 import AddStudentModal from "../components/Students/AddStudentModal";
@@ -14,34 +6,41 @@ import toast from "react-hot-toast";
 import StudentDetailsModal from "../components/Students/StudentDetailModal";
 import Pagination from "../components/Pagination";
 import { getStoredAdmin, isOwner } from "../../utils/auth";
+import StudentsStatCardSkeleton from "../components/Students/StudentsStatCardSkeleton";
 
 function StatsCard({ title, subtitle, value, icon, bgColor, isLoading }) {
   return (
-    <div className="group rounded-2xl border border-gray-200 bg-white p-6 text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900 dark:text-white">
-      <div className="flex items-center justify-between">
-        <div
-          className={`flex h-12 w-12 items-center justify-center rounded-xl text-xl text-white shadow-md ${bgColor}`}
-        >
-          {icon}
+    <>
+      {isLoading ? (
+        <StudentsStatCardSkeleton />
+      ) : (
+        <div className="group rounded-2xl border border-gray-200 bg-white p-6 text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900 dark:text-white">
+          <div className="flex items-center justify-between">
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-xl text-xl text-white shadow-md ${bgColor}`}
+            >
+              {icon}
+            </div>
+
+            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500 dark:bg-zinc-800 dark:text-gray-400">
+              {subtitle}
+            </span>
+          </div>
+
+          <div className="mt-6">
+            {isLoading ? (
+              <StudentsStatCardSkeleton />
+            ) : (
+              <div className="text-4xl font-bold tracking-tight">{value}</div>
+            )}
+
+            <p className="mt-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
+              {title}
+            </p>
+          </div>
         </div>
-
-        <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-500 dark:bg-zinc-800 dark:text-gray-400">
-          {subtitle}
-        </span>
-      </div>
-
-      <div className="mt-6">
-        {isLoading ? (
-          <div className="h-8 w-15 rounded bg-gray-300 dark:bg-zinc-700"></div>
-        ) : (
-          <div className="text-4xl font-bold tracking-tight">{value}</div>
-        )}
-
-        <p className="mt-2 text-sm font-semibold text-gray-500 dark:text-gray-400">
-          {title}
-        </p>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 
@@ -185,28 +184,28 @@ function Students() {
       title: "Total Students",
       subtitle: "Registered",
       value: students.length,
-      icon: <FaUsers />,
+      icon: <Users />,
       bgColor: "bg-blue-500",
     },
     {
       title: "Verified Students",
       subtitle: "Approved",
       value: verifiedStudents.length,
-      icon: <FaUserCheck />,
+      icon: <UserCheck />,
       bgColor: "bg-green-500",
     },
     {
       title: "Pending",
       subtitle: "Review",
       value: unVerifiedStudents.length,
-      icon: <FaUserClock />,
+      icon: <Clock3 />,
       bgColor: "bg-yellow-500",
     },
     {
       title: "New Today",
       subtitle: "Today",
       value: todayStudents.length,
-      icon: <FaCalendarDay />,
+      icon: <CalendarDays />,
       bgColor: "bg-purple-500",
     },
   ];
@@ -230,7 +229,7 @@ function Students() {
             className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700  cursor-pointer"
             onClick={() => setShowAddStudent(true)}
           >
-            <FaPlus />
+            <Plus />
             Add Student
           </button>
         </div>
@@ -307,9 +306,9 @@ function Students() {
                 ))}
               </select>
               {!clicked.uniId ? (
-                <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
               ) : (
-                <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
               )}
             </div>
           )}
@@ -337,9 +336,9 @@ function Students() {
               <option value="pending">Pending</option>
             </select>
             {!clicked.status ? (
-              <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
             ) : (
-              <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
             )}
           </div>
 
@@ -367,9 +366,9 @@ function Students() {
               <option value="month">This Month</option>
             </select>
             {!clicked.date ? (
-              <FaChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
             ) : (
-              <FaChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+              <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
             )}
           </div>
         </div>
@@ -537,3 +536,5 @@ function Students() {
 }
 
 export default Students;
+
+

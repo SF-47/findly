@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  FaEye,
-  FaEyeSlash,
-  FaKey,
-  FaLock,
-  FaSave,
-  FaTimes,
-} from "react-icons/fa";
+import { Eye, EyeOff, KeyRound, LockKeyhole, Save, X } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 
@@ -111,12 +104,12 @@ function ChangePasswordModal({ onClose }) {
           onClick={onClose}
           className="absolute right-5 top-5 rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
         >
-          <FaTimes />
+          <X />
         </button>
 
         <div className="mb-6 flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-r from-blue-500 to-indigo-600 text-xl text-white shadow-md">
-            <FaKey />
+            <KeyRound />
           </div>
 
           <div>
@@ -133,7 +126,7 @@ function ChangePasswordModal({ onClose }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-              <FaLock className="text-blue-600 dark:text-blue-400" />
+              <LockKeyhole className="text-blue-600 dark:text-blue-400" />
               Current Password
             </label>
 
@@ -171,14 +164,14 @@ function ChangePasswordModal({ onClose }) {
                 }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-blue-500"
               >
-                {showPassword.current ? <FaEyeSlash /> : <FaEye />}
+                {showPassword.current ? <EyeOff /> : <Eye />}
               </button>
             </div>
           </div>
 
           <div>
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-              <FaLock className="text-blue-600 dark:text-blue-400" />
+              <LockKeyhole className="text-blue-600 dark:text-blue-400" />
               New Password
             </label>
 
@@ -216,7 +209,7 @@ function ChangePasswordModal({ onClose }) {
                 }
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-blue-500"
               >
-                {showPassword.new ? <FaEyeSlash /> : <FaEye />}
+                {showPassword.new ? <EyeOff /> : <Eye />}
               </button>
             </div>
           </div>
@@ -235,7 +228,7 @@ function ChangePasswordModal({ onClose }) {
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700"
               disabled={isLoading}
             >
-              <FaSave />
+              <Save />
               {isLoading ? "Changing..." : "Change"}
             </button>
           </div>
@@ -246,3 +239,5 @@ function ChangePasswordModal({ onClose }) {
 }
 
 export default ChangePasswordModal;
+
+

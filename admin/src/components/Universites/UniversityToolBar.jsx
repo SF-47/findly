@@ -1,4 +1,4 @@
-import { FaSearch } from "react-icons/fa";
+import { Search } from "lucide-react";
 
 function UniversitiesToolbar({ search, setSearch }) {
   return (
@@ -15,7 +15,7 @@ function UniversitiesToolbar({ search, setSearch }) {
         </div>
 
         <div className="relative w-full md:w-96">
-          <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
 
           <input
             type="text"
@@ -31,3 +31,4 @@ function UniversitiesToolbar({ search, setSearch }) {
 }
 
 export default UniversitiesToolbar;
+

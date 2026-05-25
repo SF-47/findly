@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaSave, FaTimes, FaUniversity } from "react-icons/fa";
+import { Save, University, X } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 
@@ -236,7 +236,7 @@ function UniversityFormModal({
         <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-zinc-700">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 text-white shadow-lg">
-              <FaUniversity size={20} />
+              <University size={20} />
             </div>
 
             <div>
@@ -255,7 +255,7 @@ function UniversityFormModal({
             disabled={isLoading}
             className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
           >
-            <FaTimes />
+            <X />
           </button>
         </div>
 
@@ -350,7 +350,7 @@ function UniversityFormModal({
             className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
             onClick={isEdit ? handleUpdate : handleAdd}
           >
-            <FaSave />
+            <Save />
             {isLoading
               ? isEdit
                 ? "Saving..."
@@ -366,3 +366,5 @@ function UniversityFormModal({
 }
 
 export default UniversityFormModal;
+
+

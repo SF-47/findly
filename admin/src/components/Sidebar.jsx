@@ -1,14 +1,4 @@
-import {
-  FaBoxOpen,
-  FaClipboardCheck,
-  FaHome,
-  FaList,
-  FaSearch,
-  FaSignOutAlt,
-  FaUniversity,
-  FaUserCircle,
-  FaUsers,
-} from "react-icons/fa";
+import { CircleUserRound, ClipboardCheck, House, List, LogOut, PackageOpen, Search, University, Users } from "lucide-react";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { isOwner } from "../../utils/auth";
@@ -67,7 +57,7 @@ export default function Sidebar() {
       <div>
         <div className="flex items-center gap-4 border-b border-gray-200 px-5 py-6 dark:border-zinc-700">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/40">
-            <FaSearch size={32} className="text-blue-600 dark:text-blue-400" />
+            <Search size={32} className="text-blue-600 dark:text-blue-400" />
           </div>
 
           <div>
@@ -89,7 +79,7 @@ export default function Sidebar() {
           <div className="flex flex-col gap-2">
             <SidebarButton
               id="dashboard"
-              icon={<FaHome size={20} />}
+              icon={<House size={20} />}
               label="Dashboard"
               activeButton={activeButton}
               navigate={navigate}
@@ -98,7 +88,7 @@ export default function Sidebar() {
 
             <SidebarButton
               id="students"
-              icon={<FaUsers size={20} />}
+              icon={<Users size={20} />}
               label="Students"
               activeButton={activeButton}
               navigate={navigate}
@@ -107,7 +97,7 @@ export default function Sidebar() {
             {owner && (
               <SidebarButton
                 id="universities"
-                icon={<FaUniversity size={20} />}
+                icon={<University size={20} />}
                 label="Universities"
                 activeButton={activeButton}
                 navigate={navigate}
@@ -117,7 +107,7 @@ export default function Sidebar() {
 
             <SidebarButton
               id="categories"
-              icon={<FaList size={20} />}
+              icon={<List size={20} />}
               label="Categories"
               activeButton={activeButton}
               navigate={navigate}
@@ -126,7 +116,7 @@ export default function Sidebar() {
 
             <SidebarButton
               id="lost"
-              icon={<FaBoxOpen size={20} />}
+              icon={<PackageOpen size={20} />}
               label="Lost Items"
               activeButton={activeButton}
               navigate={navigate}
@@ -135,7 +125,7 @@ export default function Sidebar() {
 
             <SidebarButton
               id="found"
-              icon={<FaClipboardCheck size={20} />}
+              icon={<ClipboardCheck size={20} />}
               label="Found Items"
               activeButton={activeButton}
               navigate={navigate}
@@ -144,7 +134,7 @@ export default function Sidebar() {
 
             <SidebarButton
               id="matches"
-              icon={<FaSearch size={20} />}
+              icon={<Search size={20} />}
               label="Matches"
               activeButton={activeButton}
               navigate={navigate}
@@ -162,7 +152,7 @@ export default function Sidebar() {
         <div className="flex flex-col gap-2">
           <SidebarButton
             id="profile"
-            icon={<FaUserCircle size={20} />}
+            icon={<CircleUserRound size={20} />}
             label="Profile"
             activeButton={activeButton}
             navigate={navigate}
@@ -173,7 +163,7 @@ export default function Sidebar() {
             className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start font-mono text-white transition-colors hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
             onClick={handleLogout}
           >
-            <FaSignOutAlt size={20} />
+            <LogOut size={20} />
             <span>Logout</span>
           </button>
         </div>
@@ -181,3 +171,5 @@ export default function Sidebar() {
     </aside>
   );
 }
+
+

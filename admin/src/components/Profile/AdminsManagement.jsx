@@ -1,14 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  FaEnvelope,
-  FaUserShield,
-  FaCalendarAlt,
-  FaTrash,
-  FaCrown,
-  FaArrowLeft,
-  FaPlus,
-  FaPhone,
-} from "react-icons/fa";
+import { ArrowLeft, Calendar, Crown, Mail, Phone, Plus, ShieldUser, Trash2 } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import AddAdminModal from "./AddAdminModal";
 import ConfirmDialog from "../ConfirmDialog";
@@ -79,7 +70,7 @@ function AdminsManagement({ onBack }) {
             onClick={onBack}
             className="flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-300 dark:hover:bg-zinc-800"
           >
-            <FaArrowLeft />
+            <ArrowLeft />
           </button>
 
           <div>
@@ -98,7 +89,7 @@ function AdminsManagement({ onBack }) {
           className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => setShowAddAdmin(true)}
         >
-          <FaPlus />
+          <Plus />
           Add Admin
         </button>
       </div>
@@ -113,7 +104,7 @@ function AdminsManagement({ onBack }) {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600 text-white">
-              <FaUserShield />
+              <ShieldUser />
             </div>
             <p className="mt-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
               Total Admins
@@ -125,7 +116,7 @@ function AdminsManagement({ onBack }) {
 
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-yellow-500 text-white">
-              <FaCrown />
+              <Crown />
             </div>
             <p className="mt-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
               Owner
@@ -137,7 +128,7 @@ function AdminsManagement({ onBack }) {
 
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-green-600 text-white">
-              <FaUserShield />
+              <ShieldUser />
             </div>
             <p className="mt-5 text-sm font-semibold text-gray-500 dark:text-gray-400">
               Access Status
@@ -208,7 +199,7 @@ function AdminsManagement({ onBack }) {
                             {admin.fullName}
                           </p>
                           <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                            <FaEnvelope className="shrink-0" />
+                            <Mail className="shrink-0" />
                             <span className="truncate">{admin.email}</span>
                           </div>
                         </div>
@@ -216,14 +207,14 @@ function AdminsManagement({ onBack }) {
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                        <FaPhone className="shrink-0" />
+                        <Phone className="shrink-0" />
                         <span>{admin.phoneNumber || "Not provided"}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4">
                       {admin.role === "Owner" ? (
                         <span className="inline-flex items-center gap-2 rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300">
-                          <FaCrown />
+                          <Crown />
                           Owner
                         </span>
                       ) : (
@@ -234,7 +225,7 @@ function AdminsManagement({ onBack }) {
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                        <FaCalendarAlt className="shrink-0" />
+                        <Calendar className="shrink-0" />
                         <span>
                           {new Date(admin.createdAt).toLocaleDateString()}
                         </span>
@@ -254,7 +245,7 @@ function AdminsManagement({ onBack }) {
                             onClick={(e) => e.stopPropagation()}
                             className="flex cursor-pointer items-center justify-center rounded-xl border border-red-200 bg-red-50 p-3 text-red-600 transition hover:bg-red-100 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-400 dark:hover:bg-red-950/40"
                           >
-                            <FaTrash />
+                            <Trash2 />
                           </button>
                         </ConfirmDialog>
                       </div>
@@ -289,3 +280,5 @@ function AdminsManagement({ onBack }) {
 }
 
 export default AdminsManagement;
+
+

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaPlus, FaUniversity } from "react-icons/fa";
+import { Plus, University } from "lucide-react";
 import UniversityCard from "../components/Universites/UniversityCard";
 import UniversityFormModal from "../components/Universites/UniversityFormModal";
 import UniversitiesToolbar from "../components/Universites/UniversityToolBar";
@@ -68,7 +68,7 @@ function Universities() {
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700 cursor-pointer"
           >
-            <FaPlus />
+            <Plus />
             Add University
           </button>
         </div>
@@ -112,7 +112,7 @@ function Universities() {
       ) : (
         <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 text-gray-500 dark:bg-zinc-800 dark:text-gray-400">
-            <FaUniversity size={28} />
+            <University size={28} />
           </div>
 
           <h2 className="mt-5 text-xl font-bold text-gray-900 dark:text-white">
@@ -136,3 +136,4 @@ function Universities() {
 }
 
 export default Universities;
+

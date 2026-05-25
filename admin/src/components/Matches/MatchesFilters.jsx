@@ -1,4 +1,4 @@
-import { FaTimes, FaSearch, FaChevronDown, FaUserCheck } from "react-icons/fa";
+import { ChevronDown, Search, UserCheck, X } from "lucide-react";
 
 function MatchesFilter({ onClose }) {
     
@@ -13,7 +13,7 @@ function MatchesFilter({ onClose }) {
           onClick={onClose}
           className="rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-zinc-800 dark:hover:text-white"
         >
-          <FaTimes />
+          <X />
         </button>
       </div>
 
@@ -24,7 +24,7 @@ function MatchesFilter({ onClose }) {
           </label>
 
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-50 px-3 dark:border-zinc-700 dark:bg-zinc-800">
-            <FaSearch className="mr-2 text-gray-400" />
+            <Search className="mr-2 text-gray-400" />
 
             <input
               type="text"
@@ -47,7 +47,7 @@ function MatchesFilter({ onClose }) {
               <option value="rejected">Rejected</option>
             </select>
 
-            <FaChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
           </div>
         </div>
 
@@ -64,7 +64,7 @@ function MatchesFilter({ onClose }) {
               <option value="50">50% and above</option>
             </select>
 
-            <FaChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
           </div>
         </div>
 
@@ -81,7 +81,7 @@ function MatchesFilter({ onClose }) {
               <option value="month">This Month</option>
             </select>
 
-            <FaChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
           </div>
         </div>
       </div>
@@ -92,7 +92,7 @@ function MatchesFilter({ onClose }) {
         </button>
 
         <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
-          <FaUserCheck />
+          <UserCheck />
           Apply
         </button>
       </div>
@@ -101,3 +101,4 @@ function MatchesFilter({ onClose }) {
 }
 
 export default MatchesFilter;
+

@@ -1,45 +1,58 @@
-import {
-  FaBoxOpen,
-  FaClock,
-  FaFilter,
-  FaMapMarkerAlt,
-  FaPlus,
-  FaSearch,
-} from "react-icons/fa";
+import { Clock, MapPin, PackageOpen, Plus, Search, SlidersHorizontal } from "lucide-react";
 import ItemCard from "../components/Items/ItemCard";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LostItemsFilter from "../components/Items/LostItemsFilters";
+import axiosClient from "../api/axiosClient";
 
 function LostItems() {
+  const [lostItems, setlostItems] = useState([]);
+  async function fetchData() {
+    const response = await axiosClient.get("lost-items");
+
+    setlostItems(response.data);
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchData();
+  }, []);
+
   const [showFilters, setShowFilters] = useState(false);
+
+  const openStatusItems = lostItems.filter((item) => {
+    if (item.status != "open") {
+      return false;
+    }
+    return true;
+  });
   const stats = [
     {
       title: "Total Lost Items",
       subtitle: "Reports",
-      value: "--",
-      icon: <FaBoxOpen />,
+      value: lostItems.length,
+      icon: <PackageOpen />,
       bgColor: "bg-red-500",
     },
     {
       title: "Open Reports",
       subtitle: "Active",
-      value: "--",
-      icon: <FaClock />,
+      value: openStatusItems.length,
+      icon: <Clock />,
       bgColor: "bg-orange-500",
     },
     {
       title: "Locations",
       subtitle: "Campus",
       value: "--",
-      icon: <FaMapMarkerAlt />,
+      icon: <MapPin />,
       bgColor: "bg-red-500",
     },
     {
       title: "Possible Matches",
       subtitle: "Smart",
       value: "--",
-      icon: <FaSearch />,
+      icon: <Search />,
       bgColor: "bg-orange-500",
     },
   ];
@@ -63,7 +76,7 @@ function LostItems() {
               onClick={() => setShowFilters((prev) => !prev)}
               className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
             >
-              <FaFilter />
+              <SlidersHorizontal />
               Filter
             </button>
 
@@ -73,7 +86,7 @@ function LostItems() {
           </div>
 
           <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 via-indigo-500 to-red-500 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
-            <FaPlus />
+            <Plus />
             Add Lost Item
           </button>
         </div>
@@ -104,7 +117,7 @@ function LostItems() {
           </div>
 
           <div className="relative w-full md:w-80">
-            <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search lost items..."
@@ -115,7 +128,7 @@ function LostItems() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        <ItemCard type="lost" />
+        <ItemCard type="lost" lostItems={lostItems}/>
         <ItemCard type="lost" />
         <ItemCard type="lost" />
       </div>
@@ -124,3 +137,5 @@ function LostItems() {
 }
 
 export default LostItems;
+
+

@@ -1,12 +1,4 @@
-import {
-  FaBoxOpen,
-  FaCheckCircle,
-  FaClipboardCheck,
-  FaEllipsisV,
-  FaEye,
-  FaTimesCircle,
-  FaTrash,
-} from "react-icons/fa";
+import { CircleCheck, CircleX, ClipboardCheck, Eye, MoreVertical, PackageOpen, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 function MatchCard() {
@@ -35,18 +27,18 @@ function MatchCard() {
             onClick={() => setShowMenu((prev) => !prev)}
             className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
           >
-            <FaEllipsisV size={14} />
+            <MoreVertical size={14} />
           </button>
 
           {showMenu && (
             <div className="absolute right-0 top-10 z-50 w-36 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
               <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700">
-                <FaEye size={13} />
+                <Eye size={13} />
                 View
               </button>
 
               <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
-                <FaTrash size={13} />
+                <Trash2 size={13} />
                 Delete
               </button>
             </div>
@@ -58,7 +50,7 @@ function MatchCard() {
         <div className="rounded-2xl border border-red-100 bg-red-50 p-4 dark:border-red-900/40 dark:bg-red-950/20">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500 text-white">
-              <FaBoxOpen />
+              <PackageOpen />
             </div>
 
             <div>
@@ -80,7 +72,7 @@ function MatchCard() {
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/20">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-white">
-              <FaClipboardCheck />
+              <ClipboardCheck />
             </div>
 
             <div>
@@ -118,12 +110,12 @@ function MatchCard() {
 
       <div className="mt-6 flex gap-3">
         <button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700">
-          <FaCheckCircle />
+          <CircleCheck />
           Confirm
         </button>
 
         <button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700">
-          <FaTimesCircle />
+          <CircleX />
           Reject
         </button>
       </div>
@@ -132,3 +124,4 @@ function MatchCard() {
 }
 
 export default MatchCard;
+

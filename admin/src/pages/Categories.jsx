@@ -1,5 +1,5 @@
 import CatCard from "../components/Categories/CatCard";
-import { FaFilter, FaPlus } from "react-icons/fa";
+import { Plus, SlidersHorizontal } from "lucide-react";
 import { useState, useEffect } from "react";
 import CategoryFilter from "../components/Categories/CatFilters";
 import axiosClient from "../api/axiosClient";
@@ -69,7 +69,7 @@ function Categories() {
               onClick={() => setShowFilters((prev) => !prev)}
               className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
             >
-              <FaFilter />
+              <SlidersHorizontal />
               Filter
             </button>
 
@@ -79,7 +79,7 @@ function Categories() {
           </div>
 
           <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
-            <FaPlus />
+            <Plus />
             Add Category
           </button>
         </div>
@@ -113,3 +113,4 @@ function Categories() {
 }
 
 export default Categories;
+

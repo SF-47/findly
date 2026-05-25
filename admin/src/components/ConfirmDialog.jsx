@@ -1,5 +1,5 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
-import { FaTrash } from "react-icons/fa";
+import { Trash2 } from "lucide-react";
 
 function ConfirmDialog({
   children,
@@ -19,7 +19,7 @@ function ConfirmDialog({
 
         <AlertDialog.Content className="fixed left-1/2 top-1/2 z-80 w-[92vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900">
           <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400">
-            <FaTrash />
+            <Trash2 />
           </div>
 
           <AlertDialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
@@ -56,3 +56,4 @@ function ConfirmDialog({
 }
 
 export default ConfirmDialog;
+

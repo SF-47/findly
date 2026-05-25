@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  FaEllipsisV,
-  FaMapMarkerAlt,
-  FaPen,
-  FaTrash,
-  FaUniversity,
-} from "react-icons/fa";
+import { MapPin, MoreVertical, Pencil, Trash2, University } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 import UniversityFormModal from "./UniversityFormModal";
@@ -59,7 +53,7 @@ function UniversityCard({ university, onRefresh }) {
             }}
             className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
           >
-            <FaEllipsisV size={14} />
+            <MoreVertical size={14} />
           </button>
 
           {showMenu && (
@@ -72,7 +66,7 @@ function UniversityCard({ university, onRefresh }) {
                 }}
                 className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700 cursor-pointer"
               >
-                <FaPen size={12} />
+                <Pencil size={12} />
                 Edit
               </button>
 
@@ -88,7 +82,7 @@ function UniversityCard({ university, onRefresh }) {
                   type="button"
                   className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
                 >
-                  <FaTrash size={12} />
+                  <Trash2 size={12} />
                   Delete
                 </button>
               </ConfirmDialog>
@@ -98,12 +92,12 @@ function UniversityCard({ university, onRefresh }) {
 
         <div className="mt-7 space-y-3 text-sm text-gray-600 dark:text-gray-300">
           <div className="flex items-center gap-3">
-            <FaUniversity className="text-blue-500" />
+            <University className="text-blue-500" />
             <span className="line-clamp-1">{university.fullName}</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <FaMapMarkerAlt className="text-blue-500" />
+            <MapPin className="text-blue-500" />
             <span>{university.branch} Branch</span>
           </div>
         </div>
@@ -144,3 +138,5 @@ function UniversityCard({ university, onRefresh }) {
 }
 
 export default UniversityCard;
+
+

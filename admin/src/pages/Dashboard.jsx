@@ -1,19 +1,13 @@
-import {
-  FaUsers,
-  FaUserCheck,
-  FaUserClock,
-  FaBoxOpen,
-  FaClipboardCheck,
-  FaSearch,
-  FaTags,
-  FaSyncAlt,
-  FaUniversity,
-} from "react-icons/fa";
+import { ClipboardCheck, PackageOpen, RefreshCw, Search, Tags, University, UserCheck, Clock3, Users } from "lucide-react";
 
 import DashCard from "../components/Dashboard/DashCard";
 import TableSkeleton from "../components/Dashboard/TableSkeleton";
 import axiosClient from "../api/axiosClient";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import DashCardSkeleton from "../components/Dashboard/DashCardSkeleton";
+
+
 
 function Dashboard() {
   const [statsData, setStatsData] = useState({
@@ -25,11 +19,32 @@ function Dashboard() {
     foundItems: 0,
     possibleMatches: 0,
     totalUniversities: 0,
-  }); //7atyton kermel ykoon al response 2deme
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   async function fetchDashboardSummary() {
-    var response = await axiosClient.get("/dashboard/summary");
-    setStatsData(response.data);
+    try {
+      setIsLoading(true);
+
+      const response = await axiosClient.get("/dashboard/summary");
+
+      setStatsData({
+        totalStudents: response.data.totalStudents ?? 0,
+        verifiedStudents: response.data.verifiedStudents ?? 0,
+        pendingStudents: response.data.pendingStudents ?? 0,
+        totalCategories: response.data.totalCategories ?? 0,
+        lostItems: response.data.lostItems ?? 0,
+        foundItems: response.data.foundItems ?? 0,
+        possibleMatches: response.data.possibleMatches ?? 0,
+        totalUniversities: response.data.totalUniversities ?? 0,
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load dashboard data.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -41,49 +56,49 @@ function Dashboard() {
     {
       label: "Total Students",
       value: statsData.totalStudents,
-      icon: <FaUsers />,
+      icon: <Users />,
       bgColor: "bg-blue-600",
     },
     {
       label: "Verified Students",
       value: statsData.verifiedStudents,
-      icon: <FaUserCheck />,
+      icon: <UserCheck />,
       bgColor: "bg-green-600",
     },
     {
       label: "Pending Students",
       value: statsData.pendingStudents,
-      icon: <FaUserClock />,
+      icon: <Clock3 />,
       bgColor: "bg-yellow-600",
     },
     {
       label: "Categories",
       value: statsData.totalCategories,
-      icon: <FaTags />,
+      icon: <Tags />,
       bgColor: "bg-indigo-600",
     },
     {
       label: "Lost Items",
       value: statsData.lostItems,
-      icon: <FaBoxOpen />,
+      icon: <PackageOpen />,
       bgColor: "bg-red-600",
     },
     {
       label: "Found Items",
       value: statsData.foundItems,
-      icon: <FaClipboardCheck />,
+      icon: <ClipboardCheck />,
       bgColor: "bg-emerald-600",
     },
     {
       label: "Possible Matches",
       value: statsData.possibleMatches,
-      icon: <FaSearch />,
+      icon: <Search />,
       bgColor: "bg-purple-600",
     },
     {
-      label: "Universities ",
+      label: "Universities",
       value: statsData.totalUniversities,
-      icon: <FaUniversity />,
+      icon: <University />,
       bgColor: "bg-cyan-600",
     },
   ];
@@ -102,22 +117,31 @@ function Dashboard() {
           </p>
         </div>
 
-        <button className="flex w-fit items-center gap-3 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg duration-300 hover:from-blue-600 hover:to-indigo-700">
-          <FaSyncAlt size={16} />
-          Refresh
+        <button
+          type="button"
+          onClick={fetchDashboardSummary}
+          disabled={isLoading}
+          className="flex w-fit cursor-pointer items-center gap-3 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg duration-300 hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+          {isLoading ? "Refreshing..." : "Refresh"}
         </button>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {stats.map((stat) => (
-          <DashCard
-            key={stat.label}
-            icon={stat.icon}
-            label={stat.label}
-            value={stat.value}
-            bgColor={stat.bgColor}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 8 }).map((_, index) => (
+              <DashCardSkeleton key={index} />
+            ))
+          : stats.map((stat) => (
+              <DashCard
+                key={stat.label}
+                icon={stat.icon}
+                label={stat.label}
+                value={stat.value}
+                bgColor={stat.bgColor}
+              />
+            ))}
       </div>
 
       <div className="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -150,3 +174,5 @@ function Dashboard() {
 }
 
 export default Dashboard;
+
+

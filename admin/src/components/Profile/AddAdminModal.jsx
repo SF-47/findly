@@ -1,18 +1,7 @@
 import axiosClient from "../../api/axiosClient";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import {
-  FaEnvelope,
-  FaLock,
-  FaPlus,
-  FaTimes,
-  FaUserShield,
-  FaUser,
-  FaPhone,
-  FaUniversity,
-  FaChevronRight,
-  FaChevronDown,
-} from "react-icons/fa";
+import { ChevronDown, ChevronRight, LockKeyhole, Mail, Phone, Plus, ShieldUser, University, User, X } from "lucide-react";
 
 function AddAdminModal({ onClose, onAdminAdded, universities }) {
   const [inputs, setInputs] = useState({
@@ -171,12 +160,12 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
           disabled={isLoading}
           className="absolute right-5 top-5 rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-zinc-800 dark:hover:text-white"
         >
-          <FaTimes />
+          <X />
         </button>
 
         <div className="mb-6 flex items-center gap-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-r from-blue-500 to-indigo-600 text-xl text-white shadow-md">
-            <FaUserShield />
+            <ShieldUser />
           </div>
 
           <div>
@@ -196,7 +185,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  <FaUser className="text-blue-600 dark:text-blue-400" />
+                  <User className="text-blue-600 dark:text-blue-400" />
                   Full Name
                 </label>
 
@@ -231,7 +220,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
 
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  <FaEnvelope className="text-blue-600 dark:text-blue-400" />
+                  <Mail className="text-blue-600 dark:text-blue-400" />
                   Email
                 </label>
 
@@ -266,7 +255,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
 
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  <FaPhone className="text-blue-600 dark:text-blue-400" />
+                  <Phone className="text-blue-600 dark:text-blue-400" />
                   Phone
                 </label>
 
@@ -304,7 +293,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
             <div className="space-y-4">
               <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  <FaLock className="text-blue-600 dark:text-blue-400" />
+                  <LockKeyhole className="text-blue-600 dark:text-blue-400" />
                   Password
                 </label>
 
@@ -339,7 +328,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
 
               <div className="relative">
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
-                  <FaUniversity className="text-blue-600 dark:text-blue-400" />
+                  <University className="text-blue-600 dark:text-blue-400" />
                   University
                 </label>
 
@@ -373,9 +362,9 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
                 </select>
 
                 {!clickedUniversity ? (
-                  <FaChevronRight className="pointer-events-none absolute right-4 top-11 text-sm text-gray-400 dark:text-white" />
+                  <ChevronRight className="pointer-events-none absolute right-4 top-11 text-sm text-gray-400 dark:text-white" />
                 ) : (
-                  <FaChevronDown className="pointer-events-none absolute right-4 top-11 text-sm text-gray-400 dark:text-white" />
+                  <ChevronDown className="pointer-events-none absolute right-4 top-11 text-sm text-gray-400 dark:text-white" />
                 )}
 
                 {errors.universityIdError && (
@@ -414,7 +403,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
               disabled={isLoading}
               className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <FaPlus />
+              <Plus />
               {isLoading ? "Adding..." : "Add admin"}
             </button>
           </div>
@@ -425,3 +414,5 @@ function AddAdminModal({ onClose, onAdminAdded, universities }) {
 }
 
 export default AddAdminModal;
+
+
