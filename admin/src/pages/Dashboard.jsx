@@ -7,114 +7,84 @@ import {
   FaSearch,
   FaTags,
   FaSyncAlt,
+  FaUniversity,
 } from "react-icons/fa";
 
-function DashCard({ icon, label, value, bgColor }) {
-  return (
-    <div className="group rounded-2xl border border-gray-200 bg-white p-6 text-gray-900 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900 dark:text-white">
-      <div
-        className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl text-xl text-white shadow-md ${bgColor}`}
-      >
-        {icon}
-      </div>
-
-      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-        {label}
-      </p>
-
-      <h1 className="mt-2 text-3xl font-bold">{value}</h1>
-    </div>
-  );
-}
-
-function TableSkeleton({ title, subtitle, columns }) {
-  return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-      <div className="border-b border-gray-200 px-5 py-4 dark:border-zinc-700">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-          {title}
-        </h2>
-
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {subtitle}
-        </p>
-      </div>
-
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="border-b border-gray-200 text-left text-xs uppercase text-gray-500 dark:border-zinc-700 dark:text-gray-400">
-            {columns.map((column) => (
-              <th key={column} className="px-5 py-4">
-                {column}
-              </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td
-              colSpan={columns.length}
-              className="px-5 py-12 text-center text-sm text-gray-500 dark:text-gray-400"
-            >
-              No data loaded yet.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-}
+import DashCard from "../components/Dashboard/DashCard";
+import TableSkeleton from "../components/Dashboard/TableSkeleton";
+import axiosClient from "../api/axiosClient";
+import { useEffect, useState } from "react";
 
 function Dashboard() {
+  const [statsData, setStatsData] = useState({
+    totalStudents: 0,
+    verifiedStudents: 0,
+    pendingStudents: 0,
+    totalCategories: 0,
+    lostItems: 0,
+    foundItems: 0,
+    possibleMatches: 0,
+    totalUniversities: 0,
+  }); //7atyton kermel ykoon al response 2deme
+
+  async function fetchDashboardSummary() {
+    var response = await axiosClient.get("/dashboard/summary");
+    setStatsData(response.data);
+  }
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchDashboardSummary();
+  }, []);
+
   const stats = [
     {
       label: "Total Students",
-      value: "--",
+      value: statsData.totalStudents,
       icon: <FaUsers />,
       bgColor: "bg-blue-600",
     },
     {
       label: "Verified Students",
-      value: "--",
+      value: statsData.verifiedStudents,
       icon: <FaUserCheck />,
       bgColor: "bg-green-600",
     },
     {
       label: "Pending Students",
-      value: "--",
+      value: statsData.pendingStudents,
       icon: <FaUserClock />,
       bgColor: "bg-yellow-600",
     },
     {
       label: "Categories",
-      value: "--",
+      value: statsData.totalCategories,
       icon: <FaTags />,
       bgColor: "bg-indigo-600",
     },
     {
       label: "Lost Items",
-      value: "--",
+      value: statsData.lostItems,
       icon: <FaBoxOpen />,
       bgColor: "bg-red-600",
     },
     {
       label: "Found Items",
-      value: "--",
+      value: statsData.foundItems,
       icon: <FaClipboardCheck />,
       bgColor: "bg-emerald-600",
     },
     {
       label: "Possible Matches",
-      value: "--",
+      value: statsData.possibleMatches,
       icon: <FaSearch />,
       bgColor: "bg-purple-600",
     },
     {
-      label: "Possible ",
-      value: "--",
-      icon: <FaSearch />,
-      bgColor: "bg-purple-600",
+      label: "Universities ",
+      value: statsData.totalUniversities,
+      icon: <FaUniversity />,
+      bgColor: "bg-cyan-600",
     },
   ];
 

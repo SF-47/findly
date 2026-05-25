@@ -3,6 +3,7 @@ using backend.Data;
 using backend.Services.Admins;
 using backend.Services.Auth;
 using backend.Services.Categories;
+using backend.Services.Dashboard;
 using backend.Services.FoundItems;
 using backend.Services.Jwt;
 using backend.Services.LostItems;
@@ -30,7 +31,9 @@ builder.Services.AddScoped<IFoundItemService, FoundItemsServices>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUniversityService, UniversityService>();
+builder.Services.AddScoped<IDashboardService,DashboardService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
