@@ -32,3 +32,6 @@ function UniversitiesToolbar({ search, setSearch }) {
 
 export default UniversitiesToolbar;
 
+
+
+

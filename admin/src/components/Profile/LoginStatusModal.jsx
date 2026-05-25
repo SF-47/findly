@@ -31,7 +31,7 @@ function LoginStatusModal({ onClose }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm lg:left-72">
       <div className="relative w-full max-w-lg rounded-3xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
         <button
           type="button"
@@ -112,4 +112,7 @@ function LoginStatusModal({ onClose }) {
 }
 
 export default LoginStatusModal;
+
+
+
 

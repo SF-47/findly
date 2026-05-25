@@ -1,5 +1,17 @@
-import { CircleUserRound, ClipboardCheck, House, List, LogOut, PackageOpen, Search, University, Users } from "lucide-react";
+import {
+  CircleUserRound,
+  ClipboardCheck,
+  House,
+  List,
+  LogOut,
+  PackageOpen,
+  RefreshCw,
+  Search,
+  University,
+  Users,
+} from "lucide-react";
 
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { isOwner } from "../../utils/auth";
 
@@ -14,7 +26,7 @@ function SidebarButton({
   return (
     <button
       onClick={() => navigate(destination)}
-      className={`flex w-full items-center gap-3 rounded-lg p-3 text-start font-mono transition-colors  cursor-pointer ${
+      className={`flex w-full items-center gap-3 rounded-lg p-3 text-start transition-colors  cursor-pointer ${
         activeButton === id
           ? "bg-blue-600 text-white dark:bg-blue-500 dark:text-white"
           : "text-gray-700 hover:bg-gray-200 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white"
@@ -30,6 +42,7 @@ export default function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const owner = isOwner();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const activeButton = getActiveButton(location.pathname);
 
@@ -47,9 +60,13 @@ export default function Sidebar() {
   }
 
   function handleLogout() {
+    setIsLoggingOut(true);
     localStorage.removeItem("admin");
     sessionStorage.removeItem("admin");
-    navigate("/", { replace: true }); //replace: true so after logout the user cannot click browser Back and visually return to the dashboard page
+
+    setTimeout(() => {
+      navigate("/", { replace: true }); 
+    }, 250);
   }
 
   return (
@@ -76,7 +93,7 @@ export default function Sidebar() {
             Main Menu
           </p>
 
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             <SidebarButton
               id="dashboard"
               icon={<House size={20} />}
@@ -160,16 +177,24 @@ export default function Sidebar() {
           />
 
           <button
-            className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start font-mono text-white transition-colors hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
+            className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start text-white transition-colors hover:bg-red-700 disabled:opacity-70 dark:bg-red-700 dark:hover:bg-red-600"
             onClick={handleLogout}
+            disabled={isLoggingOut}
           >
-            <LogOut size={20} />
-            <span>Logout</span>
+            {isLoggingOut ? (
+              <RefreshCw size={20} className="animate-spin" />
+            ) : (
+              <LogOut size={20} />
+            )}
+            <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
           </button>
         </div>
       </div>
     </aside>
   );
 }
+
+
+
 
 

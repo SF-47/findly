@@ -122,3 +122,6 @@ function ItemCard({ type }) {
 
 export default ItemCard;
 
+
+
+

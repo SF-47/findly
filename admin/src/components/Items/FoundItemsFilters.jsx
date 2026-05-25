@@ -102,3 +102,6 @@ function FoundItemsFilter({ onClose }) {
 
 export default FoundItemsFilter;
 
+
+
+

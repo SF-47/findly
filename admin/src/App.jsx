@@ -1,4 +1,8 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { MantineProvider } from "@mantine/core";
+import "@mantine/core/styles.css";
+
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
@@ -8,13 +12,20 @@ import FoundItems from "./pages/Found-Items";
 import Matches from "./pages/Matches";
 import Profile from "./pages/Profile";
 import LoginPage from "./pages/LoginPage";
-import { Toaster } from "react-hot-toast";
-import ProtectedRoute from "./components/ProtectedRoute";
 import Universities from "./pages/Universities";
-import OwnerRoute from "./components/OwnerRoute";
 import Forbidden from "./pages/Forbidden";
 
+import { Toaster } from "react-hot-toast";
+import ProtectedRoute from "./components/ProtectedRoute";
+import OwnerRoute from "./components/OwnerRoute";
+
+function getCurrentTheme() {
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
+
 function AdminLayout() {
+  const location = useLocation();
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-100 dark:bg-zinc-950">
@@ -28,35 +39,33 @@ function AdminLayout() {
             },
           }}
         />
+
         <Sidebar />
 
-        <main className="ml-72 p-8 text-gray-900 dark:text-white">
+        <main
+          key={location.pathname}
+          className="animate-page-fade-in ml-72 p-8 text-gray-900 dark:text-white"
+        >
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/students" element={<Students />} />
+
             <Route
-              path="universities"
+              path="/universities"
               element={
-                <ProtectedRoute>
-                  <OwnerRoute>
-                    <Universities />
-                  </OwnerRoute>
-                </ProtectedRoute>
+                <OwnerRoute>
+                  <Universities />
+                </OwnerRoute>
               }
             />
+
             <Route path="/categories" element={<Categories />} />
             <Route path="/lost-items" element={<LostItems />} />
             <Route path="/found-items" element={<FoundItems />} />
             <Route path="/matches" element={<Matches />} />
             <Route path="/profile" element={<Profile />} />
-            <Route
-              path="/404"
-              element={
-                <ProtectedRoute>
-                  <Forbidden />
-                </ProtectedRoute>
-              }
-            />
+
+            <Route path="/404" element={<Forbidden />} />
           </Routes>
         </main>
       </div>
@@ -65,10 +74,42 @@ function AdminLayout() {
 }
 
 export default function App() {
+  const [mantineTheme, setMantineTheme] = useState(getCurrentTheme());
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMantineTheme("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      setMantineTheme("light");
+    }
+
+    const observer = new MutationObserver(() => {
+      const currentTheme = getCurrentTheme();
+      setMantineTheme(currentTheme);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/*" element={<AdminLayout />} />
-    </Routes>
+    <MantineProvider forceColorScheme={mantineTheme}>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/*" element={<AdminLayout />} />
+      </Routes>
+    </MantineProvider>
   );
 }
+
+
+

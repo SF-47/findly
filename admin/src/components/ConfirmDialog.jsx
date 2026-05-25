@@ -1,5 +1,25 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
-import { Trash2 } from "lucide-react";
+import { CircleCheck, Info, Trash2 } from "lucide-react";
+
+const dialogVariants = {
+  destructive: {
+    icon: <Trash2 />,
+    iconClass: "bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400",
+    buttonClass: "bg-red-600 text-white hover:bg-red-700",
+  },
+  success: {
+    icon: <CircleCheck />,
+    iconClass:
+      "bg-green-100 text-green-600 dark:bg-green-950/40 dark:text-green-400",
+    buttonClass: "bg-green-600 text-white hover:bg-green-700",
+  },
+  default: {
+    icon: <Info />,
+    iconClass:
+      "bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+    buttonClass: "bg-blue-600 text-white hover:bg-blue-700",
+  },
+};
 
 function ConfirmDialog({
   children,
@@ -9,17 +29,22 @@ function ConfirmDialog({
   cancelText = "Cancel",
   onConfirm,
   onCancel,
+  variant = "destructive",
 }) {
+  const styles = dialogVariants[variant] || dialogVariants.default;
+
   return (
     <AlertDialog.Root>
       <AlertDialog.Trigger asChild>{children}</AlertDialog.Trigger>
 
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-70 bg-black/45 backdrop-blur-sm" />
+        <AlertDialog.Overlay className="fixed inset-0 z-70 bg-black/45 backdrop-blur-sm lg:left-72" />
 
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-80 w-[92vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900">
-          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400">
-            <Trash2 />
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-80 w-[92vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900 lg:left-[calc(50%+9rem)]">
+          <div
+            className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${styles.iconClass}`}
+          >
+            {styles.icon}
           </div>
 
           <AlertDialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
@@ -43,7 +68,7 @@ function ConfirmDialog({
             <AlertDialog.Action asChild>
               <button
                 onClick={onConfirm}
-                className="w-full rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700"
+                className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition ${styles.buttonClass}`}
               >
                 {confirmText}
               </button>
@@ -56,4 +81,7 @@ function ConfirmDialog({
 }
 
 export default ConfirmDialog;
+
+
+
 

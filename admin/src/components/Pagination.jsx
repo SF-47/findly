@@ -40,3 +40,6 @@ function Pagination({ page, totalItems, rowsPerPage, setPage }) {
 
 export default Pagination;
 
+
+
+
