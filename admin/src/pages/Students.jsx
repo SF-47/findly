@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronDown, ChevronRight, Plus, UserCheck, Clock3, Users } from "lucide-react";
+import { CalendarDays, Plus, UserCheck, Clock3, Users } from "lucide-react";
 import { useState, useEffect } from "react";
 import axiosClient from "../api/axiosClient";
 import AddStudentModal from "../components/Students/AddStudentModal";
@@ -7,6 +7,7 @@ import StudentDetailsModal from "../components/Students/StudentDetailModal";
 import Pagination from "../components/Pagination";
 import { getStoredAdmin, isOwner } from "../../utils/auth";
 import StudentsStatCardSkeleton from "../components/Students/StudentsStatCardSkeleton";
+import PrimeDropdown from "../components/PrimeDropdown";
 
 function StatsCard({ title, subtitle, value, icon, bgColor, isLoading }) {
   return (
@@ -58,11 +59,6 @@ function Students() {
   });
 
   const [selectedStudent, setSelectedStudent] = useState(null);
-  const [clicked, setClicked] = useState({
-    uniId: false,
-    status: false,
-    date: false,
-  });
   const [page, setPage] = useState(1);
   const rowsPerPage = 7;
 
@@ -276,100 +272,73 @@ function Students() {
                 }))
               }
               placeholder="Name, email, or university ID..."
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
             />
           </div>
           {owner && (
-            <div className="relative">
+            <div>
               <label className="mb-1 block text-sm text-start font-medium text-gray-600 dark:text-gray-300">
                 University Name
               </label>
 
-              <select
+              <PrimeDropdown
                 value={filters.uniId}
-                onClick={() =>
-                  setClicked((prev) => ({ ...prev, uniId: !prev.uniId }))
-                }
-                onChange={(e) =>
+                onChange={(value) =>
                   setFilters((prev) => ({
                     ...prev,
-                    uniId: e.target.value,
+                    uniId: value,
                   }))
                 }
-                className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-              >
-                <option value="">All</option>
-                {universities.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.shortName} - {u.branch}
-                  </option>
-                ))}
-              </select>
-              {!clicked.uniId ? (
-                <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-              ) : (
-                <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-              )}
+                placeholder="All"
+                options={universities.map((u) => ({
+                  value: u.id,
+                  label: `${u.shortName} - ${u.branch}`,
+                }))}
+              />
             </div>
           )}
 
-          <div className="relative">
+          <div>
             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Verification Status
             </label>
 
-            <select
+            <PrimeDropdown
               value={filters.verificationStatus}
-              onClick={() =>
-                setClicked((prev) => ({ ...prev, status: !prev.status }))
-              }
-              onChange={(e) =>
+              onChange={(value) =>
                 setFilters((prev) => ({
                   ...prev,
-                  verificationStatus: e.target.value,
+                  verificationStatus: value,
                 }))
               }
-              className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">All Students</option>
-              <option value="verified">Verified</option>
-              <option value="pending">Pending</option>
-            </select>
-            {!clicked.status ? (
-              <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-            ) : (
-              <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-            )}
+              placeholder="All Students"
+              options={[
+                { value: "verified", label: "Verified" },
+                { value: "pending", label: "Pending" },
+              ]}
+            />
           </div>
 
-          <div className="relative">
+          <div>
             <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Registered Date
             </label>
 
-            <select
+            <PrimeDropdown
               value={filters.registeredDate}
-              onClick={() =>
-                setClicked((prev) => ({ ...prev, date: !prev.date }))
-              }
-              onChange={(e) =>
+              onChange={(value) =>
                 setFilters((prev) => ({
                   ...prev,
-                  registeredDate: e.target.value,
+                  registeredDate: value,
                 }))
               }
-              className="w-full rounded-xl border appearance-none border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-            >
-              <option value="">All Dates</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-            {!clicked.date ? (
-              <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-            ) : (
-              <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-            )}
+              placeholder="All Dates"
+              options={[
+                { value: "today", label: "Today" },
+                { value: "week", label: "This Week" },
+                { value: "month", label: "This Month" },
+              ]}
+            />
           </div>
         </div>
         <table className="w-full border-collapse">

@@ -15,7 +15,13 @@ function ItemCard({ type, item, students }) {
   const [showMenu, setShowMenu] = useState(false);
 
   const isLost = type === "lost";
-  const studentName = students.find((student) => student.id == item.studentId);
+  const studentName = students?.find(
+    (student) => student.id == item?.studentId,
+  );
+  function formatDate(date) {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString();
+  }
 
   const accent = isLost
     ? {
@@ -47,7 +53,7 @@ function ItemCard({ type, item, students }) {
 
             <div>
               <h2 className="mt-3 text-xl font-bold text-white">
-                {item.itemName}
+                {item?.itemName || "Untitled Item"}
               </h2>
             </div>
           </div>
@@ -86,7 +92,7 @@ function ItemCard({ type, item, students }) {
             </p>
 
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
-              {item.description}
+              {item?.description || "No description available."}
             </p>
           </div>
 
@@ -100,22 +106,26 @@ function ItemCard({ type, item, students }) {
         <div className="mt-5 space-y-3 text-sm text-gray-600 dark:text-gray-300">
           <div className="flex items-center gap-3">
             <User className="text-blue-500" />
-            <span>{studentName.fullName}</span>
+            <span>{studentName?.fullName || "Unknown student"}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <MapPin className="text-blue-500" />
-            <span>{item.location}</span>
+            <span>{item?.location || "No location"}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Palette className="text-blue-500" />
-            <span>{item.color}</span>
+            <span>{item?.color || "No color"}</span>
           </div>
 
           <div className="flex items-center gap-3">
             <Calendar className="text-blue-500" />
-            <span>{isLost ? item.lostDate : "Found Date"}</span>
+            <span>
+              {isLost
+                ? formatDate(item?.lostDate) || "No date"
+                : formatDate(item?.foundDate) || "No date"}
+            </span>
           </div>
         </div>
 

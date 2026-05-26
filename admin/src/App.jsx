@@ -25,10 +25,31 @@ function getCurrentTheme() {
 
 function AdminLayout() {
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--admin-sidebar-offset",
+      isSidebarOpen ? "18rem" : "0px",
+    );
+
+    return () => {
+      document.documentElement.style.removeProperty("--admin-sidebar-offset");
+    };
+  }, [isSidebarOpen]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [location.pathname]);
 
   return (
     <ProtectedRoute>
-      <div className="admin-animated-bg relative isolate min-h-screen overflow-hidden bg-gray-100 dark:bg-zinc-950">
+      <div
+        className="admin-animated-bg relative isolate min-h-screen overflow-hidden bg-gray-100 dark:bg-zinc-950"
+        style={{
+          "--admin-sidebar-offset": isSidebarOpen ? "18rem" : "0px",
+        }}
+      >
         <Toaster
           position="top-center"
           toastOptions={{
@@ -40,11 +61,16 @@ function AdminLayout() {
           }}
         />
 
-        <Sidebar />
+        <Sidebar
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen((prev) => !prev)}
+        />
 
         <main
           key={location.pathname}
-          className="animate-page-fade-in relative z-10 ml-72 min-h-screen p-8 text-gray-900 dark:text-white"
+          className={`animate-page-fade-in relative z-10 min-h-screen p-8 text-gray-900 transition-[margin] duration-300 dark:text-white ${
+            isSidebarOpen ? "ml-72" : "ml-16"
+          }`}
         >
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />

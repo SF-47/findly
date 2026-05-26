@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, IdCard, Image, Mail, Phone, Plus, University, User, X } from "lucide-react";
+import { IdCard, Image, Mail, Phone, Plus, University, User, X } from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
+import PrimeDropdown from "../PrimeDropdown";
 
 function FormInput({
   icon,
@@ -26,7 +27,7 @@ function FormInput({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+        className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
           errorMessage
             ? "border-red-400 dark:border-red-500"
             : "border-gray-200 dark:border-zinc-700"
@@ -65,7 +66,6 @@ function AddStudentModal({
     universityCardImageUrlError: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [clicked, setClicked] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -214,7 +214,7 @@ function AddStudentModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm lg:left-72">
+    <div className="admin-modal-overlay fixed inset-y-0 right-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
       <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
         <button
           type="button"
@@ -276,20 +276,20 @@ function AddStudentModal({
             />
 
             {owner ? (
-              <div className="relative flex flex-col">
+              <div className="flex flex-col">
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <span className="text-blue-600 dark:text-blue-400">
                     <University />
                   </span>
                   University
                 </label>
-                <select
+
+                <PrimeDropdown
                   value={formData.universityId}
-                  onClick={() => setClicked((prev) => !prev)}
-                  onChange={(e) => {
+                  onChange={(value) => {
                     setFormData((prev) => ({
                       ...prev,
-                      universityId: e.target.value,
+                      universityId: value,
                     }));
 
                     setInputErrorMessage((prev) => ({
@@ -297,20 +297,18 @@ function AddStudentModal({
                       universityIdError: "",
                     }));
                   }}
-                  className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                >
-                  <option value="">Select university</option>
+                  placeholder="Select university"
+                  invalid={Boolean(inputErrorMessage.universityIdError)}
+                  options={universities.map((u) => ({
+                    value: u.id,
+                    label: `${u.shortName} (${u.branch})`,
+                  }))}
+                />
 
-                  {universities.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.shortName} ({u.branch})
-                    </option>
-                  ))}
-                </select>
-                {!clicked ? (
-                  <ChevronRight className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
-                ) : (
-                  <ChevronDown className="pointer-events-none absolute right-3 top-10.5 dark:text-white text-gray-400 text-sm" />
+                {inputErrorMessage.universityIdError && (
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                    {inputErrorMessage.universityIdError}
+                  </p>
                 )}
               </div>
             ) : (

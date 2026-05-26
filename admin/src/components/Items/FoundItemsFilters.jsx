@@ -1,6 +1,14 @@
-import { ChevronDown, ClipboardCheck, Search, X } from "lucide-react";
+import { useState } from "react";
+import { ClipboardCheck, Search, X } from "lucide-react";
+import PrimeDropdown from "../PrimeDropdown";
 
 function FoundItemsFilter({ onClose }) {
+  const [filters, setFilters] = useState({
+    category: "",
+    status: "",
+    foundDate: "",
+  });
+
   return (
     <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
       <div className="mb-5 flex items-center justify-between">
@@ -38,17 +46,19 @@ function FoundItemsFilter({ onClose }) {
             Category
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Categories</option>
-              <option value="electronics">Electronics</option>
-              <option value="wallets">Wallets</option>
-              <option value="keys">Keys</option>
-              <option value="books">Books</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.category}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, category: value }))
+            }
+            placeholder="All Categories"
+            options={[
+              { value: "electronics", label: "Electronics" },
+              { value: "wallets", label: "Wallets" },
+              { value: "keys", label: "Keys" },
+              { value: "books", label: "Books" },
+            ]}
+          />
         </div>
 
         <div>
@@ -56,16 +66,18 @@ function FoundItemsFilter({ onClose }) {
             Status
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Status</option>
-              <option value="open">Open</option>
-              <option value="matched">Matched</option>
-              <option value="closed">Closed</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.status}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, status: value }))
+            }
+            placeholder="All Status"
+            options={[
+              { value: "open", label: "Open" },
+              { value: "matched", label: "Matched" },
+              { value: "closed", label: "Closed" },
+            ]}
+          />
         </div>
 
         <div>
@@ -73,16 +85,18 @@ function FoundItemsFilter({ onClose }) {
             Found Date
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Dates</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.foundDate}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, foundDate: value }))
+            }
+            placeholder="All Dates"
+            options={[
+              { value: "today", label: "Today" },
+              { value: "week", label: "This Week" },
+              { value: "month", label: "This Month" },
+            ]}
+          />
         </div>
       </div>
 

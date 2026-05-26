@@ -62,7 +62,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
   const adminRole = filteredAdmin?.role;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm lg:left-72">
+    <div className="admin-modal-overlay fixed inset-y-0 right-0 z-50 flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm">
       <div className="w-full max-w-lg overflow-hidden rounded-3xl border border-white/[0.07] bg-zinc-900 shadow-2xl">
 
         {/* Header */}

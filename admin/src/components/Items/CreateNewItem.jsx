@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   Calendar,
+  ClipboardCheck,
   FileText,
   Image,
   MapPin,
@@ -11,6 +12,8 @@ import {
   User,
   X,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import PrimeDropdown from "../PrimeDropdown";
 
 function FieldLabel({ icon, children }) {
   return (
@@ -31,7 +34,13 @@ function CreateLostItemModal({
   students = [],
   categories = [],
   isSubmitting = false,
+  type = "lost",
 }) {
+  const isFound = type === "found";
+  const dateFieldName = isFound ? "foundDate" : "lostDate";
+  const itemLabel = isFound ? "Found Item" : "Lost Item";
+  const itemLabelLower = isFound ? "found item" : "lost item";
+
   const [formData, setFormData] = useState({
     studentId: "",
     categoryId: "",
@@ -39,6 +48,7 @@ function CreateLostItemModal({
     description: "",
     color: "",
     location: "",
+    foundDate: "",
     lostDate: "",
     imageUrl: "",
   });
@@ -57,6 +67,11 @@ function CreateLostItemModal({
   async function handleSubmit(e) {
     e.preventDefault();
 
+    if (!formData.studentId || !formData.categoryId) {
+      toast.error("Please select a student and category.");
+      return;
+    }
+
     const requestBody = {
       studentId: formData.studentId,
       categoryId: Number(formData.categoryId),
@@ -64,7 +79,7 @@ function CreateLostItemModal({
       description: formData.description,
       color: formData.color,
       location: formData.location,
-      lostDate: formData.lostDate,
+      [dateFieldName]: formData[dateFieldName],
       imageUrl: formData.imageUrl,
     };
 
@@ -72,7 +87,7 @@ function CreateLostItemModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm lg:left-72">
+    <div className="admin-modal-overlay fixed inset-y-0 right-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-2xl rounded-3xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
         <button
           type="button"
@@ -85,16 +100,16 @@ function CreateLostItemModal({
 
         <div className="mb-4 flex items-center gap-3.5">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-r from-blue-500 to-indigo-600 text-xl text-white shadow-md">
-            <PackageOpen />
+            {isFound ? <ClipboardCheck /> : <PackageOpen />}
           </div>
 
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Create Lost Item
+              Create {itemLabel}
             </h1>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Add a new lost item report submitted by a student.
+              Add a new {itemLabelLower} report submitted by a student.
             </p>
           </div>
         </div>
@@ -103,40 +118,34 @@ function CreateLostItemModal({
           <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
             <div>
               <FieldLabel icon={<User />}>Student</FieldLabel>
-              <select
-                name="studentId"
+              <PrimeDropdown
                 value={formData.studentId}
-                onChange={handleChange}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, studentId: value }))
+                }
                 disabled={isSubmitting}
-                className={fieldClass}
-                required
-              >
-                <option value="">Select student</option>
-                {students.map((student) => (
-                  <option key={student.id} value={student.id}>
-                    {student.fullName} - {student.universityStudentId}
-                  </option>
-                ))}
-              </select>
+                placeholder="Select student"
+                options={students.map((student) => ({
+                  value: student.id,
+                  label: `${student.fullName} - ${student.universityStudentId}`,
+                }))}
+              />
             </div>
 
             <div>
               <FieldLabel icon={<Tag />}>Category</FieldLabel>
-              <select
-                name="categoryId"
+              <PrimeDropdown
                 value={formData.categoryId}
-                onChange={handleChange}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, categoryId: value }))
+                }
                 disabled={isSubmitting}
-                className={fieldClass}
-                required
-              >
-                <option value="">Select category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+                placeholder="Select category"
+                options={categories.map((category) => ({
+                  value: category.id,
+                  label: category.name,
+                }))}
+              />
             </div>
 
             <div>
@@ -182,11 +191,13 @@ function CreateLostItemModal({
             </div>
 
             <div>
-              <FieldLabel icon={<Calendar />}>Lost Date</FieldLabel>
+              <FieldLabel icon={<Calendar />}>
+                {isFound ? "Found Date" : "Lost Date"}
+              </FieldLabel>
               <input
                 type="date"
-                name="lostDate"
-                value={formData.lostDate}
+                name={dateFieldName}
+                value={formData[dateFieldName]}
                 onChange={handleChange}
                 disabled={isSubmitting}
                 className={fieldClass}
@@ -239,7 +250,7 @@ function CreateLostItemModal({
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Plus />
-              {isSubmitting ? "Creating..." : "Create lost item"}
+              {isSubmitting ? "Creating..." : `Create ${itemLabelLower}`}
             </button>
           </div>
         </form>

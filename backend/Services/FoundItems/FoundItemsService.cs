@@ -16,12 +16,20 @@ public class FoundItemsServices : IFoundItemService
 
     public async Task<List<FoundItem>> GetAll()
     {
-        return await _db.FoundItems.ToListAsync();
+        return await _db
+            .FoundItems.Include(f => f.Student)
+            .ThenInclude(s => s.University)
+            .Include(f => f.Category)
+            .ToListAsync();
     }
 
     public async Task<FoundItem?> GetById(Guid id)
     {
-        return await _db.FoundItems.FirstOrDefaultAsync(f => f.Id == id);
+        return await _db
+            .FoundItems.Include(f => f.Student)
+            .ThenInclude(s => s.University)
+            .Include(f => f.Category)
+            .FirstOrDefaultAsync(f => f.Id == id);
     }
 
     public async Task<FoundItem> Create(CreateFoundItemRequest request)
@@ -43,7 +51,7 @@ public class FoundItemsServices : IFoundItemService
         _db.FoundItems.Add(FoundItem);
         await _db.SaveChangesAsync();
 
-        return FoundItem;
+        return await GetById(FoundItem.Id) ?? FoundItem;
     }
 
     public async Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request)

@@ -1,6 +1,13 @@
-import { ChevronDown, Search, Tags, X } from "lucide-react";
+import { useState } from "react";
+import { Search, Tags, X } from "lucide-react";
+import PrimeDropdown from "../PrimeDropdown";
 
 function CategoryFilter({ onClose }) {
+  const [filters, setFilters] = useState({
+    usage: "",
+    sortBy: "",
+  });
+
   return (
     <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
       <div className="mb-5 flex items-center justify-between">
@@ -38,15 +45,17 @@ function CategoryFilter({ onClose }) {
             Usage
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Categories</option>
-              <option value="used">Used in reports</option>
-              <option value="unused">Not used yet</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.usage}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, usage: value }))
+            }
+            placeholder="All Categories"
+            options={[
+              { value: "used", label: "Used in reports" },
+              { value: "unused", label: "Not used yet" },
+            ]}
+          />
         </div>
 
         <div>
@@ -54,17 +63,19 @@ function CategoryFilter({ onClose }) {
             Sort By
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">Default</option>
-              <option value="name-asc">Name A-Z</option>
-              <option value="name-desc">Name Z-A</option>
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.sortBy}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, sortBy: value }))
+            }
+            placeholder="Default"
+            options={[
+              { value: "name-asc", label: "Name A-Z" },
+              { value: "name-desc", label: "Name Z-A" },
+              { value: "newest", label: "Newest" },
+              { value: "oldest", label: "Oldest" },
+            ]}
+          />
         </div>
       </div>
 

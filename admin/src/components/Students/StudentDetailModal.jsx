@@ -1,8 +1,21 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, CircleCheck, IdCard, Image, Mail, Pencil, Phone, Save, Trash2, University, User, X } from "lucide-react";
+import {
+  CircleCheck,
+  IdCard,
+  Image,
+  Mail,
+  Pencil,
+  Phone,
+  Save,
+  Trash2,
+  University,
+  User,
+  X,
+} from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../ConfirmDialog";
+import PrimeDropdown from "../PrimeDropdown";
 
 function FormInput({
   icon,
@@ -58,7 +71,6 @@ function StudentDetailsModal({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [clicked, setClicked] = useState(false);
 
   const isPending = !student?.isVerified;
 
@@ -301,12 +313,12 @@ function StudentDetailsModal({
     }
   }
 
-  const selectedUniversity = universities.find(
-    (u) => u.id === formData.universityId,
-  );
+  // const selectedUniversity = universities.find(
+  //   (u) => u.id === formData.universityId,
+  // );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm lg:left-72">
+    <div className="admin-modal-overlay fixed inset-y-0 right-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
       <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
         <button
           type="button"
@@ -399,7 +411,7 @@ function StudentDetailsModal({
               errorMessage={inputErrorMessage.emailError}
             />
             {owner ? (
-              <div className="relative">
+              <div>
                 <label className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
                   <span className="text-blue-600 dark:text-blue-400">
                     <University />
@@ -407,14 +419,13 @@ function StudentDetailsModal({
                   University
                 </label>
 
-                <select
+                <PrimeDropdown
                   value={formData.universityId}
                   disabled={!isEditing}
-                  onClick={() => setClicked((prev) => !prev)}
-                  onChange={(e) => {
+                  onChange={(value) => {
                     setFormData((prev) => ({
                       ...prev,
-                      universityId: e.target.value,
+                      universityId: value,
                     }));
 
                     setInputErrorMessage((prev) => ({
@@ -422,38 +433,17 @@ function StudentDetailsModal({
                       universityIdError: "",
                     }));
                   }}
-                  className={`w-full appearance-none rounded-xl border px-3 py-2.5 text-sm text-gray-900 outline-none transition dark:text-white ${
-                    inputErrorMessage.universityIdError
-                      ? "border-red-500 bg-red-50 dark:border-red-500 dark:bg-red-950/20"
-                      : !isEditing
-                        ? "cursor-not-allowed border-gray-200 bg-gray-100 text-gray-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-gray-400"
-                        : "border-gray-200 bg-gray-50 focus:border-blue-500 dark:border-zinc-700 dark:bg-zinc-800"
-                  }`}
-                >
-                  <option value="">Select university</option>
-
-                  {universities.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.shortName} - {u.branch}
-                    </option>
-                  ))}
-                </select>
-
-                {!clicked ? (
-                  <ChevronRight className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
-                ) : (
-                  <ChevronDown className="pointer-events-none absolute right-3 top-9.5 text-sm text-gray-400 dark:text-white" />
-                )}
+                  placeholder="Select university"
+                  invalid={Boolean(inputErrorMessage.universityIdError)}
+                  options={universities.map((u) => ({
+                    value: u.id,
+                    label: `${u.shortName} - ${u.branch}`,
+                  }))}
+                />
 
                 {inputErrorMessage.universityIdError && (
                   <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
                     {inputErrorMessage.universityIdError}
-                  </p>
-                )}
-
-                {!isEditing && selectedUniversity && (
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {selectedUniversity.fullName}
                   </p>
                 )}
               </div>
@@ -606,8 +596,3 @@ function StudentDetailsModal({
 }
 
 export default StudentDetailsModal;
-
-
-
-
-

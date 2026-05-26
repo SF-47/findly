@@ -109,7 +109,11 @@ public class LostItemsController : ControllerBase
         return new FullLostItemsResponse(
             lostItem.Id,
             lostItem.StudentId,
+            lostItem.Student?.FullName ?? "Unknown student",
+            lostItem.Student?.University?.ShortName ?? "Unknown university",
+            lostItem.Student?.University?.Branch ?? "Unknown branch",
             lostItem.CategoryId,
+            lostItem.Category?.Name ?? "Unknown category",
             lostItem.ItemName,
             lostItem.Description,
             lostItem.Color,

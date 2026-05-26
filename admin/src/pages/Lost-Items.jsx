@@ -13,59 +13,67 @@ import LostItemsFilter from "../components/Items/LostItemsFilters";
 import axiosClient from "../api/axiosClient";
 import CreateLostItemModal from "../components/Items/CreateNewItem";
 import toast from "react-hot-toast";
+import ItemCardSkeleton from "./../components/Items/ItemCardSkeleton.jsx";
+import ItemStatsCardSkeleton from "../components/Items/ItemStatsCardSkeleton.jsx";
+import AllLostItems from "../components/Items/AllLostItems.jsx";
 
 function LostItems() {
   const [lostItems, setlostItems] = useState([]);
   const [students, setStudents] = useState([]);
   const [categories, setCategories] = useState([]);
+
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function fetchData() {
+    try {
+      setIsLoading(true);
+
+      const [studentResponse, lostItemsResponse, categoryResponse] =
+        await Promise.all([
+          axiosClient.get("/students"),
+          axiosClient.get("/lost-items"),
+          axiosClient.get("/categories"),
+        ]);
+
+      setStudents(studentResponse.data);
+      setlostItems(lostItemsResponse.data);
+      setCategories(categoryResponse.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load lost items.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function fetchData() {
-      try {
-        const [studentResponse, lostItemsResponse, categoryResponse] =
-          await Promise.all([
-            axiosClient.get("/students"),
-            axiosClient.get("/lost-items"),
-            axiosClient.get("/categories"),
-          ]);
-
-        if (isMounted) {
-          setStudents(studentResponse.data);
-          setlostItems(lostItemsResponse.data);
-          setCategories(categoryResponse.data);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to load lost items.");
-      }
-    }
-
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
-
-    return () => {
-      isMounted = false;
-    };
   }, []);
-
-  const [showFilters, setShowFilters] = useState(false);
 
   const openStatusItems = lostItems.filter((item) => {
     if (item.status?.toLowerCase() !== "open") {
       return false;
     }
+
     return true;
   });
+
+  const previewLostItems = lostItems.slice(0, 3);
 
   async function handleCreateLostItem(requestBody) {
     try {
       setIsSubmitting(true);
+
       await axiosClient.post("/lost-items", requestBody);
 
       const response = await axiosClient.get("/lost-items");
+
       setlostItems(response.data);
       setShowCreateModal(false);
       toast.success("Lost item created successfully.");
@@ -108,6 +116,19 @@ function LostItems() {
     },
   ];
 
+  if (showAll) {
+    return (
+      <AllLostItems
+        lostItems={lostItems}
+        students={students}
+        onBack={() => {
+          setShowAll(false);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -148,16 +169,20 @@ function LostItems() {
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => (
-          <ItemStatsCard
-            key={stat.title}
-            title={stat.title}
-            subtitle={stat.subtitle}
-            value={stat.value}
-            icon={stat.icon}
-            bgColor={stat.bgColor}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <ItemStatsCardSkeleton key={index} />
+            ))
+          : stats.map((stat) => (
+              <ItemStatsCard
+                key={stat.title}
+                title={stat.title}
+                subtitle={stat.subtitle}
+                value={stat.value}
+                icon={stat.icon}
+                bgColor={stat.bgColor}
+              />
+            ))}
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
@@ -166,13 +191,15 @@ function LostItems() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               Lost Item Reports
             </h2>
+
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Item cards will be filled later from the backend.
+              Review the latest lost item reports submitted by students.
             </p>
           </div>
 
           <div className="relative w-full md:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+
             <input
               type="text"
               placeholder="Search lost items..."
@@ -182,12 +209,43 @@ function LostItems() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {lostItems.map((item) => (
-          <span id={item.id} key={item.id}>
-            <ItemCard type="lost" item={item} students={students} />
-          </span>
-        ))}
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <ItemCardSkeleton key={index} />
+              ))
+            : previewLostItems.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  type="lost"
+                  item={item}
+                  students={students}
+                />
+              ))}
+        </div>
+
+        {!isLoading && (
+          <div className="flex flex-col items-center justify-center gap-2">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              Showing {previewLostItems.length} of {lostItems.length} lost items
+            </p>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowAll(true);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="group flex items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-500 hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-600 hover:text-white hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-900 dark:text-blue-300 dark:hover:border-transparent dark:hover:text-white"
+            >
+              View All Lost Items
+              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                →
+              </span>
+            </button>
+          </div>
+        )}
       </div>
 
       <CreateLostItemModal

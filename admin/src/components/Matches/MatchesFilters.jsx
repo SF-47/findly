@@ -1,6 +1,13 @@
-import { ChevronDown, Search, UserCheck, X } from "lucide-react";
+import { useState } from "react";
+import { Search, UserCheck, X } from "lucide-react";
+import PrimeDropdown from "../PrimeDropdown";
 
 function MatchesFilter({ onClose }) {
+  const [filters, setFilters] = useState({
+    status: "",
+    percentage: "",
+    createdDate: "",
+  });
     
   return (
     <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
@@ -39,16 +46,18 @@ function MatchesFilter({ onClose }) {
             Match Status
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Matches</option>
-              <option value="pending">Pending</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="rejected">Rejected</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.status}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, status: value }))
+            }
+            placeholder="All Matches"
+            options={[
+              { value: "pending", label: "Pending" },
+              { value: "confirmed", label: "Confirmed" },
+              { value: "rejected", label: "Rejected" },
+            ]}
+          />
         </div>
 
         <div>
@@ -56,16 +65,18 @@ function MatchesFilter({ onClose }) {
             Match Percentage
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Percentages</option>
-              <option value="90">90% and above</option>
-              <option value="75">75% and above</option>
-              <option value="50">50% and above</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.percentage}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, percentage: value }))
+            }
+            placeholder="All Percentages"
+            options={[
+              { value: "90", label: "90% and above" },
+              { value: "75", label: "75% and above" },
+              { value: "50", label: "50% and above" },
+            ]}
+          />
         </div>
 
         <div>
@@ -73,16 +84,18 @@ function MatchesFilter({ onClose }) {
             Created Date
           </label>
 
-          <div className="relative">
-            <select className="w-full appearance-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-white">
-              <option value="">All Dates</option>
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </select>
-
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400" />
-          </div>
+          <PrimeDropdown
+            value={filters.createdDate}
+            onChange={(value) =>
+              setFilters((prev) => ({ ...prev, createdDate: value }))
+            }
+            placeholder="All Dates"
+            options={[
+              { value: "today", label: "Today" },
+              { value: "week", label: "This Week" },
+              { value: "month", label: "This Month" },
+            ]}
+          />
         </div>
       </div>
 

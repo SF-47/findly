@@ -2,8 +2,6 @@ import axiosClient from "../../api/axiosClient";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import {
-  ChevronDown,
-  ChevronRight,
   LockKeyhole,
   Mail,
   Phone,
@@ -13,6 +11,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import PrimeDropdown from "../PrimeDropdown";
 
 function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
   const [inputs, setInputs] = useState({
@@ -29,7 +28,6 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
   );
 
   const [isLoading, setIsLoading] = useState(false);
-  const [clickedUniversity, setClickedUniversity] = useState(false);
 
   const [errors, setErrors] = useState({
     fullNameError: "",
@@ -167,7 +165,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm lg:left-72">
+    <div className="admin-modal-overlay fixed inset-y-0 right-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
       <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
         <button
           type="button"
@@ -219,7 +217,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                     }));
                   }}
                   placeholder="Enter admin full name"
-                  className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                  className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
                     errors.fullNameError
                       ? "border-red-400 dark:border-red-500"
                       : "border-gray-200 dark:border-zinc-700"
@@ -254,7 +252,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                     }));
                   }}
                   placeholder="admin@example.com"
-                  className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                  className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
                     errors.emailError
                       ? "border-red-400 dark:border-red-500"
                       : "border-gray-200 dark:border-zinc-700"
@@ -289,7 +287,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                     }));
                   }}
                   placeholder="03123456"
-                  className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                  className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
                     errors.phoneError
                       ? "border-red-400 dark:border-red-500"
                       : "border-gray-200 dark:border-zinc-700"
@@ -327,7 +325,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                     }));
                   }}
                   placeholder="Enter admin password"
-                  className={`w-full rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
+                  className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
                     errors.passwordError
                       ? "border-red-400 dark:border-red-500"
                       : "border-gray-200 dark:border-zinc-700"
@@ -341,19 +339,18 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                 )}
               </div>
 
-              <div className="relative">
+              <div>
                 <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
                   <University className="text-blue-600 dark:text-blue-400" />
                   University
                 </label>
 
-                <select
+                <PrimeDropdown
                   value={inputs.universityId}
-                  onClick={() => setClickedUniversity((prev) => !prev)}
-                  onChange={(e) => {
+                  onChange={(value) => {
                     setInputs((prev) => ({
                       ...prev,
-                      universityId: e.target.value,
+                      universityId: value,
                     }));
 
                     setErrors((prev) => ({
@@ -361,26 +358,13 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                       universityIdError: "",
                     }));
                   }}
-                  className={`w-full appearance-none rounded-xl border bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white ${
-                    errors.universityIdError
-                      ? "border-red-400 dark:border-red-500"
-                      : "border-gray-200 dark:border-zinc-700"
-                  }`}
-                >
-                  <option value="">Select university</option>
-
-                  {availableUniversities.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.shortName} - {u.fullName} ({u.branch})
-                    </option>
-                  ))}
-                </select>
-
-                {!clickedUniversity ? (
-                  <ChevronRight className="pointer-events-none absolute right-4 top-11 text-sm text-gray-400 dark:text-white" />
-                ) : (
-                  <ChevronDown className="pointer-events-none absolute right-4 top-11 text-sm text-gray-400 dark:text-white" />
-                )}
+                  placeholder="Select university"
+                  invalid={Boolean(errors.universityIdError)}
+                  options={availableUniversities.map((u) => ({
+                    value: u.id,
+                    label: `${u.shortName} - ${u.fullName} (${u.branch})`,
+                  }))}
+                />
 
                 {errors.universityIdError && (
                   <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
@@ -408,7 +392,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
             >
               Cancel
             </button>
@@ -416,7 +400,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-2.5 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Plus />
               {isLoading ? "Adding..." : "Add admin"}

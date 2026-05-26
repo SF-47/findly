@@ -38,9 +38,9 @@ function ConfirmDialog({
       <AlertDialog.Trigger asChild>{children}</AlertDialog.Trigger>
 
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-70 bg-black/45 backdrop-blur-sm lg:left-72" />
+        <AlertDialog.Overlay className="admin-modal-overlay fixed inset-y-0 right-0 z-70 bg-black/45 backdrop-blur-sm" />
 
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-80 w-[92vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900 lg:left-[calc(50%+9rem)]">
+        <AlertDialog.Content className="admin-confirm-dialog-content fixed top-1/2 z-80 w-[92vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900">
           <div
             className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${styles.iconClass}`}
           >

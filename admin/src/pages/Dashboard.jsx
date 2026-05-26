@@ -29,6 +29,13 @@ function Dashboard() {
     totalUniversities: 0,
   });
 
+  const [dataForTables, setDataForTables] = useState({
+    lostItemsData: [],
+    foundItemsData: [],
+    studentsData: [],
+    matchesData: [],
+  });
+
   const [isLoading, setIsLoading] = useState(false);
 
   async function fetchDashboardSummary() {
@@ -55,9 +62,31 @@ function Dashboard() {
     }
   }
 
+  async function fetchTableData() {
+    try {
+      const [lostItemsResponse, foundItemsResponse, studentsResponse] =
+        await Promise.all([
+          axiosClient.get("/lost-items"),
+          axiosClient.get("/found-items"),
+          axiosClient.get("/students"),
+        ]);
+
+      setDataForTables({
+        lostItemsData: lostItemsResponse.data,
+        foundItemsData: foundItemsResponse.data,
+        studentsData: studentsResponse.data,
+        matchesData: [],
+      });
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load dashboard table data.");
+    }
+  }
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchDashboardSummary();
+    fetchTableData();
   }, []);
 
   const stats = [
@@ -157,24 +186,27 @@ function Dashboard() {
           title="Recent Lost Items"
           subtitle="Latest lost item reports will appear here."
           columns={["Item", "Category", "Student", "Status", "Date"]}
+          data={dataForTables.lostItemsData}
+          type="lost"
+          isLoading={isLoading}
         />
 
         <TableSkeleton
           title="Recent Found Items"
           subtitle="Latest found item reports will appear here."
           columns={["Item", "Category", "Student", "Status", "Date"]}
+          data={dataForTables.foundItemsData}
+          type="found"
+          isLoading={isLoading}
         />
 
         <TableSkeleton
           title="Pending Students"
           subtitle="Students waiting for verification will appear here."
           columns={["Student", "University ID", "Phone", "Status"]}
-        />
-
-        <TableSkeleton
-          title="Possible Matches"
-          subtitle="Generated lost/found matches will appear here."
-          columns={["Lost Item", "Found Item", "Match %", "Status"]}
+          data={dataForTables.studentsData.filter((s) => !s.isVerified)}
+          type="students"
+          isLoading={isLoading}
         />
       </div>
     </div>
@@ -182,8 +214,3 @@ function Dashboard() {
 }
 
 export default Dashboard;
-
-
-
-
-

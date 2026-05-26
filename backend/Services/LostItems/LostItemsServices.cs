@@ -16,12 +16,20 @@ public class LostItemsServices : ILostItemsService
 
     public async Task<List<LostItem>> GetAll()
     {
-        return await _db.LostItems.ToListAsync();
+        return await _db
+            .LostItems.Include(l => l.Student)
+                .ThenInclude(s => s.University)
+            .Include(l => l.Category)
+            .ToListAsync();
     }
 
     public async Task<LostItem?> GetById(Guid id)
     {
-        return await _db.LostItems.FirstOrDefaultAsync(l => l.Id == id);
+        return await _db
+            .LostItems.Include(l => l.Student)
+                .ThenInclude(s => s.University)
+            .Include(l => l.Category)
+            .FirstOrDefaultAsync(l => l.Id == id);
     }
 
     public async Task<LostItem> Create(CreateLostItemRequest request)
@@ -43,7 +51,7 @@ public class LostItemsServices : ILostItemsService
         _db.LostItems.Add(lostItem);
         await _db.SaveChangesAsync();
 
-        return lostItem;
+        return await GetById(lostItem.Id) ?? lostItem;
     }
 
     public async Task<LostItem?> Update(Guid id, UpdateLostItemRequest request)

@@ -7,8 +7,13 @@ import AdminsManagement from "../components/Profile/AdminsManagement";
 function Profile() {
   const [activeView, setActiveView] = useState("profile");
 
+  function changeView(view) {
+    setActiveView(view);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   if (activeView === "admins") {
-    return <AdminsManagement onBack={() => setActiveView("profile")} />;
+    return <AdminsManagement onBack={() => changeView("profile")} />;
   }
 
   return (
@@ -31,7 +36,7 @@ function Profile() {
         </div>
 
         <div className="flex h-full flex-col gap-6 xl:col-span-2">
-          <ProfileSecurityCard onManageAdmins={() => setActiveView("admins")} />
+          <ProfileSecurityCard onManageAdmins={() => changeView("admins")} />
           <Appearance />
         </div>
       </div>

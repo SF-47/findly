@@ -4,6 +4,8 @@ import {
   House,
   List,
   LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
   PackageOpen,
   RefreshCw,
   Search,
@@ -41,7 +43,7 @@ function SidebarButton({
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onToggle }) {
   const location = useLocation();
   const navigate = useNavigate();
   const owner = isOwner();
@@ -73,7 +75,23 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="admin-animated-bg fixed left-0 top-0 z-40 isolate flex h-screen w-72 flex-col justify-between overflow-hidden border-r border-blue-100/80 shadow-sm dark:border-zinc-700">
+    <>
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label="Open sidebar"
+          className="fixed left-5 top-5 z-50 flex h-11 w-11 items-center justify-center rounded-xl border border-blue-100/80 bg-white/85 text-blue-600 shadow-lg backdrop-blur transition hover:bg-blue-50 dark:border-zinc-700 dark:bg-zinc-900/85 dark:text-blue-400 dark:hover:bg-zinc-800"
+        >
+          <PanelLeftOpen size={20} />
+        </button>
+      )}
+
+      <aside
+        className={`admin-animated-bg fixed left-0 top-0 z-40 isolate flex h-screen w-72 flex-col justify-between overflow-hidden border-r border-blue-100/80 shadow-sm transition-transform duration-300 dark:border-zinc-700 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
       <div className="absolute inset-0 z-0 bg-white/70 backdrop-blur-[1px] dark:bg-zinc-950/70" />
 
       <div className="relative z-10">
@@ -91,6 +109,15 @@ export default function Sidebar() {
               Admin Dashboard
             </p>
           </div>
+
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-label="Close sidebar"
+            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+          >
+            <PanelLeftClose size={20} />
+          </button>
         </div>
 
         <nav className="px-4 py-5">
@@ -195,7 +222,8 @@ export default function Sidebar() {
           </button>
         </div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 

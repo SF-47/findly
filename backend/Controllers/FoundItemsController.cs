@@ -109,7 +109,11 @@ public class FoundItemsController : ControllerBase
         return new FullFoundItemsResponse(
             foundItem.Id,
             foundItem.StudentId,
+            foundItem.Student?.FullName ?? "Unknown student",
+            foundItem.Student?.University?.ShortName ?? "Unknown university",
+            foundItem.Student?.University?.Branch ?? "Unknown branch",
             foundItem.CategoryId,
+            foundItem.Category?.Name ?? "Unknown category",
             foundItem.ItemName,
             foundItem.Description,
             foundItem.Color,

@@ -123,3 +123,19 @@ admins :
 "universityFullName": "Holy Spirit University of Kaslik",
 "universityBranch": "Kaslik",
 "createdAt": "2026-05-23T15:37:37.735963Z"
+
+
+
+lostitems : 
+
+"id": "019e6562-4926-72bf-be5a-db94ea31b583",
+"studentId": "019e551a-0b38-73f4-b583-660e2b8b2a1f",
+"categoryId": 3,
+"itemName": "Math book",
+"description": "Math book found in room 201",
+"color": "Red",
+"location": "Room 201",
+"lostDate": "2026-05-15T00:00:00Z",
+"imageUrl": "xxxxxxxxxx",
+"status": "open",
+"createdAt": "2026-05-26T17:43:20.6137783Z"

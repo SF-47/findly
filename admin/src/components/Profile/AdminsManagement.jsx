@@ -301,15 +301,7 @@ function AdminsManagement({ onBack }) {
         />
       </div>
 
-      <div className="rounded-2xl border border-blue-100 bg-blue-50 px-5 py-4 dark:border-blue-900/40 dark:bg-blue-950/20">
-        <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-          Owner-only feature
-        </p>
-        <p className="mt-1 text-sm text-blue-600/80 dark:text-blue-300/80">
-          Later, only the Owner role should be able to view, add, or remove
-          admin accounts.
-        </p>
-      </div>
+      
 
       {showAddAdmin && (
         <AddAdminModal
