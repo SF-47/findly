@@ -5,10 +5,12 @@ using backend.Responses.Categories;
 using backend.Responses.Errors;
 using backend.Services.Categories;
 using backend.Validators.Categories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("categories")]
 public class CategoriesController : ControllerBase
@@ -42,7 +44,7 @@ public class CategoriesController : ControllerBase
         var response = ToCategoryResponse(category);
         return Ok(response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> CreateNewCategory(CreateCategoryRequest request)
     {
@@ -65,7 +67,7 @@ public class CategoriesController : ControllerBase
         var response = ToCategoryResponse(category);
         return Created($"/categories/{category.Id}", response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCategory(int id, UpdateCategoryRequest request)
     {
@@ -84,7 +86,7 @@ public class CategoriesController : ControllerBase
         var response = ToCategoryResponse(category);
         return Ok(response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {

@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import ItemCard from "../components/Items/ItemCard";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import LostItemsFilter from "../components/Items/LostItemsFilters";
 import axiosClient from "../api/axiosClient";
 import CreateLostItemModal from "../components/Items/CreateNewItem";
@@ -25,6 +25,12 @@ function LostItems() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [filters, setFilters] = useState({
+    search: "",
+    category: "",
+    status: "",
+    date: "",
+  });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +70,45 @@ function LostItems() {
     return true;
   });
 
-  const previewLostItems = lostItems.slice(0, 3);
+  const filteredLostItems = useMemo(() => {
+    return lostItems.filter((item) => {
+      const search = filters.search.trim().toLowerCase();
+      const itemDate = new Date(item.lostDate);
+      const now = new Date();
+      const daysDiff = (now - itemDate) / (1000 * 60 * 60 * 24);
+
+      const matchesSearch =
+        !search ||
+        item.itemName?.toLowerCase().includes(search) ||
+        item.description?.toLowerCase().includes(search) ||
+        item.color?.toLowerCase().includes(search) ||
+        item.location?.toLowerCase().includes(search) ||
+        item.categoryName?.toLowerCase().includes(search) ||
+        item.studentName?.toLowerCase().includes(search);
+
+      const matchesCategory = !filters.category || item.categoryId === filters.category;
+      const matchesStatus =
+        !filters.status || item.status?.toLowerCase() === filters.status;
+      const matchesDate =
+        !filters.date ||
+        (filters.date === "today" && itemDate.toDateString() === now.toDateString()) ||
+        (filters.date === "week" && daysDiff <= 7) ||
+        (filters.date === "month" && daysDiff <= 31);
+
+      return matchesSearch && matchesCategory && matchesStatus && matchesDate;
+    });
+  }, [filters, lostItems]);
+
+  const previewLostItems = filteredLostItems.slice(0, 3);
+
+  function clearFilters() {
+    setFilters({
+      search: "",
+      category: "",
+      status: "",
+      date: "",
+    });
+  }
 
   async function handleCreateLostItem(requestBody) {
     try {
@@ -119,7 +163,7 @@ function LostItems() {
   if (showAll) {
     return (
       <AllLostItems
-        lostItems={lostItems}
+        lostItems={filteredLostItems}
         students={students}
         onBack={() => {
           setShowAll(false);
@@ -153,7 +197,13 @@ function LostItems() {
             </button>
 
             {showFilters && (
-              <LostItemsFilter onClose={() => setShowFilters(false)} />
+              <LostItemsFilter
+                filters={filters}
+                categories={categories}
+                onChange={setFilters}
+                onClear={clearFilters}
+                onClose={() => setShowFilters(false)}
+              />
             )}
           </div>
 
@@ -202,6 +252,10 @@ function LostItems() {
 
             <input
               type="text"
+              value={filters.search}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
               placeholder="Search lost items..."
               className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-blue-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-blue-500"
             />
@@ -228,7 +282,7 @@ function LostItems() {
         {!isLoading && (
           <div className="flex flex-col items-center justify-center gap-2">
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-              Showing {previewLostItems.length} of {lostItems.length} lost items
+              Showing {previewLostItems.length} of {filteredLostItems.length} lost items
             </p>
 
             <button

@@ -15,7 +15,7 @@ export function getStoredAdmin() {
 
 export function isOwner() {
   const admin = getStoredAdmin();
-  return admin?.role === "Owner";
+  return admin?.role === "Owner";  //if admin?.role === "Owner" then true , else false
 }
 
 export function isUniversityAdmin() {

@@ -1,9 +1,9 @@
 import CatCard from "../components/Categories/CatCard";
-import { Plus, SlidersHorizontal } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
-import CategoryFilter from "../components/Categories/CatFilters";
 import axiosClient from "../api/axiosClient";
 import toast from "react-hot-toast";
+import { isOwner } from "../../utils/auth";
 
 function CategorySkeletonCard() {
   return (
@@ -27,16 +27,29 @@ function CategorySkeletonCard() {
 }
 
 function Categories() {
-  const [showFilters, setShowFilters] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [reportCounts, setReportCounts] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const owner = isOwner();
 
   async function fetchData() {
     try {
       setIsLoading(true);
 
-      const response = await axiosClient.get("/categories");
-      setCategories(response.data);
+      const [categoryResponse, lostItemsResponse, foundItemsResponse] =
+        await Promise.all([
+          axiosClient.get("/categories"),
+          axiosClient.get("/lost-items"),
+          axiosClient.get("/found-items"),
+        ]);
+
+      const counts = {};
+      [...lostItemsResponse.data, ...foundItemsResponse.data].forEach((item) => {
+        counts[item.categoryId] = (counts[item.categoryId] || 0) + 1;
+      });
+
+      setCategories(categoryResponse.data);
+      setReportCounts(counts);
     } catch (error) {
       console.log(error);
       toast.error("Error fetching data.");
@@ -64,24 +77,12 @@ function Categories() {
         </div>
 
         <div className="flex gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowFilters((prev) => !prev)}
-              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
-            >
-              <SlidersHorizontal />
-              Filter
+          {owner && (
+            <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
+              <Plus />
+              Add Category
             </button>
-
-            {showFilters && (
-              <CategoryFilter onClose={() => setShowFilters(false)} />
-            )}
-          </div>
-
-          <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
-            <Plus />
-            Add Category
-          </button>
+          )}
         </div>
       </div>
 
@@ -94,7 +95,7 @@ function Categories() {
       ) : categories.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           {categories.map((c) => (
-            <CatCard key={c.id} category={c} />
+            <CatCard key={c.id} category={c} reportCount={reportCounts[c.id] || 0} />
           ))}
         </div>
       ) : (
@@ -113,7 +114,3 @@ function Categories() {
 }
 
 export default Categories;
-
-
-
-

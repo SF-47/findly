@@ -60,7 +60,7 @@ public class StudentController : ControllerBase
         {
             return NotFound("Student not found.");
         }
-
+        
         var accessResult = CheckStudentAccess(student);
 
         if (accessResult is not null)

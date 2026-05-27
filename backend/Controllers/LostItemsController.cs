@@ -4,10 +4,12 @@ using backend.Responses.Errors;
 using backend.Responses.LostItems;
 using backend.Services.LostItems;
 using backend.Validators.LostItems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("lost-items")]
 public class LostItemsController : ControllerBase
@@ -22,8 +24,27 @@ public class LostItemsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllLostItems()
     {
-        var lostItems = await _lostItemsService.GetAll();
-        var response = lostItems.Select(lostItem => ToFullResponse(lostItem));
+        var lostItems = new List<LostItem>();
+
+        if (IsOwner())
+        {
+            lostItems = await _lostItemsService.GetAll();
+        }
+        else if (IsUniversityAdmin())
+        {
+            var adminUniId = GetAdminUniversityId();
+            if (adminUniId is null)
+            {
+                return Forbid();
+            }
+            lostItems = await _lostItemsService.GetAllByUniversityId(adminUniId.Value);
+        }
+        else
+        {
+            return Forbid();
+        }
+
+        var response = lostItems.Select(ToFullResponse);
 
         return Ok(response);
     }
@@ -35,6 +56,12 @@ public class LostItemsController : ControllerBase
         if (lostItem is null)
         {
             return NotFound("No Item found");
+        }
+
+        var accessResult = CheckItemAccess(lostItem);
+        if (accessResult is not null)
+        {
+            return accessResult;
         }
 
         var response = ToFullResponse(lostItem);
@@ -59,6 +86,13 @@ public class LostItemsController : ControllerBase
             );
             return BadRequest(errorResponse);
         }
+
+        var accessResult = await CheckItemCreateAccess(request.StudentId);
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
         var categoryExists = await _lostItemsService.CategoryExists(request.CategoryId);
         if (!categoryExists)
         {
@@ -84,11 +118,34 @@ public class LostItemsController : ControllerBase
             return BadRequest(errorResponse);
         }
 
+        var existingLostItem = await _lostItemsService.GetById(id);
+        if (existingLostItem is null)
+        {
+            return NotFound("Item not found");
+        }
+
+        var accessResult = CheckItemAccess(existingLostItem);
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
+        var categoryExists = await _lostItemsService.CategoryExists(request.CategoryId);
+        if (!categoryExists)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Category does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+
         var lostItem = await _lostItemsService.Update(id, request);
         if (lostItem is null)
         {
             return NotFound("Item not found");
         }
+
         var response = ToFullResponse(lostItem);
         return Ok(response);
     }
@@ -96,12 +153,48 @@ public class LostItemsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteLostItem(Guid id)
     {
+        var lostItem = await _lostItemsService.GetById(id);
+        if (lostItem is null)
+        {
+            return NotFound("Item not found");
+        }
+
+        var accessResult = CheckItemAccess(lostItem);
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
         var result = await _lostItemsService.Delete(id);
         if (!result)
         {
             return NotFound("Item not found");
         }
         return NoContent();
+    }
+
+    private bool IsOwner()
+    {
+        return User.IsInRole("Owner");
+    }
+
+    private bool IsUniversityAdmin()
+    {
+        return User.IsInRole("UniversityAdmin");
+    }
+
+    private Guid? GetAdminUniversityId()
+    {
+        var universityIdValue = User.FindFirst("universityId")?.Value;
+        if (string.IsNullOrWhiteSpace(universityIdValue))
+        {
+            return null;
+        }
+        if (!Guid.TryParse(universityIdValue, out var universityId))
+        {
+            return null;
+        }
+        return universityId;
     }
 
     private static FullLostItemsResponse ToFullResponse(LostItem lostItem)
@@ -123,5 +216,60 @@ public class LostItemsController : ControllerBase
             lostItem.Status,
             lostItem.CreatedAt
         );
+    }
+
+    private IActionResult? CheckItemAccess(LostItem lostItem)
+    {
+        if (IsOwner())
+        {
+            return null;
+        }
+        if (IsUniversityAdmin())
+        {
+            var adminUniversityId = GetAdminUniversityId();
+            if (adminUniversityId is null)
+            {
+                return Forbid();
+            }
+
+            if (lostItem?.Student?.UniversityId != adminUniversityId)
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+
+        return Forbid();
+    }
+
+    private async Task<IActionResult?> CheckItemCreateAccess(Guid requestStudentId)
+    {
+        if (IsOwner())
+        {
+            return null;
+        }
+        if (IsUniversityAdmin())
+        {
+            var adminUniId = GetAdminUniversityId();
+            if (adminUniId is null)
+            {
+                return Forbid();
+            }
+            var universityIdOfStudent = await _lostItemsService.GetUniversityIdFromStudentId(
+                requestStudentId
+            );
+            if (universityIdOfStudent is null)
+            {
+                return Forbid();
+            }
+            if (universityIdOfStudent != adminUniId)
+            {
+                return Forbid();
+            }
+
+            return null;
+        }
+        return Forbid();
     }
 }

@@ -23,6 +23,16 @@ public class LostItemsServices : ILostItemsService
             .ToListAsync();
     }
 
+    public async Task<List<LostItem>> GetAllByUniversityId(Guid adminUniId)
+    {
+        return await _db
+            .LostItems.Include(l => l.Student)
+                .ThenInclude(s => s.University)
+            .Where(l => l.Student.UniversityId == adminUniId)
+            .Include(l => l.Category)
+            .ToListAsync();
+    }
+
     public async Task<LostItem?> GetById(Guid id)
     {
         return await _db
@@ -97,5 +107,15 @@ public class LostItemsServices : ILostItemsService
     public async Task<bool> CategoryExists(int categoryId)
     {
         return await _db.Categories.AnyAsync(c => c.Id == categoryId);
+    }
+
+    public async Task<Guid?> GetUniversityIdFromStudentId(Guid studentId)
+    {
+        var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == studentId);
+        if (student is null)
+        {
+            return null;
+        }
+        return student.UniversityId;
     }
 }

@@ -4,6 +4,7 @@ using backend.Responses.Errors;
 using backend.Services.Auth;
 using backend.Services.Jwt;
 using backend.Validators.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -80,4 +81,6 @@ public class AuthController : ControllerBase
         var message = "Password changed successfully.";
         return Ok(message);
     }
+
+    
 }

@@ -5,6 +5,7 @@ import {
   Search,
   Tags,
   University,
+  UserRound,
   UserCheck,
   Clock3,
   Users,
@@ -16,8 +17,11 @@ import axiosClient from "../api/axiosClient";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import DashCardSkeleton from "../components/Dashboard/DashCardSkeleton";
+import { getStoredAdmin } from "../../utils/auth";
 
 function Dashboard() {
+  const admin = getStoredAdmin();
+
   const [statsData, setStatsData] = useState({
     totalStudents: 0,
     verifiedStudents: 0,
@@ -154,15 +158,38 @@ function Dashboard() {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={fetchDashboardSummary}
-          disabled={isLoading}
-          className="flex w-fit cursor-pointer items-center gap-3 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg duration-300 hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
-          {isLoading ? "Refreshing..." : "Refresh"}
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                <UserRound size={18} />
+              </div>
+
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">
+                  {admin?.fullName || "Admin"}
+                </p>
+                <p className="text-xs font-medium text-gray-500 dark:text-zinc-400">
+                  {admin?.role === "Owner"
+                    ? "Owner - All Universities"
+                    : `${admin?.universityShortName || "University"}${
+                        admin?.universityBranch ? ` - ${admin.universityBranch}` : ""
+                      }`}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={fetchDashboardSummary}
+            disabled={isLoading}
+            className="flex w-fit cursor-pointer items-center gap-3 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg duration-300 hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+            {isLoading ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -185,7 +212,7 @@ function Dashboard() {
         <TableSkeleton
           title="Recent Lost Items"
           subtitle="Latest lost item reports will appear here."
-          columns={["Item", "Category", "Student", "Status", "Date"]}
+          columns={["Item", "University", "Student", "Status", "Date"]}
           data={dataForTables.lostItemsData}
           type="lost"
           isLoading={isLoading}

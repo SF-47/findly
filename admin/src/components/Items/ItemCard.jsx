@@ -3,6 +3,7 @@ import {
   Calendar,
   ClipboardCheck,
   Eye,
+  LucideUniversity,
   MapPin,
   MoreVertical,
   PackageOpen,
@@ -10,14 +11,22 @@ import {
   Trash2,
   User,
 } from "lucide-react";
+import { isOwner } from "../../../utils/auth";
 
 function ItemCard({ type, item, students }) {
   const [showMenu, setShowMenu] = useState(false);
 
+  const owner = isOwner();
+
   const isLost = type === "lost";
-  const studentName = students?.find(
+
+  const student = students?.find(
     (student) => student.id == item?.studentId,
   );
+
+  
+
+
   function formatDate(date) {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString();
@@ -106,8 +115,14 @@ function ItemCard({ type, item, students }) {
         <div className="mt-5 space-y-3 text-sm text-gray-600 dark:text-gray-300">
           <div className="flex items-center gap-3">
             <User className="text-blue-500" />
-            <span>{studentName?.fullName || "Unknown student"}</span>
+            <span>{student?.fullName || "Unknown student"}</span>
           </div>
+          {owner && (
+            <div className="flex items-center gap-3">
+              <LucideUniversity className="text-blue-500" />
+              <span>{student?.universityShortName +" - " + student?.universityBranch || "Not Assigned"}</span>
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             <MapPin className="text-blue-500" />

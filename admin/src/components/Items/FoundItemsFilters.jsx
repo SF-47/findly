@@ -1,13 +1,11 @@
-import { useState } from "react";
 import { ClipboardCheck, Search, X } from "lucide-react";
 import PrimeDropdown from "../PrimeDropdown";
 
-function FoundItemsFilter({ onClose }) {
-  const [filters, setFilters] = useState({
-    category: "",
-    status: "",
-    foundDate: "",
-  });
+function FoundItemsFilter({ filters, categories, onChange, onClear, onClose }) {
+  const categoryOptions = categories.map((category) => ({
+    value: category.id,
+    label: category.name,
+  }));
 
   return (
     <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
@@ -35,6 +33,8 @@ function FoundItemsFilter({ onClose }) {
 
             <input
               type="text"
+              value={filters.search}
+              onChange={(e) => onChange({ ...filters, search: e.target.value })}
               placeholder="Name, description, color, location..."
               className="w-full bg-transparent py-3 text-sm text-gray-900 outline-none dark:text-white"
             />
@@ -48,16 +48,9 @@ function FoundItemsFilter({ onClose }) {
 
           <PrimeDropdown
             value={filters.category}
-            onChange={(value) =>
-              setFilters((prev) => ({ ...prev, category: value }))
-            }
+            onChange={(value) => onChange({ ...filters, category: value })}
             placeholder="All Categories"
-            options={[
-              { value: "electronics", label: "Electronics" },
-              { value: "wallets", label: "Wallets" },
-              { value: "keys", label: "Keys" },
-              { value: "books", label: "Books" },
-            ]}
+            options={categoryOptions}
           />
         </div>
 
@@ -68,9 +61,7 @@ function FoundItemsFilter({ onClose }) {
 
           <PrimeDropdown
             value={filters.status}
-            onChange={(value) =>
-              setFilters((prev) => ({ ...prev, status: value }))
-            }
+            onChange={(value) => onChange({ ...filters, status: value })}
             placeholder="All Status"
             options={[
               { value: "open", label: "Open" },
@@ -86,10 +77,8 @@ function FoundItemsFilter({ onClose }) {
           </label>
 
           <PrimeDropdown
-            value={filters.foundDate}
-            onChange={(value) =>
-              setFilters((prev) => ({ ...prev, foundDate: value }))
-            }
+            value={filters.date}
+            onChange={(value) => onChange({ ...filters, date: value })}
             placeholder="All Dates"
             options={[
               { value: "today", label: "Today" },
@@ -101,11 +90,19 @@ function FoundItemsFilter({ onClose }) {
       </div>
 
       <div className="mt-6 flex gap-3">
-        <button className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
+        <button
+          type="button"
+          onClick={onClear}
+          className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+        >
           Clear
         </button>
 
-        <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700"
+        >
           <ClipboardCheck />
           Apply
         </button>

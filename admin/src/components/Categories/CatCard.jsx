@@ -10,9 +10,11 @@ import {
   Shirt,
   Tags,
 } from "lucide-react";
+import { isOwner } from "../../../utils/auth";
 
-function CatCard({ category }) {
+function CatCard({ category, reportCount = 0 }) {
   const [showMenu, setShowMenu] = useState(false);
+  const owner = isOwner();
 
   function getCategoryIcon(categoryName) {
     const name = categoryName?.toLowerCase() || "";
@@ -54,14 +56,15 @@ function CatCard({ category }) {
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 text-xl font-bold text-white shadow-lg ring-2 ring-white/20">
           {getCategoryIcon(category.name)}
         </div>
-
-        <button
-          type="button"
-          className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
-          onClick={() => setShowMenu((prev) => !prev)}
-        >
-          <MoreVertical size={16} strokeWidth={2.2} />
-        </button>
+        {owner && (
+          <button
+            type="button"
+            className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
+            onClick={() => setShowMenu((prev) => !prev)}
+          >
+            <MoreVertical size={16} strokeWidth={2.2} />
+          </button>
+        )}
 
         {showMenu && (
           <div className="absolute right-0 top-10 z-50 w-28 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
@@ -86,7 +89,7 @@ function CatCard({ category }) {
         </p>
 
         <span className="mt-4 inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 dark:border-transparent dark:bg-blue-900/40 dark:text-blue-300">
-          0 Reports
+          {reportCount} Reports
         </span>
       </div>
 
@@ -101,8 +104,3 @@ function CatCard({ category }) {
 }
 
 export default CatCard;
-
-
-
-
-

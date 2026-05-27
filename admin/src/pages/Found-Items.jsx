@@ -1,5 +1,5 @@
 import { ClipboardCheck, Clock, MapPin, Plus, Search, SlidersHorizontal } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
 import FoundItemsFilter from "../components/Items/FoundItemsFilters";
 import axiosClient from "../api/axiosClient";
@@ -17,6 +17,12 @@ function FoundItems() {
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [filters, setFilters] = useState({
+    search: "",
+    category: "",
+    status: "",
+    date: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,7 +68,45 @@ function FoundItems() {
     return true;
   });
 
-  const previewFoundItems = foundItems.slice(0, 3);
+  const filteredFoundItems = useMemo(() => {
+    return foundItems.filter((item) => {
+      const search = filters.search.trim().toLowerCase();
+      const itemDate = new Date(item.foundDate);
+      const now = new Date();
+      const daysDiff = (now - itemDate) / (1000 * 60 * 60 * 24);
+
+      const matchesSearch =
+        !search ||
+        item.itemName?.toLowerCase().includes(search) ||
+        item.description?.toLowerCase().includes(search) ||
+        item.color?.toLowerCase().includes(search) ||
+        item.location?.toLowerCase().includes(search) ||
+        item.categoryName?.toLowerCase().includes(search) ||
+        item.studentName?.toLowerCase().includes(search);
+
+      const matchesCategory = !filters.category || item.categoryId === filters.category;
+      const matchesStatus =
+        !filters.status || item.status?.toLowerCase() === filters.status;
+      const matchesDate =
+        !filters.date ||
+        (filters.date === "today" && itemDate.toDateString() === now.toDateString()) ||
+        (filters.date === "week" && daysDiff <= 7) ||
+        (filters.date === "month" && daysDiff <= 31);
+
+      return matchesSearch && matchesCategory && matchesStatus && matchesDate;
+    });
+  }, [filters, foundItems]);
+
+  const previewFoundItems = filteredFoundItems.slice(0, 3);
+
+  function clearFilters() {
+    setFilters({
+      search: "",
+      category: "",
+      status: "",
+      date: "",
+    });
+  }
 
   async function handleCreateFoundItem(requestBody) {
     try {
@@ -117,7 +161,7 @@ function FoundItems() {
   if (showAll) {
     return (
       <AllFoundItems
-        foundItems={foundItems}
+        foundItems={filteredFoundItems}
         students={students}
         onBack={() => {
           setShowAll(false);
@@ -151,7 +195,13 @@ function FoundItems() {
             </button>
 
             {showFilters && (
-              <FoundItemsFilter onClose={() => setShowFilters(false)} />
+              <FoundItemsFilter
+                filters={filters}
+                categories={categories}
+                onChange={setFilters}
+                onClear={clearFilters}
+                onClose={() => setShowFilters(false)}
+              />
             )}
           </div>
 
@@ -198,6 +248,10 @@ function FoundItems() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
+              value={filters.search}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
               placeholder="Search found items..."
               className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-blue-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-blue-500"
             />
@@ -224,7 +278,7 @@ function FoundItems() {
         {!isLoading && (
           <div className="flex flex-col items-center justify-center gap-2">
             <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-              Showing {previewFoundItems.length} of {foundItems.length} found items
+              Showing {previewFoundItems.length} of {filteredFoundItems.length} found items
             </p>
 
             <button
