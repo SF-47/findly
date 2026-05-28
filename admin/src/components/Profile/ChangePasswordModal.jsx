@@ -47,9 +47,7 @@ function ChangePasswordModal({ onClose }) {
 
     return Object.values(newErrors).some((error) => error !== "");
   }
-  const admin = JSON.parse(
-    localStorage.getItem("admin") || sessionStorage.getItem("admin") || "null",
-  );
+  
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -61,7 +59,6 @@ function ChangePasswordModal({ onClose }) {
     try {
       setIsLoading(true);
       const request = {
-        adminId: admin.id,
         currentPassword: inputs.currentPass,
         newPassword: inputs.newPass,
       };

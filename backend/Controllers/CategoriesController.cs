@@ -77,6 +77,14 @@ public class CategoriesController : ControllerBase
             var errorResponse = new ErrorResponse("Validation failed", errors);
             return BadRequest(errorResponse);
         }
+        var exists = await _categoryService.CategoryNameExistsExceptId(id , request.Name);
+        if (exists)
+        {
+            errors.Add("Category name already exists.");
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
         var category = await _categoryService.Update(id, request);
         if (category is null)
         {

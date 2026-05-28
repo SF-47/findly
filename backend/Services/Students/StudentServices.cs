@@ -88,7 +88,7 @@ public class StudentServices : IStudentServices
 
     public async Task<Student?> VerifyStudent(Guid id)
     {
-        var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == id);
+        var student = await GetById(id);
 
         if (student is null)
         {

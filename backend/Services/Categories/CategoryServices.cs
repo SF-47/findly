@@ -23,7 +23,8 @@ public class CategoryService : ICategoryService
 
     public async Task<bool> CategoryNameExists(string name)
     {
-        var exists = await _db.Categories.AnyAsync(c => c.Name.ToLower() == name.ToLower());
+        var cleanName = name.Trim().ToLower();
+        var exists = await _db.Categories.AnyAsync(c => c.Name.ToLower() == cleanName);
 
         return exists;
     }
@@ -35,7 +36,11 @@ public class CategoryService : ICategoryService
 
     public async Task<Category> Create(CreateCategoryRequest request)
     {
-        var category = new Category { Name = request.Name, Description = request.Description };
+        var category = new Category
+        {
+            Name = request.Name.Trim(),
+            Description = request.Description?.Trim() ?? "",
+        };
 
         _db.Categories.Add(category);
         await _db.SaveChangesAsync();
@@ -51,10 +56,20 @@ public class CategoryService : ICategoryService
             return null;
         }
 
-        category.Name = request.Name;
-        category.Description = request.Description;
+        category.Name = request.Name.Trim();
+        category.Description = request.Description?.Trim() ?? "";
         await _db.SaveChangesAsync();
         return category;
+    }
+
+    public async Task<bool> CategoryNameExistsExceptId(int id , string name)
+    {
+        var cleanName = name.Trim().ToLower();
+        var exists = await _db.Categories.AnyAsync(c =>
+            c.Name.ToLower() == cleanName && c.Id != id
+        );
+
+        return exists;
     }
 
     public async Task<bool> Delete(int id)

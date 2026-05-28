@@ -10,5 +10,7 @@ public interface ICategoryService
     Task<Category> Create(CreateCategoryRequest request);
     Task<bool> CategoryNameExists(string name);
     Task<Category?> Update(int id, UpdateCategoryRequest request);
+
+    Task<bool> CategoryNameExistsExceptId(int id , string name);
     Task<bool> Delete(int id);
 }

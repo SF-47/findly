@@ -36,9 +36,9 @@ public class AuthService : IAuthService
         return admin;
     }
 
-    public async Task<bool> ChangePassword(ChangePasswordRequest request)
+    public async Task<bool> ChangePassword(Guid adminId , ChangePasswordRequest request)
     {
-        var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Id == request.AdminId);
+        var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Id == adminId);
         if (admin is null)
         {
             return false;

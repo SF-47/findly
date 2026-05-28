@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.Requests.Auth;
 using backend.Responses.Auth;
 using backend.Responses.Errors;
@@ -58,9 +59,16 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize]
     [HttpPut("admin/change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
     {
+        var adminIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(adminIdValue, out var adminId))
+        {
+            return Unauthorized();
+        }
         var errors = AuthValidator.ValidateChangePasswordInputs(request);
 
         if (errors.Count > 0)
@@ -69,7 +77,7 @@ public class AuthController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        var changed = await _authService.ChangePassword(request);
+        var changed = await _authService.ChangePassword(adminId , request);
 
         if (!changed)
         {
@@ -81,6 +89,4 @@ public class AuthController : ControllerBase
         var message = "Password changed successfully.";
         return Ok(message);
     }
-
-    
 }
