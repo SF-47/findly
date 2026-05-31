@@ -1,7 +1,7 @@
 import { ArrowLeft, ClipboardCheck } from "lucide-react";
 import ItemCard from "./ItemCard";
 
-function AllFoundItems({ foundItems, students, onBack }) {
+function AllFoundItems({ foundItems, students, onDelete, onBack }) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -49,6 +49,7 @@ function AllFoundItems({ foundItems, students, onBack }) {
               type="found"
               item={item}
               students={students}
+              onDelete={onDelete}
             />
           ))}
         </div>

@@ -1,14 +1,7 @@
-import { useState } from "react";
 import { Search, UserCheck, X } from "lucide-react";
 import PrimeDropdown from "../PrimeDropdown";
 
-function MatchesFilter({ onClose }) {
-  const [filters, setFilters] = useState({
-    status: "",
-    percentage: "",
-    createdDate: "",
-  });
-    
+function MatchesFilter({ filters, onChange, onClear, onClose }) {
   return (
     <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
       <div className="mb-5 flex items-center justify-between">
@@ -35,6 +28,10 @@ function MatchesFilter({ onClose }) {
 
             <input
               type="text"
+              value={filters.search}
+              onChange={(e) =>
+                onChange((prev) => ({ ...prev, search: e.target.value }))
+              }
               placeholder="Lost item, found item, student..."
               className="w-full bg-transparent py-3 text-sm text-gray-900 outline-none dark:text-white"
             />
@@ -49,7 +46,7 @@ function MatchesFilter({ onClose }) {
           <PrimeDropdown
             value={filters.status}
             onChange={(value) =>
-              setFilters((prev) => ({ ...prev, status: value }))
+              onChange((prev) => ({ ...prev, status: value }))
             }
             placeholder="All Matches"
             options={[
@@ -68,7 +65,7 @@ function MatchesFilter({ onClose }) {
           <PrimeDropdown
             value={filters.percentage}
             onChange={(value) =>
-              setFilters((prev) => ({ ...prev, percentage: value }))
+              onChange((prev) => ({ ...prev, percentage: value }))
             }
             placeholder="All Percentages"
             options={[
@@ -87,7 +84,7 @@ function MatchesFilter({ onClose }) {
           <PrimeDropdown
             value={filters.createdDate}
             onChange={(value) =>
-              setFilters((prev) => ({ ...prev, createdDate: value }))
+              onChange((prev) => ({ ...prev, createdDate: value }))
             }
             placeholder="All Dates"
             options={[
@@ -100,11 +97,19 @@ function MatchesFilter({ onClose }) {
       </div>
 
       <div className="mt-6 flex gap-3">
-        <button className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
+        <button
+          type="button"
+          onClick={onClear}
+          className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+        >
           Clear
         </button>
 
-        <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700"
+        >
           <UserCheck />
           Apply
         </button>
@@ -114,7 +119,3 @@ function MatchesFilter({ onClose }) {
 }
 
 export default MatchesFilter;
-
-
-
-

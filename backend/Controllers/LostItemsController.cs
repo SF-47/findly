@@ -3,6 +3,7 @@ using backend.Requests.LostItems;
 using backend.Responses.Errors;
 using backend.Responses.LostItems;
 using backend.Services.LostItems;
+using backend.Services.N8n;
 using backend.Validators.LostItems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,15 @@ namespace backend.Controllers;
 public class LostItemsController : ControllerBase
 {
     private readonly ILostItemsService _lostItemsService;
+    private readonly IN8nMatchingService _n8nMatchingService;
 
-    public LostItemsController(ILostItemsService lostItemsService)
+    public LostItemsController(
+        ILostItemsService lostItemsService,
+        IN8nMatchingService n8nMatchingService
+    )
     {
         _lostItemsService = lostItemsService;
+        _n8nMatchingService = n8nMatchingService;
     }
 
     [HttpGet]
@@ -103,6 +109,7 @@ public class LostItemsController : ControllerBase
             return BadRequest(errorResponse);
         }
         var lostItem = await _lostItemsService.Create(request);
+        _ = _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
 
         var response = ToFullResponse(lostItem);
         return Created($"/lost-items/{lostItem.Id}", response);

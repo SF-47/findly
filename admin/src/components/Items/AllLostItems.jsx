@@ -1,7 +1,7 @@
 import ItemCard from "./ItemCard";
 import { ArrowLeft, PackageOpen } from "lucide-react";
 
-function AllLostItems({ lostItems, students, onBack }) {
+function AllLostItems({ lostItems, students, onDelete, onBack }) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -49,6 +49,7 @@ function AllLostItems({ lostItems, students, onBack }) {
               type="lost"
               item={item}
               students={students}
+              onDelete={onDelete}
             />
           ))}
         </div>

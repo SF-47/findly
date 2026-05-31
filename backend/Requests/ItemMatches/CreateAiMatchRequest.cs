@@ -1,5 +1,5 @@
 namespace backend.Requests.ItemMatches;
-
+//for saving AI matches
 public record CreateAiMatchRequest(
     Guid LostItemId,
     Guid FoundItemId,

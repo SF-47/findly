@@ -12,6 +12,7 @@ using backend.Services.Universities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using backend.Services.N8n;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +34,11 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUniversityService, UniversityService>();
 builder.Services.AddScoped<IDashboardService,DashboardService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IN8nMatchingService, N8nMatchingService>();
 
-builder.Services.AddHttpClient();//ASP.NET needs HttpClient to call the n8n webhook after creating an item.
+builder.Services.AddHttpClient();
+//Because after ASP.NET creates a lost/found item, it needs to send an HTTP request to n8n.
+// Without HttpClient, the backend cannot trigger n8n.
 
 builder.Services.AddCors(options =>
 {

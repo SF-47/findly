@@ -57,7 +57,7 @@ function CreateNewItem({
   const dateFieldName = isFound ? "foundDate" : "lostDate";
   const itemLabel = isFound ? "Found Item" : "Lost Item";
   const itemLabelLower = isFound ? "found item" : "lost item";
-
+  console.log(students);
   const [formData, setFormData] = useState(initialFormData);
   const [itemImageFile, setItemImageFile] = useState(null);
   const [itemImagePreview, setItemImagePreview] = useState("");
@@ -237,7 +237,7 @@ function CreateNewItem({
                 placeholder="Select student"
                 options={students.map((student) => ({
                   value: student.id,
-                  label: `${student.fullName} - ${student.universityStudentId}`,
+                  label: `${student.fullName} ( ${student.universityShortName} - ${student.universityBranch} )`,
                 }))}
               />
             </div>

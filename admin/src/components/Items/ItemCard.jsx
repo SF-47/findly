@@ -12,8 +12,9 @@ import {
   User,
 } from "lucide-react";
 import { isOwner } from "../../../utils/auth";
+import ConfirmDialog from "../ConfirmDialog";
 
-function ItemCard({ type, item, students }) {
+function ItemCard({ type, item, students, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
 
   const owner = isOwner();
@@ -83,10 +84,23 @@ function ItemCard({ type, item, students }) {
                   View
                 </button>
 
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
-                  <Trash2 size={13} />
-                  Delete
-                </button>
+                <ConfirmDialog
+                  title={`Delete ${isLost ? "lost" : "found"} item?`}
+                  description={`Are you sure you want to delete ${item?.itemName || "this item"}? This action cannot be undone.`}
+                  onConfirm={() => {
+                    setShowMenu(false);
+                    onDelete?.(item.id);
+                  }}
+                  onCancel={() => setShowMenu(false)}
+                >
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+                  >
+                    <Trash2 size={13} />
+                    Delete
+                  </button>
+                </ConfirmDialog>
               </div>
             )}
           </div>

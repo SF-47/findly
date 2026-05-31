@@ -1,37 +1,154 @@
-import { CircleCheck, CircleX, Plus, RefreshCw, Search, SlidersHorizontal } from "lucide-react";
+import {
+  CircleCheck,
+  CircleX,
+  Plus,
+  RefreshCw,
+  Search,
+  SlidersHorizontal,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import axiosClient from "../api/axiosClient";
 import MatchCard from "../components/Matches/MatchCard";
-import MatchStatsCard from "../components/Matches/MatchStatsCard";
-import { useState } from "react";
 import MatchesFilter from "../components/Matches/MatchesFilters";
+import MatchStatsCard from "../components/Matches/MatchStatsCard";
 
 function Matches() {
+  const [matches, setMatches] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    search: "",
+    status: "",
+    percentage: "",
+    createdDate: "",
+  });
+
+  useEffect(() => {
+    async function fetchMatches() {
+      try {
+        setIsLoading(true);
+        const response = await axiosClient.get("/matches");
+        setMatches(response.data);
+      } catch (error) {
+        console.log(error);
+        toast.error("Failed to load matches.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchMatches();
+  }, []);
+
+  const filteredMatches = useMemo(() => {
+    return matches.filter((match) => {
+      const search = filters.search.trim().toLowerCase();
+      const createdDate = new Date(match.createdAt);
+      const now = new Date();
+      const daysDiff = (now - createdDate) / (1000 * 60 * 60 * 24);
+
+      const matchesSearch =
+        !search ||
+        match.lostItem.itemName?.toLowerCase().includes(search) ||
+        match.foundItem.itemName?.toLowerCase().includes(search) ||
+        match.lostItem.categoryName?.toLowerCase().includes(search) ||
+        match.foundItem.categoryName?.toLowerCase().includes(search) ||
+        match.lostItem.location?.toLowerCase().includes(search) ||
+        match.foundItem.location?.toLowerCase().includes(search) ||
+        match.lostItem.studentName?.toLowerCase().includes(search) ||
+        match.foundItem.studentName?.toLowerCase().includes(search);
+
+      const matchesStatus =
+        !filters.status || match.status?.toLowerCase() === filters.status;
+      const matchesPercentage =
+        !filters.percentage ||
+        match.matchPercentage >= Number(filters.percentage);
+      const matchesDate =
+        !filters.createdDate ||
+        (filters.createdDate === "today" &&
+          createdDate.toDateString() === now.toDateString()) ||
+        (filters.createdDate === "week" && daysDiff <= 7) ||
+        (filters.createdDate === "month" && daysDiff <= 31);
+
+      return matchesSearch && matchesStatus && matchesPercentage && matchesDate;
+    });
+  }, [filters, matches]);
+
+  function clearFilters() {
+    setFilters({
+      search: "",
+      status: "",
+      percentage: "",
+      createdDate: "",
+    });
+  }
+
+  async function handleStatusChange(id, status) {
+    try {
+      const response = await axiosClient.patch(`/matches/${id}/status`, {
+        status,
+      });
+
+      setMatches((prev) =>
+        prev.map((match) =>
+          match.id === id
+            ? {
+                ...match,
+                status: response.data.status,
+                reviewedAt: response.data.reviewedAt,
+              }
+            : match,
+        ),
+      );
+
+      toast.success(`Match ${status.toLowerCase()} successfully.`);
+    } catch (error) {
+      console.log(error);
+      toast.error(`Failed to ${status.toLowerCase()} match.`);
+    }
+  }
+
+  async function handleDeleteMatch(id) {
+    try {
+      await axiosClient.delete(`/matches/${id}`);
+      setMatches((prev) => prev.filter((match) => match.id !== id));
+      toast.success("Match deleted successfully.");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete match.");
+    }
+  }
+
+  const countByStatus = (status) =>
+    matches.filter((match) => match.status?.toLowerCase() === status).length;
+
   const stats = [
     {
       title: "Total Matches",
       subtitle: "Generated",
-      value: "--",
+      value: matches.length,
       icon: <Search />,
       bgColor: "bg-purple-500",
     },
     {
       title: "Pending Matches",
       subtitle: "Review",
-      value: "--",
+      value: countByStatus("pending"),
       icon: <RefreshCw />,
       bgColor: "bg-yellow-500",
     },
     {
       title: "Confirmed",
       subtitle: "Accepted",
-      value: "--",
+      value: countByStatus("confirmed"),
       icon: <CircleCheck />,
       bgColor: "bg-green-500",
     },
     {
       title: "Rejected",
       subtitle: "Closed",
-      value: "--",
+      value: countByStatus("rejected"),
       icon: <CircleX />,
       bgColor: "bg-red-500",
     },
@@ -61,7 +178,12 @@ function Matches() {
             </button>
 
             {showFilters && (
-              <MatchesFilter onClose={() => setShowFilters(false)} />
+              <MatchesFilter
+                filters={filters}
+                onChange={setFilters}
+                onClear={clearFilters}
+                onClose={() => setShowFilters(false)}
+              />
             )}
           </div>
 
@@ -93,7 +215,7 @@ function Matches() {
             </h2>
 
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Match cards will be filled later from the backend.
+              Review AI-generated lost and found item matches.
             </p>
           </div>
 
@@ -102,6 +224,10 @@ function Matches() {
 
             <input
               type="text"
+              value={filters.search}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, search: e.target.value }))
+              }
               placeholder="Search matches..."
               className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-purple-500"
             />
@@ -109,17 +235,33 @@ function Matches() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <MatchCard />
-        <MatchCard />
-      </div>
+      {isLoading ? (
+        <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center text-sm text-gray-500 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-400">
+          Loading matches...
+        </div>
+      ) : filteredMatches.length === 0 ? (
+        <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            No matches found
+          </h2>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Matches saved by the matching workflow will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          {filteredMatches.map((match) => (
+            <MatchCard
+              key={match.id}
+              match={match}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDeleteMatch}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 export default Matches;
-
-
-
-
-

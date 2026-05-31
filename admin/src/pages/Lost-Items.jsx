@@ -129,6 +129,17 @@ function LostItems() {
     }
   }
 
+  async function handleDeleteLostItem(id) {
+    try {
+      await axiosClient.delete(`/lost-items/${id}`);
+      setlostItems((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Lost item deleted successfully.");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete lost item.");
+    }
+  }
+
   const stats = [
     {
       title: "Total Lost Items",
@@ -165,6 +176,7 @@ function LostItems() {
       <AllLostItems
         lostItems={filteredLostItems}
         students={students}
+        onDelete={handleDeleteLostItem}
         onBack={() => {
           setShowAll(false);
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -275,6 +287,7 @@ function LostItems() {
                   type="lost"
                   item={item}
                   students={students}
+                  onDelete={handleDeleteLostItem}
                 />
               ))}
         </div>

@@ -3,6 +3,7 @@ using backend.Requests.FoundItems;
 using backend.Responses.Errors;
 using backend.Responses.FoundItems;
 using backend.Services.FoundItems;
+using backend.Services.N8n;
 using backend.Validators.FoundItems;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,15 @@ namespace backend.Controllers;
 public class FoundItemsController : ControllerBase
 {
     private readonly IFoundItemService _foundItemsService;
+    private readonly IN8nMatchingService _n8nMatchingService;
 
-    public FoundItemsController(IFoundItemService foundItemsServices)
+    public FoundItemsController(
+        IFoundItemService foundItemsService,
+        IN8nMatchingService n8nMatchingService
+    )
     {
-        _foundItemsService = foundItemsServices;
+        _foundItemsService = foundItemsService;
+        _n8nMatchingService = n8nMatchingService;
     }
 
     [HttpGet]
@@ -103,6 +109,7 @@ public class FoundItemsController : ControllerBase
             return BadRequest(errorResponse);
         }
         var foundItem = await _foundItemsService.Create(request);
+        _ = _n8nMatchingService.TriggerMatchingAsync(foundItem.Id, "found");
 
         var response = ToFullResponse(foundItem);
         return Created($"/found-items/{foundItem.Id}", response);

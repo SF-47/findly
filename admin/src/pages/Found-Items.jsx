@@ -127,6 +127,17 @@ function FoundItems() {
     }
   }
 
+  async function handleDeleteFoundItem(id) {
+    try {
+      await axiosClient.delete(`/found-items/${id}`);
+      setFoundItems((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Found item deleted successfully.");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete found item.");
+    }
+  }
+
   const stats = [
     {
       title: "Total Found Items",
@@ -163,6 +174,7 @@ function FoundItems() {
       <AllFoundItems
         foundItems={filteredFoundItems}
         students={students}
+        onDelete={handleDeleteFoundItem}
         onBack={() => {
           setShowAll(false);
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -271,6 +283,7 @@ function FoundItems() {
                   type="found"
                   item={item}
                   students={students}
+                  onDelete={handleDeleteFoundItem}
                 />
               ))}
         </div>
