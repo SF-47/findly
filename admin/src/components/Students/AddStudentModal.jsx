@@ -1,8 +1,18 @@
 import { useState } from "react";
-import { IdCard, Image, Mail, Phone, Plus, University, User, X } from "lucide-react";
+import {
+  IdCard,
+  Image,
+  Mail,
+  Phone,
+  Plus,
+  University,
+  User,
+  X,
+} from "lucide-react";
 import axiosClient from "../../api/axiosClient";
 import toast from "react-hot-toast";
 import PrimeDropdown from "../PrimeDropdown";
+import { supabase } from "../../api/supabaseClient";
 
 function FormInput({
   icon,
@@ -42,6 +52,29 @@ function FormInput({
   );
 }
 
+async function uploadUniversityCardImage(file) {
+  const fileExtension = file.name.split(".").pop();
+  const fileName = `${crypto.randomUUID()}.${fileExtension}`;
+  const filePath = `students/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("universities-cards")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { data } = supabase.storage
+    .from("universities-cards")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+
 function AddStudentModal({
   onClose,
   onStudentAdded,
@@ -66,6 +99,8 @@ function AddStudentModal({
     universityCardImageUrlError: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [cardImageFile, setCardImageFile] = useState(null);
+  const [cardImagePreview, setCardImagePreview] = useState("");
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -76,6 +111,32 @@ function AddStudentModal({
     }));
   }
 
+  function handleCardImageChange(e) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file.");
+      return;
+    }
+
+    const maxSizeInBytes = 5 * 1024 * 1024;
+
+    if (file.size > maxSizeInBytes) {
+      toast.error("Image must be less than 5MB.");
+      return;
+    }
+
+    setCardImageFile(file);
+    setCardImagePreview(URL.createObjectURL(file));
+
+    setInputErrorMessage((prev) => ({
+      ...prev,
+      universityCardImageUrlError: "",
+    }));
+  }
+
   function validateFrontend() {
     const errors = {
       fullNameError: "",
@@ -83,7 +144,6 @@ function AddStudentModal({
       universityIdError: "",
       universityStudentIdError: "",
       phoneNumberError: "",
-      universityCardImageUrlError: "",
     };
 
     let hasError = false;
@@ -120,16 +180,6 @@ function AddStudentModal({
       hasError = true;
     }
 
-    if (!formData.universityCardImageUrl.trim()) {
-      errors.universityCardImageUrlError =
-        "University card image URL is required.";
-      hasError = true;
-    } else if (!formData.universityCardImageUrl.startsWith("http")) {
-      errors.universityCardImageUrlError =
-        "Please enter a valid URL starting with http:// or https://";
-      hasError = true;
-    }
-
     setInputErrorMessage(errors);
     return hasError; // Return true if there ARE errors
   }
@@ -144,10 +194,26 @@ function AddStudentModal({
       return;
     }
 
+    if (!cardImageFile) {
+      setInputErrorMessage((prev) => ({
+        ...prev,
+        universityCardImageUrlError: "University card image is required.",
+      }));
+
+      toast.error("Please choose a university card image.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await axiosClient.post("/students", formData);
+      const universityCardImageUrl =
+        await uploadUniversityCardImage(cardImageFile);
+
+      await axiosClient.post("/students", {
+        ...formData,
+        universityCardImageUrl,
+      });
       toast.success("Student added successfully");
       await onStudentAdded();
       onClose();
@@ -369,21 +435,46 @@ function AddStudentModal({
               errorMessage={inputErrorMessage.phoneNumberError}
             />
 
-            <FormInput
-              icon={<Image />}
-              label="Card Image URL"
-              name="universityCardImageUrl"
-              value={formData.universityCardImageUrl}
-              onChange={(e) => {
-                handleChange(e);
-                setInputErrorMessage((prev) => ({
-                  ...prev,
-                  universityCardImageUrlError: "",
-                }));
-              }}
-              placeholder="https://example.com/card.jpg"
-              errorMessage={inputErrorMessage.universityCardImageUrlError}
-            />
+            <div>
+              <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                <span className="text-blue-600 dark:text-blue-400">
+                  <Image />
+                </span>
+                University Card Image
+              </label>
+
+              <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-6 text-center transition hover:border-blue-400  dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-blue-500">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleCardImageChange}
+                  className="hidden"
+                />
+
+                {cardImagePreview ? (
+                  <img
+                    src={cardImagePreview}
+                    alt="University card preview"
+                    className="h-40 w-full rounded-xl object-cover"
+                  />
+                ) : (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Click to upload university card
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      PNG, JPG, or WEBP up to 5MB
+                    </p>
+                  </div>
+                )}
+              </label>
+
+              {inputErrorMessage.universityCardImageUrlError && (
+                <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                  {inputErrorMessage.universityCardImageUrlError}
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -411,8 +502,3 @@ function AddStudentModal({
 }
 
 export default AddStudentModal;
-
-
-
-
-

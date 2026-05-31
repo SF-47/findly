@@ -34,6 +34,8 @@ builder.Services.AddScoped<IUniversityService, UniversityService>();
 builder.Services.AddScoped<IDashboardService,DashboardService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+builder.Services.AddHttpClient();//ASP.NET needs HttpClient to call the n8n webhook after creating an item.
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(

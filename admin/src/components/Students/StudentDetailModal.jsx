@@ -505,21 +505,59 @@ function StudentDetailsModal({
               errorMessage={inputErrorMessage.phoneNumberError}
             />
 
-            <FormInput
-              icon={<Image />}
-              label="Card Image URL"
-              name="universityCardImageUrl"
-              value={formData.universityCardImageUrl}
-              onChange={(e) => {
-                handleChange(e);
-                setInputErrorMessage((prev) => ({
-                  ...prev,
-                  universityCardImageUrlError: "",
-                }));
-              }}
-              disabled={!isEditing}
-              errorMessage={inputErrorMessage.universityCardImageUrlError}
-            />
+            {isEditing ? (
+              <FormInput
+                icon={<Image />}
+                label="Card Image URL"
+                name="universityCardImageUrl"
+                value={formData.universityCardImageUrl}
+                onChange={(e) => {
+                  handleChange(e);
+                  setInputErrorMessage((prev) => ({
+                    ...prev,
+                    universityCardImageUrlError: "",
+                  }));
+                }}
+                disabled={!isEditing}
+                errorMessage={inputErrorMessage.universityCardImageUrlError}
+              />
+            ) : (
+              <div className="md:col-span-2">
+                <label className="mb-1.5 flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="text-blue-600 dark:text-blue-400">
+                    <Image />
+                  </span>
+                  University Card Image
+                </label>
+
+                <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800">
+                  {formData.universityCardImageUrl ? (
+                    <a
+                      href={formData.universityCardImageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block"
+                    >
+                      <img
+                        src={formData.universityCardImageUrl}
+                        alt={`${formData.fullName}'s university card`}
+                        className="max-h-80 w-full object-contain"
+                      />
+                    </a>
+                  ) : (
+                    <div className="flex h-40 items-center justify-center px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                      No university card image available.
+                    </div>
+                  )}
+                </div>
+
+                {inputErrorMessage.universityCardImageUrlError && (
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                    {inputErrorMessage.universityCardImageUrlError}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 pt-2">

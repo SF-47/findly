@@ -8,7 +8,7 @@ import ItemCard from "../components/Items/ItemCard";
 import ItemCardSkeleton from "../components/Items/ItemCardSkeleton";
 import ItemStatsCardSkeleton from "../components/Items/ItemStatsCardSkeleton";
 import AllFoundItems from "../components/Items/AllFoundItems";
-import CreateFoundItemModal from "../components/Items/CreateNewItem";
+import CreateNewItem from "../components/Items/CreateNewItem";
 
 function FoundItems() {
   const [foundItems, setFoundItems] = useState([]);
@@ -298,7 +298,7 @@ function FoundItems() {
         )}
       </div>
 
-      <CreateFoundItemModal
+      <CreateNewItem
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateFoundItem}

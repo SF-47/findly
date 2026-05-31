@@ -22,6 +22,54 @@ namespace backend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("ItemsMatch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ConfidenceLevel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("FoundItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("LostItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MatchPercentage")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReasoningSummary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ReviewedByAdminId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FoundItemId");
+
+                    b.HasIndex("ReviewedByAdminId");
+
+                    b.HasIndex("LostItemId", "FoundItemId")
+                        .IsUnique();
+
+                    b.ToTable("Matches");
+                });
+
             modelBuilder.Entity("backend.Models.Admin", b =>
                 {
                     b.Property<Guid>("Id")
@@ -256,6 +304,31 @@ namespace backend.Migrations
                         .IsUnique();
 
                     b.ToTable("Universities");
+                });
+
+            modelBuilder.Entity("ItemsMatch", b =>
+                {
+                    b.HasOne("backend.Models.FoundItem", "FoundItem")
+                        .WithMany()
+                        .HasForeignKey("FoundItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.LostItem", "LostItem")
+                        .WithMany()
+                        .HasForeignKey("LostItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Admin", "ReviewedByAdmin")
+                        .WithMany()
+                        .HasForeignKey("ReviewedByAdminId");
+
+                    b.Navigation("FoundItem");
+
+                    b.Navigation("LostItem");
+
+                    b.Navigation("ReviewedByAdmin");
                 });
 
             modelBuilder.Entity("backend.Models.Admin", b =>

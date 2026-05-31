@@ -11,7 +11,7 @@ import ItemStatsCard from "../components/Items/ItemStatsCard";
 import { useEffect, useMemo, useState } from "react";
 import LostItemsFilter from "../components/Items/LostItemsFilters";
 import axiosClient from "../api/axiosClient";
-import CreateLostItemModal from "../components/Items/CreateNewItem";
+import CreateNewItem from "../components/Items/CreateNewItem";
 import toast from "react-hot-toast";
 import ItemCardSkeleton from "./../components/Items/ItemCardSkeleton.jsx";
 import ItemStatsCardSkeleton from "../components/Items/ItemStatsCardSkeleton.jsx";
@@ -302,13 +302,14 @@ function LostItems() {
         )}
       </div>
 
-      <CreateLostItemModal
+      <CreateNewItem
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateLostItem}
         students={students}
         categories={categories}
         isSubmitting={isSubmitting}
+        type="lost"
       />
     </div>
   );
