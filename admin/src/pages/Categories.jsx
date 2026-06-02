@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axiosClient from "../api/axiosClient";
 import toast from "react-hot-toast";
 import { isOwner } from "../../utils/auth";
+import EditCategoryModal from "../components/Categories/EditCategoryModal";
 
 function CategorySkeletonCard() {
   return (
@@ -30,6 +31,8 @@ function Categories() {
   const [categories, setCategories] = useState([]);
   const [reportCounts, setReportCounts] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const owner = isOwner();
 
   async function fetchData() {
@@ -63,6 +66,22 @@ function Categories() {
     fetchData();
   }, []);
 
+  function handleEditCategory(category) {
+    setSelectedCategory(category);
+    setShowCategoryModal(true);
+  }
+
+  async function handleDeleteCategory(id) {
+    try {
+      await axiosClient.delete(`/categories/${id}`);
+      toast.success("Category deleted successfully.");
+      await fetchData();
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete category.");
+    }
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -78,7 +97,14 @@ function Categories() {
 
         <div className="flex gap-3">
           {owner && (
-            <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedCategory(null);
+                setShowCategoryModal(true);
+              }}
+              className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700"
+            >
               <Plus />
               Add Category
             </button>
@@ -95,7 +121,13 @@ function Categories() {
       ) : categories.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
           {categories.map((c) => (
-            <CatCard key={c.id} category={c} reportCount={reportCounts[c.id] || 0} />
+            <CatCard
+              key={c.id}
+              category={c}
+              reportCount={reportCounts[c.id] || 0}
+              onEdit={handleEditCategory}
+              onDelete={handleDeleteCategory}
+            />
           ))}
         </div>
       ) : (
@@ -108,6 +140,19 @@ function Categories() {
             Add your first category to organize lost and found reports.
           </p>
         </div>
+      )}
+
+      {showCategoryModal && (
+        <EditCategoryModal
+          key={selectedCategory?.id || "new"}
+          isOpen
+          category={selectedCategory}
+          onClose={() => {
+            setShowCategoryModal(false);
+            setSelectedCategory(null);
+          }}
+          onSuccess={fetchData}
+        />
       )}
     </div>
   );

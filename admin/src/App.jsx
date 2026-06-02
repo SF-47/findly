@@ -92,6 +92,7 @@ function AdminLayout() {
             <Route path="/profile" element={<Profile />} />
 
             <Route path="/404" element={<Forbidden />} />
+            <Route path="*" element={<Forbidden />} />
           </Routes>
         </main>
       </div>

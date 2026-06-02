@@ -1,7 +1,19 @@
-import { ArrowLeft, ClipboardCheck } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, SlidersHorizontal } from "lucide-react";
 import ItemCard from "./ItemCard";
+import FoundItemsFilter from "./FoundItemsFilters";
 
-function AllFoundItems({ foundItems, students, onDelete, onBack }) {
+function AllFoundItems({
+  foundItems,
+  students,
+  onDelete,
+  onBack,
+  showFilters,
+  setShowFilters,
+  filters,
+  setFilters,
+  categories,
+  clearFilters,
+}) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
@@ -25,9 +37,32 @@ function AllFoundItems({ foundItems, students, onDelete, onBack }) {
           </div>
         </div>
 
-        <div className="flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-300">
-          <ClipboardCheck size={18} />
-          {foundItems.length} Reports
+        <div className="flex gap-3">
+          <div className="flex w-fit items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-300">
+            <ClipboardCheck size={18} />
+            {foundItems.length} Reports
+          </div>
+
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setShowFilters((prev) => !prev)}
+              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
+            >
+              <SlidersHorizontal />
+              Filter
+            </button>
+
+            {showFilters && (
+              <FoundItemsFilter
+                filters={filters}
+                categories={categories}
+                onChange={setFilters}
+                onClear={clearFilters}
+                onClose={() => setShowFilters(false)}
+              />
+            )}
+          </div>
         </div>
       </div>
 

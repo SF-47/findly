@@ -30,7 +30,7 @@ public class N8nMatchingController : ControllerBase
     }
 
     [HttpGet("candidates")]
-    public async Task<IActionResult> GetCandidates([FromQuery] string type, [FromQuery] Guid itemId)
+    public async Task<IActionResult> GetCandidates([FromQuery] string type, [FromQuery] Guid itemId)// [FromQuery] string type, [FromQuery] Guid itemId . Take the value from the URL query string. example endpoint : GET /n8n/matching/candidates?type=lost&itemId=019e7999-750a-7647-8413-622f5a23cb2a
     {
         if (!IsValidN8nRequest())
         {
@@ -188,7 +188,7 @@ public class N8nMatchingController : ControllerBase
         }
 
         var lostItem = await _db.LostItems
-            .AsNoTracking()
+            .AsNoTracking() //EF Core should read the data only, but not track it for changes.
             .FirstOrDefaultAsync(l => l.Id == request.LostItemId);
         var foundItem = await _db.FoundItems
             .AsNoTracking()

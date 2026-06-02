@@ -66,9 +66,6 @@ function ChangePasswordModal({ onClose }) {
       toast.success("Password changed successfully.");
       onClose();
     } catch (error) {
-      console.log(error);
-      console.log("Backend response:", error.response?.data);
-
       const backendErrors = error.response?.data?.errors;
 
       if (Array.isArray(backendErrors) && backendErrors.length > 0) {
@@ -89,8 +86,6 @@ function ChangePasswordModal({ onClose }) {
     } finally {
       setIsLoading(false);
     }
-
-    console.log(inputs);
   }
 
   return (

@@ -83,6 +83,37 @@ button:disabled,
   }
 }
 
+@keyframes modal-overlay-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes confirm-dialog-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 @keyframes admin-grid-move {
   from {
     background-position:
@@ -188,11 +219,25 @@ button:disabled,
 .admin-modal-overlay {
   left: var(--admin-sidebar-offset, 18rem);
   transition: left 0.3s ease;
+  animation: modal-overlay-fade-in 0.18s ease-out both;
+}
+
+.admin-modal-overlay > :first-child {
+  animation: modal-panel-enter 0.22s ease-out both;
 }
 
 .admin-confirm-dialog-content {
   left: calc(50% + (var(--admin-sidebar-offset, 18rem) / 2));
   transition: left 0.3s ease;
+  animation: confirm-dialog-enter 0.2s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-modal-overlay,
+  .admin-modal-overlay > :first-child,
+  .admin-confirm-dialog-content {
+    animation: none;
+  }
 }
 
 .app-prime-dropdown {

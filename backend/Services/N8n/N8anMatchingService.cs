@@ -6,11 +6,17 @@ public class N8nMatchingService : IN8nMatchingService
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _config;
+    private readonly ILogger<N8nMatchingService> _logger;
 
-    public N8nMatchingService(HttpClient httpClient, IConfiguration config)
+    public N8nMatchingService(
+        HttpClient httpClient,
+        IConfiguration config,
+        ILogger<N8nMatchingService> logger
+    )
     {
         _httpClient = httpClient;
         _config = config;
+        _logger = logger;
     }
 
     public async Task TriggerMatchingAsync(Guid itemId, string type)
@@ -20,12 +26,16 @@ public class N8nMatchingService : IN8nMatchingService
 
         if (string.IsNullOrWhiteSpace(webhookUrl))
         {
+            _logger.LogWarning("Skipping n8n matching trigger because N8n:WebhookUrl is missing.");
             return;
         }
 
-        var request = new HttpRequestMessage(HttpMethod.Post, webhookUrl);
+        using var request = new HttpRequestMessage(HttpMethod.Post, webhookUrl);
 
-        request.Headers.Add("x-n8n-secret", secret);
+        if (!string.IsNullOrWhiteSpace(secret))
+        {
+            request.Headers.Add("x-n8n-secret", secret);
+        }
 
         request.Content = JsonContent.Create(new
         {
@@ -35,12 +45,20 @@ public class N8nMatchingService : IN8nMatchingService
 
         try
         {
-            await _httpClient.SendAsync(request);
+            using var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning(
+                    "n8n matching trigger failed with status {StatusCode}: {ResponseBody}",
+                    (int)response.StatusCode,
+                    responseBody
+                );
+            }
         }
-        catch
+        catch (Exception exception)
         {
-            // Do not block item creation if n8n is down.
-            // Later you can log this error.
+            _logger.LogError(exception, "Unable to trigger n8n matching workflow.");
         }
     }
 }

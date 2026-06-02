@@ -34,7 +34,7 @@ public class DashboardService : IDashboardService
 
             var foundItems = await _db.FoundItems.CountAsync();
 
-            var possibleMatches = 0; // Later: await _db.Matches.CountAsync();
+            var matches = await _db.Matches.CountAsync();
 
             var totalUniversities = await _db.Universities.CountAsync();
 
@@ -45,7 +45,7 @@ public class DashboardService : IDashboardService
                 totalCategories,
                 lostItems,
                 foundItems,
-                possibleMatches,
+                matches,
                 totalUniversities
             );
         }
@@ -73,7 +73,10 @@ public class DashboardService : IDashboardService
                 f.Student.UniversityId == universityId!.Value
             );
 
-            var possibleMatches = 0; // Later: count only matches related to this university.
+            var matches = await _db
+                .Matches.Include(m => m.LostItem)
+                    .ThenInclude(l => l.Student)
+                .CountAsync(m => m.LostItem.Student.UniversityId == universityId);
 
             var totalUniversities = 1;
 
@@ -84,7 +87,7 @@ public class DashboardService : IDashboardService
                 totalCategories,
                 lostItems,
                 foundItems,
-                possibleMatches,
+                matches,
                 totalUniversities
             );
         }

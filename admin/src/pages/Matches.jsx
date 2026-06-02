@@ -1,7 +1,6 @@
 import {
   CircleCheck,
   CircleX,
-  Plus,
   RefreshCw,
   Search,
   SlidersHorizontal,
@@ -186,11 +185,6 @@ function Matches() {
               />
             )}
           </div>
-
-          <button className="flex items-center gap-2 rounded-xl bg-linear-to-r from-purple-500 to-indigo-600 px-4 py-3 font-semibold text-white shadow-lg transition hover:from-purple-600 hover:to-indigo-700">
-            <Plus />
-            Generate Matches
-          </button>
         </div>
       </div>
 

@@ -37,7 +37,7 @@ function Dashboard() {
     lostItemsData: [],
     foundItemsData: [],
     studentsData: [],
-    matchesData: [],
+    possibleMatchesData: [],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -68,18 +68,24 @@ function Dashboard() {
 
   async function fetchTableData() {
     try {
-      const [lostItemsResponse, foundItemsResponse, studentsResponse] =
+      const [
+        lostItemsResponse,
+        foundItemsResponse,
+        studentsResponse,
+        possibleMatchesResponse,
+      ] =
         await Promise.all([
           axiosClient.get("/lost-items"),
           axiosClient.get("/found-items"),
           axiosClient.get("/students"),
+          axiosClient.get("/matches"),
         ]);
 
       setDataForTables({
         lostItemsData: lostItemsResponse.data,
         foundItemsData: foundItemsResponse.data,
         studentsData: studentsResponse.data,
-        matchesData: [],
+        possibleMatchesData: possibleMatchesResponse.data,
       });
     } catch (error) {
       console.log(error);
@@ -92,6 +98,10 @@ function Dashboard() {
     fetchDashboardSummary();
     fetchTableData();
   }, []);
+
+  async function refreshDashboard() {
+    await Promise.all([fetchDashboardSummary(), fetchTableData()]);
+  }
 
   const stats = [
     {
@@ -173,7 +183,9 @@ function Dashboard() {
                   {admin?.role === "Owner"
                     ? "Owner - All Universities"
                     : `${admin?.universityShortName || "University"}${
-                        admin?.universityBranch ? ` - ${admin.universityBranch}` : ""
+                        admin?.universityBranch
+                          ? ` - ${admin.universityBranch}`
+                          : ""
                       }`}
                 </p>
               </div>
@@ -182,7 +194,7 @@ function Dashboard() {
 
           <button
             type="button"
-            onClick={fetchDashboardSummary}
+            onClick={refreshDashboard}
             disabled={isLoading}
             className="flex w-fit cursor-pointer items-center gap-3 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg duration-300 hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -233,6 +245,15 @@ function Dashboard() {
           columns={["Student", "University ID", "Phone", "Status"]}
           data={dataForTables.studentsData.filter((s) => !s.isVerified)}
           type="students"
+          isLoading={isLoading}
+        />
+
+        <TableSkeleton
+          title="Possible Matches"
+          subtitle="Latest AI-generated item matches will appear here."
+          columns={["Lost Item", "Found Item", "Score", "Status", "Date"]}
+          data={dataForTables.possibleMatchesData}
+          type="matches"
           isLoading={isLoading}
         />
       </div>

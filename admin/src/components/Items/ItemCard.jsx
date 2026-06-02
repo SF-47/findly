@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ArrowRight,
   Calendar,
   ClipboardCheck,
   Eye,
@@ -13,9 +14,11 @@ import {
 } from "lucide-react";
 import { isOwner } from "../../../utils/auth";
 import ConfirmDialog from "../ConfirmDialog";
+import ItemDetailsModal from "./ItemDetailsModal";
 
 function ItemCard({ type, item, students, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const owner = isOwner();
 
@@ -50,6 +53,12 @@ function ItemCard({ type, item, students, onDelete }) {
         focus: "focus:border-emerald-400 dark:focus:border-emerald-500",
       };
 
+  const status = item?.status || "Open";
+  const university =
+    [student?.universityShortName, student?.universityBranch]
+      .filter(Boolean)
+      .join(" - ") || "Not Assigned";
+
   return (
     <div className="group overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
       <div
@@ -79,7 +88,14 @@ function ItemCard({ type, item, students, onDelete }) {
 
             {showMenu && (
               <div className="absolute right-0 top-10 z-50 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-                <button className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMenu(false);
+                    setShowDetails(true);
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700"
+                >
                   <Eye size={13} />
                   View
                 </button>
@@ -111,7 +127,7 @@ function ItemCard({ type, item, students, onDelete }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-              Category Name
+              {item?.categoryName || "Uncategorized"}
             </p>
 
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
@@ -122,7 +138,7 @@ function ItemCard({ type, item, students, onDelete }) {
           <span
             className={`rounded-full px-3 py-1 text-xs font-semibold ${accent.badge}`}
           >
-            Open
+            {status}
           </span>
         </div>
 
@@ -134,7 +150,7 @@ function ItemCard({ type, item, students, onDelete }) {
           {owner && (
             <div className="flex items-center gap-3">
               <LucideUniversity className="text-blue-500" />
-              <span>{student?.universityShortName +" - " + student?.universityBranch || "Not Assigned"}</span>
+              <span>{university}</span>
             </div>
           )}
 
@@ -158,13 +174,27 @@ function ItemCard({ type, item, students, onDelete }) {
           </div>
         </div>
 
-        <button className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-500 hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-600 hover:text-white hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:text-blue-300 dark:hover:border-transparent dark:hover:text-white">
+        <button
+          type="button"
+          onClick={() => setShowDetails(true)}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-500 hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-600 hover:text-white hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:text-blue-300 dark:hover:border-transparent dark:hover:text-white"
+        >
           View Details
-          <span className="transition-transform duration-300 group-hover:translate-x-1">
-            →
-          </span>
+          <ArrowRight
+            size={17}
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          />
         </button>
       </div>
+
+      {showDetails && (
+        <ItemDetailsModal
+          type={type}
+          item={item}
+          student={student}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
     </div>
   );
 }

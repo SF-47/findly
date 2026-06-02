@@ -11,8 +11,9 @@ import {
   Tags,
 } from "lucide-react";
 import { isOwner } from "../../../utils/auth";
+import ConfirmDialog from "../ConfirmDialog";
 
-function CatCard({ category, reportCount = 0 }) {
+function CatCard({ category, reportCount = 0, onEdit, onDelete }) {
   const [showMenu, setShowMenu] = useState(false);
   const owner = isOwner();
 
@@ -68,13 +69,32 @@ function CatCard({ category, reportCount = 0 }) {
 
         {showMenu && (
           <div className="absolute right-0 top-10 z-50 w-28 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
-            <button className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700">
+            <button
+              type="button"
+              onClick={() => {
+                setShowMenu(false);
+                onEdit(category);
+              }}
+              className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700"
+            >
               Edit
             </button>
 
-            <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40">
-              Delete
-            </button>
+            <ConfirmDialog
+              title="Delete category?"
+              description={`Delete "${category.name}"? This action cannot be undone.`}
+              onConfirm={() => {
+                setShowMenu(false);
+                onDelete(category.id);
+              }}
+            >
+              <button
+                type="button"
+                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+              >
+                Delete
+              </button>
+            </ConfirmDialog>
           </div>
         )}
       </div>
@@ -93,12 +113,6 @@ function CatCard({ category, reportCount = 0 }) {
         </span>
       </div>
 
-      <button className="mt-7 flex w-full items-center justify-center gap-2 rounded-2xl border border-blue-200 bg-white px-4 py-3 text-sm font-semibold text-blue-700 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-blue-500 hover:bg-linear-to-r hover:from-blue-500 hover:to-indigo-600 hover:text-white hover:shadow-lg dark:border-zinc-700 dark:bg-zinc-800 dark:text-blue-300 dark:hover:border-transparent dark:hover:text-white">
-        <span>View Category</span>
-        <span className="transition-transform duration-300 group-hover:translate-x-1">
-          →
-        </span>
-      </button>
     </div>
   );
 }

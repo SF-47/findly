@@ -11,9 +11,6 @@ function TableSkeleton({
     return new Date(date).toLocaleDateString();
   }
 
-
-  console.log(data);
-
   function renderRow(item) {
     if (type === "lost") {
       return (
@@ -85,6 +82,30 @@ function TableSkeleton({
                 Pending
               </span>
             )}
+          </td>
+        </>
+      );
+    }
+
+    if (type === "matches") {
+      return (
+        <>
+          <td className="px-5 py-4 font-semibold text-gray-900 dark:text-white">
+            {item.lostItem?.itemName || "Untitled"}
+          </td>
+          <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+            {item.foundItem?.itemName || "Untitled"}
+          </td>
+          <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+            {item.matchPercentage ?? 0}%
+          </td>
+          <td className="px-5 py-4">
+            <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+              {item.status || "Pending"}
+            </span>
+          </td>
+          <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
+            {formatDate(item.createdAt)}
           </td>
         </>
       );
