@@ -259,12 +259,12 @@ function LoginPage() {
                       input: "cursor-pointer",
                     }}
                   />
-                  <button
+                  {/* <button
                     type="button"
                     className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                   >
                     Forgot password?
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Login-level error */}
