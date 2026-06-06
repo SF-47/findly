@@ -109,7 +109,7 @@ public class LostItemsController : ControllerBase
             return BadRequest(errorResponse);
         }
         var lostItem = await _lostItemsService.Create(request);
-        await _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
+        _ = _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
 
         var response = ToFullResponse(lostItem);
         return Created($"/lost-items/{lostItem.Id}", response);

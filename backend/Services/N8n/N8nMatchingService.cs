@@ -4,9 +4,9 @@ namespace backend.Services.N8n;
 
 public class N8nMatchingService : IN8nMatchingService
 {
-    private readonly HttpClient _httpClient;
-    private readonly IConfiguration _config;
-    private readonly ILogger<N8nMatchingService> _logger;
+    private readonly HttpClient _httpClient;//Sends request to n8n.
+    private readonly IConfiguration _config;//Reads n8n URL and secret.
+    private readonly ILogger<N8nMatchingService> _logger;//Logs errors/warnings.
 
     public N8nMatchingService(
         HttpClient httpClient,

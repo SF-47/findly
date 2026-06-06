@@ -1,5 +1,6 @@
-using System.Text;
-using backend.Data;
+using System.Text; //3am nesta3mela kermel al JWT bado Encoding.UTF8.GetBytes(jwtKey) , wl encoding... converts the JWT secret mn string into bytes
+using backend.Data; //bta3tene access la AppDbContext
+// using backend.Services... : Allows Program.cs to register your services.
 using backend.Services.Admins;
 using backend.Services.Auth;
 using backend.Services.Categories;
@@ -7,24 +8,29 @@ using backend.Services.Dashboard;
 using backend.Services.FoundItems;
 using backend.Services.Jwt;
 using backend.Services.LostItems;
+using backend.Services.N8n;
 using backend.Services.Students;
 using backend.Services.Universities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using backend.Services.N8n;
+using Microsoft.AspNetCore.Authentication.JwtBearer; //Enables JWT Bearer authentication.
+using Microsoft.EntityFrameworkCore; //Allows database setup with EF Core.
+using Microsoft.IdentityModel.Tokens; //Used to configure JWT token validation.
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(); //hayde bt2ello la ASP.NET 2no hayda al project byesta3mel controllers mtl AuthController , LostItemsController ....
 
 builder.Services.AddOpenApi();
 
+//hayde hon ya3ne 3am 2ool Use PostgreSQL with the connection string named SupabaseDb
+//AppDbContext is the EF Core class that represents your database.
+//UseNpgsql means use PostgreSQL provider.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SupabaseDb"));
 });
 
+//hon 3am ba3mel register lal services li 2ele
+//AddScoped means: Create one instance of this service per HTTP request , example : when LostItemController needs ILostItemService , ASP>NET automatically gives it LostItemsServices. This is called dependency injection.
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IStudentServices, StudentServices>();
 builder.Services.AddScoped<ILostItemsService, LostItemsServices>();
@@ -32,24 +38,24 @@ builder.Services.AddScoped<IFoundItemService, FoundItemsServices>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUniversityService, UniversityService>();
-builder.Services.AddScoped<IDashboardService,DashboardService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IN8nMatchingService, N8nMatchingService>();
 
 builder.Services.AddHttpClient();
+
 //Because after ASP.NET creates a lost/found item, it needs to send an HTTP request to n8n.
 // Without HttpClient, the backend cannot trigger n8n.
 
+//hon CORS controls which frontend can call my backend
+//right now i am allowing everything , any orgin , any header , any method , but for deployment , i should restrict it to my real frontend domain.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         "AllowFrontend",
         policy =>
         {
-            policy
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod();
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
         }
     );
 });
@@ -63,6 +69,7 @@ var jwtAudience = builder.Configuration["Jwt:Audience"];
 
 //This part checks that the key exists
 //Because if the key is missing, token validation cannot work
+//So if JWT key is missing, the backend stops immediately.
 if (string.IsNullOrWhiteSpace(jwtKey))
 {
     throw new Exception("JWT Key is missing.");
@@ -99,9 +106,13 @@ builder
 
 var app = builder.Build();
 
+//This creates the actual running app.
+//Before it, I configure services.
+//After it, I configure middleware.
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi(); //Only expose OpenAPI in development.
 }
 
 app.MapGet(
@@ -110,8 +121,10 @@ app.MapGet(
     {
         return "Smart Lost & Found API is running.";
     }
-);
-app.UseCors("AllowFrontend");
+); //Good for checking that the backend is alive.
+
+//Middleware order (Order matters) :
+app.UseCors("AllowFrontend"); //Allows frontend requests.
 
 app.UseAuthentication();
 //This means : Read the token and check who the user is.
@@ -125,6 +138,5 @@ app.UseAuthorization();
 //Example : [Authorize] means Only logged-in users with valid token can access.
 //Example : [Authorize(Roles = "Owner")] means Only logged-in admins with Role = Owner can access.
 
-app.MapControllers();
-
-app.Run();
+app.MapControllers();//Activates controller routes.
+app.Run();//Starts the server
