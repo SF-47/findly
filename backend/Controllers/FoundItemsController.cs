@@ -109,7 +109,7 @@ public class FoundItemsController : ControllerBase
             return BadRequest(errorResponse);
         }
         var foundItem = await _foundItemsService.Create(request);
-        await _n8nMatchingService.TriggerMatchingAsync(foundItem.Id, "found");
+        _ = _n8nMatchingService.TriggerMatchingAsync(foundItem.Id, "found");
 
         var response = ToFullResponse(foundItem);
         return Created($"/found-items/{foundItem.Id}", response);
