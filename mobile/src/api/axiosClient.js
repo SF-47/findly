@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 import { getToken } from '../storage/tokenStorage';
-import axiosClient from './../../../admin/src/api/axiosClient';
+
 
 const API_BASE_URL = "http://192.168.1.105:5192";
 

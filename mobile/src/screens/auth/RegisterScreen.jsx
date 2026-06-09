@@ -1,5 +1,8 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import {
+  Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -10,8 +13,111 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { registerStudent } from "../../services/authService";
+import { getAllUniversities } from "../../services/universitiesService";
 
-export default function RegisterScreen({navigation}) {
+export default function RegisterScreen({ navigation }) {
+  const [registerForm, setRegisterForm] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    universityId: "",
+    universityStudentId: "",
+    universityCardImageUrl: "",
+  });
+  const [universities, setUniversities] = useState([]);
+  const [showUniversities, setShowUniversities] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  function updateRegisterForm(name, value) {
+    setRegisterForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handlePickUniversityCard() {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert(
+        "Permission needed",
+        "Please allow photo access to upload your university card.",
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [16, 10],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      updateRegisterForm("universityCardImageUrl", result.assets[0].uri);
+    }
+  }
+
+  async function handleRegister() {
+    try {
+      setError("");
+      setIsLoading(true);
+
+      if (
+        !registerForm.fullName.trim() ||
+        !registerForm.email.trim() ||
+        !registerForm.password.trim() ||
+        !registerForm.phoneNumber.trim() ||
+        !registerForm.universityId.trim() ||
+        !registerForm.universityStudentId.trim() ||
+        !registerForm.universityCardImageUrl.trim()
+      ) {
+        setError("Please fill in all fields and add your university card.");
+        return;
+      }
+
+      await registerStudent({
+        fullName: registerForm.fullName.trim(),
+        email: registerForm.email.trim(),
+        password: registerForm.password,
+        phoneNumber: registerForm.phoneNumber.trim(),
+        universityId: registerForm.universityId.trim(),
+        universityStudentId: registerForm.universityStudentId.trim(),
+        universityCardImageUrl: registerForm.universityCardImageUrl,
+      });
+
+      navigation.replace("PendingVerification");
+    } catch (error) {
+      console.log(error);
+
+      setError(
+        error?.response?.data?.message ||
+          "Registration failed. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadUniversities();
+  }, []);
+
+  async function loadUniversities() {
+    try {
+      const data = await getAllUniversities();
+      setUniversities(data);
+    } catch (error) {
+      console.log(error);
+      setError("Failed to load universities.");
+    }
+  }
+
+  const selectedUniversity = universities.find(
+    (university) => university.id === registerForm.universityId,
+  );
+
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-white"
@@ -58,6 +164,8 @@ export default function RegisterScreen({navigation}) {
               placeholder="Enter your full name"
               placeholderTextColor="#94a3b8"
               autoCapitalize="words"
+              value={registerForm.fullName}
+              onChangeText={(text) => updateRegisterForm("fullName", text)}
             />
           </View>
 
@@ -74,6 +182,8 @@ export default function RegisterScreen({navigation}) {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              value={registerForm.email}
+              onChangeText={(text) => updateRegisterForm("email", text)}
             />
           </View>
 
@@ -88,20 +198,90 @@ export default function RegisterScreen({navigation}) {
               placeholder="Enter your phone number"
               placeholderTextColor="#94a3b8"
               keyboardType="phone-pad"
+              value={registerForm.phoneNumber}
+              onChangeText={(text) => updateRegisterForm("phoneNumber", text)}
             />
           </View>
 
           {/* University ID */}
+          {/* University */}
           <View className="mb-5">
             <Text className="mb-2 text-sm font-semibold text-slate-700">
-              University ID
+              University
+            </Text>
+
+            <Pressable
+              className="h-14 flex-row items-center justify-between rounded-xl border border-slate-300 bg-white px-4"
+              onPress={() => setShowUniversities((prev) => !prev)}
+            >
+              <Text
+                className={
+                  selectedUniversity
+                    ? "text-base text-slate-900"
+                    : "text-base text-slate-400"
+                }
+              >
+                {selectedUniversity
+                  ? `${selectedUniversity.shortName} - ${selectedUniversity.branch}`
+                  : "Choose your university"}
+              </Text>
+
+              <Ionicons
+                name={
+                  showUniversities
+                    ? "chevron-up-outline"
+                    : "chevron-down-outline"
+                }
+                size={20}
+                color="#64748b"
+              />
+            </Pressable>
+
+            {showUniversities ? (
+              <View className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white">
+                {universities.length === 0 ? (
+                  <Text className="px-4 py-3 text-slate-500">
+                    No universities found.
+                  </Text>
+                ) : (
+                  universities.map((university) => (
+                    <Pressable
+                      key={university.id}
+                      className="border-b border-slate-100 px-4 py-3"
+                      onPress={() => {
+                        updateRegisterForm("universityId", university.id);
+                        setShowUniversities(false);
+                      }}
+                    >
+                      <Text className="font-bold text-slate-900">
+                        {university.shortName} - {university.branch}
+                      </Text>
+
+                      <Text className="mt-1 text-sm text-slate-500">
+                        {university.fullName}
+                      </Text>
+                    </Pressable>
+                  ))
+                )}
+              </View>
+            ) : null}
+          </View>
+
+          {/* Student ID */}
+          <View className="mb-5">
+            <Text className="mb-2 text-sm font-semibold text-slate-700">
+              Student ID
             </Text>
 
             <TextInput
               className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
-              placeholder="Enter your university ID"
+              placeholder="Enter your university student ID"
               placeholderTextColor="#94a3b8"
               autoCapitalize="characters"
+              value={registerForm.universityStudentId}
+              onChangeText={(text) =>
+                updateRegisterForm("universityStudentId", text)
+              }
             />
           </View>
 
@@ -118,26 +298,68 @@ export default function RegisterScreen({navigation}) {
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
+              value={registerForm.password}
+              onChangeText={(text) => updateRegisterForm("password", text)}
             />
           </View>
 
+          {/* University Card */}
+          <View className="mb-5">
+            <Text className="mb-2 text-sm font-semibold text-slate-700">
+              University Card
+            </Text>
+
+            {registerForm.universityCardImageUrl ? (
+              <Image
+                source={{ uri: registerForm.universityCardImageUrl }}
+                className="mb-3 h-40 w-full rounded-xl border border-slate-200"
+                resizeMode="cover"
+              />
+            ) : null}
+
+            <Pressable
+              className="h-14 flex-row items-center justify-center rounded-xl border border-dashed border-blue-400 bg-blue-50"
+              onPress={handlePickUniversityCard}
+            >
+              <Ionicons
+                name="image-outline"
+                size={22}
+                color="#2563eb"
+                style={{ marginRight: 8 }}
+              />
+              <Text className="text-base font-bold text-blue-600">
+                {registerForm.universityCardImageUrl
+                  ? "Change card image"
+                  : "Add card image"}
+              </Text>
+            </Pressable>
+          </View>
+
+          {error ? (
+            <Text className="mb-3 text-center text-sm font-semibold text-red-500">
+              {error}
+            </Text>
+          ) : null}
+
           {/* Register Button */}
-          <Pressable className="mt-2 h-14 items-center justify-center rounded-xl bg-blue-600">
+          <Pressable
+            className={`mt-2 h-14 items-center justify-center rounded-xl ${
+              isLoading ? "bg-blue-400" : "bg-blue-600"
+            }`}
+            onPress={handleRegister}
+            disabled={isLoading}
+          >
             <Text className="text-base font-bold text-white">
-              Register
+              {isLoading ? "Registering..." : "Register"}
             </Text>
           </Pressable>
 
           {/* Login Link */}
           <View className="mt-8 flex-row justify-center">
-            <Text className="text-slate-500">
-              Already have an account?
-            </Text>
+            <Text className="text-slate-500">Already have an account?</Text>
 
-            <Pressable onPress={()=> navigation.navigate("Login")}>
-              <Text className="font-bold text-blue-600">
-                {" "}Login
-              </Text>
+            <Pressable onPress={() => navigation.navigate("Login")}>
+              <Text className="font-bold text-blue-600"> Login</Text>
             </Pressable>
           </View>
         </View>

@@ -11,7 +11,7 @@ namespace backend.Controllers;
 
 [ApiController]
 [Route("universities")]
-[Authorize(Roles = "Owner")]
+
 public class UniversityController : ControllerBase
 {
     private readonly IUniversityService _universityService;
@@ -30,8 +30,8 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-
-    [HttpGet("{id}")]
+    [Authorize(Roles = "Owner")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUniById(Guid id)
     {
         var university = await _universityService.GetById(id);
@@ -45,7 +45,7 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> CreateNewUniversity(CreateUniversityRequest request)
     {
@@ -82,7 +82,7 @@ public class UniversityController : ControllerBase
 
         return Created($"/universities/{university.Id}", response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityRequest request)
     {
@@ -125,7 +125,7 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
-
+    [Authorize(Roles = "Owner")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUniversity(Guid id)
     {

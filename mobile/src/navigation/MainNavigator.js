@@ -9,7 +9,6 @@ import BrowseScreen from "../screens/main/BrowseScreen";
 import ReportScreen from "../screens/main/ReportScreen";
 import MatchesScreen from "../screens/main/MatchesScreen";
 import ProfileScreen from "../screens/main/ProfileScreen";
-import ComponentsDemoScreen from "../screens/main/ComponentsDemoScreen";
 import ItemDetailsScreen from "../screens/main/ItemDetailsScreen";
 
 const Tab = createBottomTabNavigator();
@@ -63,7 +62,7 @@ function MainTabs() {
       <Tab.Screen name="Report" component={ReportScreen} />
       <Tab.Screen name="Matches" component={MatchesScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Demo" component={ComponentsDemoScreen} />
+      
     </Tab.Navigator>
   );
 }

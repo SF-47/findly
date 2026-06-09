@@ -6,6 +6,8 @@ export const ENDPOINTS = {
 
     categories: "/categories",
 
+    universities:"/universities",
+
     myLostItems: "/students/me/lost-items",
     myFoundItems: "/students/me/found-items",
 
