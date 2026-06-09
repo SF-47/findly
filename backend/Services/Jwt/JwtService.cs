@@ -60,4 +60,40 @@ public class JwtService : IJwtService
 
         return new JwtSecurityTokenHandler().WriteToken(token);//converts it into a string sent to frontend.
     }
+    public string GenerateStudentToken(Student student)
+    {
+        var jwtKey = _configuration["Jwt:Key"];
+        var jwtIssuer = _configuration["Jwt:Issuer"];
+        var jwtAudience = _configuration["Jwt:Audience"];
+        var expiresInMinutes = _configuration.GetValue<int>("Jwt:ExpiresInMinutes");
+
+        if (string.IsNullOrWhiteSpace(jwtKey))
+        {
+            throw new Exception("JWT Key is missing.");
+        }
+        
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
+            new Claim(ClaimTypes.Email, student.Email),
+            new Claim(ClaimTypes.Name, student.FullName),
+            new Claim(ClaimTypes.Role, "Student"),
+            new Claim("universityId", student.UniversityId.ToString() ?? ""),
+            new Claim("isVerified" , student.IsVerified.ToString()) 
+        };
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); 
+
+        var token = new JwtSecurityToken(
+            issuer: jwtIssuer,
+            audience: jwtAudience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(expiresInMinutes),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
 }

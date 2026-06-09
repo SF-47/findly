@@ -24,6 +24,14 @@ public class StudentServices : IStudentServices
         return await _db.Students.Include(s => s.University).FirstOrDefaultAsync(s => s.Id == id);
     }
 
+    public async Task<Student?> GetCurrentStudent(Guid studentId)
+    {
+        return await _db
+            .Students.Include(s => s.University)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == studentId);
+    }
+
     public async Task<List<Student>> GetByUniversityId(Guid uniId)
     {
         return await _db
@@ -38,6 +46,7 @@ public class StudentServices : IStudentServices
         {
             FullName = request.FullName.Trim(),
             Email = request.Email.Trim().ToLower(),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
             UniversityId = request.UniversityId,
             UniversityStudentId = request.UniversityStudentId.Trim(),
             PhoneNumber = request.PhoneNumber.Trim(),

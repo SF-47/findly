@@ -8,6 +8,8 @@ public class Student
 
     public string Email { get; set; } = string.Empty;
 
+    public string PasswordHash { get; set; } = string.Empty;
+
     public Guid UniversityId { get; set; }
 
     public string UniversityStudentId { get; set; } = string.Empty;

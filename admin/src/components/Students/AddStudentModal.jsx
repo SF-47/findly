@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   IdCard,
   Image,
+  Lock,
   Mail,
   Phone,
   Plus,
@@ -85,6 +86,7 @@ function AddStudentModal({
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    password: "",
     universityId: owner ? "" : admin?.universityId || "",
     universityStudentId: "",
     phoneNumber: "",
@@ -93,6 +95,7 @@ function AddStudentModal({
   const [inputErrorMessage, setInputErrorMessage] = useState({
     fullNameError: "",
     emailError: "",
+    passwordError: "",
     universityIdError: "",
     universityStudentIdError: "",
     phoneNumberError: "",
@@ -141,6 +144,7 @@ function AddStudentModal({
     const errors = {
       fullNameError: "",
       emailError: "",
+      passwordError: "",
       universityIdError: "",
       universityStudentIdError: "",
       phoneNumberError: "",
@@ -159,6 +163,14 @@ function AddStudentModal({
       hasError = true;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       errors.emailError = "Please enter a valid email address.";
+      hasError = true;
+    }
+
+    if (!formData.password.trim()) {
+      errors.passwordError = "Password is required.";
+      hasError = true;
+    } else if (formData.password.length < 6) {
+      errors.passwordError = "Password must be at least 6 characters.";
       hasError = true;
     }
 
@@ -227,6 +239,7 @@ function AddStudentModal({
         const newErrors = {
           fullNameError: "",
           emailError: "",
+          passwordError: "",
           universityIdError: "",
           universityStudentIdError: "",
           phoneNumberError: "",
@@ -258,6 +271,9 @@ function AddStudentModal({
             hasBackendError = true;
           } else if (lowerError.includes("email")) {
             newErrors.emailError = err;
+            hasBackendError = true;
+          } else if (lowerError.includes("password")) {
+            newErrors.passwordError = err;
             hasBackendError = true;
           } else if (lowerError.includes("phone")) {
             newErrors.phoneNumberError = err;
@@ -339,6 +355,23 @@ function AddStudentModal({
               }}
               placeholder="xxxx@example.com"
               errorMessage={inputErrorMessage.emailError}
+            />
+
+            <FormInput
+              icon={<Lock />}
+              label="Password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => {
+                handleChange(e);
+                setInputErrorMessage((prev) => ({
+                  ...prev,
+                  passwordError: "",
+                }));
+              }}
+              placeholder="At least 6 characters"
+              errorMessage={inputErrorMessage.passwordError}
             />
 
             {owner ? (

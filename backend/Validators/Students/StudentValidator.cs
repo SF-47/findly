@@ -23,6 +23,16 @@ public static class StudentValidator
             errors.Add("University is required.");
         }
 
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            errors.Add("Password is required.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Password) && request.Password.Length < 6)
+        {
+            errors.Add("Password must be at least 6 characters.");
+        }
+
         if (string.IsNullOrWhiteSpace(request.UniversityStudentId))
         {
             errors.Add("University student ID is required.");

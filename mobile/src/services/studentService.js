@@ -1,0 +1,7 @@
+import axiosClient from "../api/axiosClient";
+import { ENDPOINTS } from "../api/endpoints";
+
+export async function getCurrentStudent() {
+    const response = await axiosClient.get(ENDPOINTS.me);
+    return response.data;
+}

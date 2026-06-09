@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.Models;
 using backend.Requests.Students;
 using backend.Responses.Errors;
@@ -51,7 +52,29 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
-    [HttpGet("{id}")]
+    [Authorize(Roles = "Student")]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCurrentStudent()
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(studentIdValue, out var studentId))//The ID inside the token is text. This converts it to Guid
+        {
+            return Unauthorized();//If the token is invalid, return Unauthorized
+        }
+
+        var student = await _studentService.GetCurrentStudent(studentId);
+        if (student is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        var response = ToFullStudentResponse(student);
+
+        return Ok(response);
+    }
+
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetStudentById(Guid id)
     {
         var student = await _studentService.GetById(id);
@@ -60,7 +83,7 @@ public class StudentController : ControllerBase
         {
             return NotFound("Student not found.");
         }
-        
+
         var accessResult = CheckStudentAccess(student);
 
         if (accessResult is not null)

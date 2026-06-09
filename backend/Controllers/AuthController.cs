@@ -4,6 +4,7 @@ using backend.Responses.Auth;
 using backend.Responses.Errors;
 using backend.Services.Auth;
 using backend.Services.Jwt;
+using backend.Validators;
 using backend.Validators.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -77,7 +78,7 @@ public class AuthController : ControllerBase
             return BadRequest(errorResponse);
         }
 
-        var changed = await _authService.ChangePassword(adminId , request);
+        var changed = await _authService.ChangePassword(adminId, request);
 
         if (!changed)
         {
@@ -88,5 +89,75 @@ public class AuthController : ControllerBase
 
         var message = "Password changed successfully.";
         return Ok(message);
+    }
+
+    [HttpPost("student/login")]
+    public async Task<IActionResult> LoginStudent(StudentLoginRequest request)
+    {
+        var validationErrors = StudentAuthValidator.ValidateLogin(request);
+
+        if (validationErrors.Any())
+        {
+            return BadRequest(new { message = "Validation failed.", errors = validationErrors });
+        }
+        var student = await _authService.LoginStudent(request);
+        if (student == null)
+        {
+            return BadRequest(new { message = "Invalid email or password." });
+        }
+
+        var token = _jwtService.GenerateStudentToken(student);
+
+        var response = new StudentLoginResponse(
+            student.Id,
+            student.FullName,
+            student.Email,
+            student.UniversityId,
+            student.University.ShortName,
+            student.University.FullName,
+            student.University.Branch,
+            student.IsVerified,
+            token
+        );
+
+        return Ok(response);
+    }
+
+    [HttpPost("student/register")]
+    public async Task<IActionResult> RegisterStudent(StudentRegisterRequest request)
+    {
+        var validationErrors = StudentAuthValidator.ValidateRegister(request);
+
+        if (validationErrors.Any())
+        {
+            return BadRequest(new { message = "Validation failed.", errors = validationErrors });
+        }
+
+        var student = await _authService.RegisterStudent(request);
+
+        if (student == null)
+        {
+            return BadRequest(
+                new
+                {
+                    message = "Student registration failed. Email, phone, or university may be invalid.",
+                }
+            );
+        }
+
+        var token = _jwtService.GenerateStudentToken(student);
+        var response = new StudentLoginResponse(
+            student.Id,
+            student.FullName,
+            student.Email,
+            student.UniversityId,
+            student.University.ShortName,
+            student.University.FullName,
+            student.University.Branch,
+            student.IsVerified,
+            token
+        );
+
+        return Ok(response);
     }
 }

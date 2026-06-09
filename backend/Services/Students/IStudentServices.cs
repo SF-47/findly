@@ -7,6 +7,7 @@ public interface IStudentServices
 {
     Task<List<Student>> GetAll();
     Task<Student?> GetById(Guid id);
+    Task<Student?> GetCurrentStudent(Guid studentId);
     Task<List<Student>> GetByUniversityId(Guid universityId);
     Task<Student> Create(CreateStudentRequest request);
     Task<Student?> Update(Guid id, UpdateStudentRequest request);
