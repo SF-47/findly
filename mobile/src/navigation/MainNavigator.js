@@ -8,8 +8,9 @@ import HomeScreen from "../screens/main/HomeScreen";
 import BrowseScreen from "../screens/main/BrowseScreen";
 import ReportScreen from "../screens/main/ReportScreen";
 import MatchesScreen from "../screens/main/MatchesScreen";
-import ProfileScreen from "../screens/main/ProfileScreen";
+import MenuScreen from "../screens/main/MenuScreen";
 import ItemDetailsScreen from "../screens/main/ItemDetailsScreen";
+import ProfileScreen from "../screens/main/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -19,7 +20,7 @@ const icons = {
   Browse: "search-outline",
   Report: "add-circle-outline",
   Matches: "sparkles-outline",
-  Profile: "person-outline",
+  Menu: "menu-outline",
   Demo: "layers-outline",
 };
 
@@ -61,8 +62,7 @@ function MainTabs() {
       <Tab.Screen name="Browse" component={BrowseScreen} />
       <Tab.Screen name="Report" component={ReportScreen} />
       <Tab.Screen name="Matches" component={MatchesScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      
+      <Tab.Screen name="Menu" component={MenuScreen} />
     </Tab.Navigator>
   );
 }
@@ -72,6 +72,7 @@ export default function MainNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen name="ItemDetails" component={ItemDetailsScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 }

@@ -87,4 +87,21 @@ public static class StudentValidator
 
         return errors;
     }
+
+    public static List<string> ValidateOwnInfoUpdate(UpdateStudentOwnInfo request)
+    {
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(request.FullName))
+        {
+            errors.Add("Full name is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+        {
+            errors.Add("Phone number is required.");
+        }
+
+        return errors;
+    }
 }

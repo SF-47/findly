@@ -157,4 +157,23 @@ public class StudentServices : IStudentServices
             && s.UniversityStudentId == universityStudentId.Trim()
         );
     }
+
+    public async Task<Student?> UpdateStudentOwnInfo(Guid studentId, UpdateStudentOwnInfo request)
+    {
+        var student = await _db
+            .Students.Include(s => s.University)
+            .FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student is null)
+        {
+            return null;
+        }
+
+        student.FullName = request.FullName.Trim();
+        student.PhoneNumber = request.PhoneNumber.Trim();
+
+        await _db.SaveChangesAsync();
+
+        return student;
+    }
 }

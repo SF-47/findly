@@ -92,142 +92,137 @@ export default function Sidebar({ isOpen, onToggle }) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-      <div className="absolute inset-0 z-0 bg-white/70 backdrop-blur-[1px] dark:bg-zinc-950/70" />
+        <div className="absolute inset-0 z-0 bg-white/70 backdrop-blur-[1px] dark:bg-zinc-950/70" />
 
-      <div className="relative z-10">
-        <div className="flex items-center gap-4 border-b border-blue-100/80 px-5 py-6 dark:border-zinc-700">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/40">
-            <Search size={32} className="text-blue-600 dark:text-blue-400" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 border-b border-blue-100/80 px-5 py-6 dark:border-zinc-700">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-100 dark:bg-blue-900/40">
+              <Search size={32} className="text-blue-600 dark:text-blue-400" />
+            </div>
+
+            <div>
+              <h1 className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
+                Lost & Found
+              </h1>
+
+              <p className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+                Admin Dashboard
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label="Close sidebar"
+              className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+            >
+              <PanelLeftClose size={20} />
+            </button>
           </div>
 
-          <div>
-            <h1 className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-              Lost & Found
-            </h1>
-
-            <p className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400">
-              Admin Dashboard
+          <nav className="px-4 py-5">
+            <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+              Main Menu
             </p>
-          </div>
 
-          <button
-            type="button"
-            onClick={onToggle}
-            aria-label="Close sidebar"
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
-          >
-            <PanelLeftClose size={20} />
-          </button>
-        </div>
-
-        <nav className="px-4 py-5">
-          <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-            Main Menu
-          </p>
-
-          <div className="flex flex-col gap-1">
-            <SidebarButton
-              id="dashboard"
-              icon={<House size={20} />}
-              label="Dashboard"
-              activeButton={activeButton}
-              navigate={navigate}
-              destination="/dashboard"
-            />
-
-            <SidebarButton
-              id="students"
-              icon={<Users size={20} />}
-              label="Students"
-              activeButton={activeButton}
-              navigate={navigate}
-              destination="/students"
-            />
-            {owner && (
+            <div className="flex flex-col gap-1">
               <SidebarButton
-                id="universities"
-                icon={<University size={20} />}
-                label="Universities"
+                id="dashboard"
+                icon={<House size={20} />}
+                label="Dashboard"
                 activeButton={activeButton}
                 navigate={navigate}
-                destination="/universities"
+                destination="/dashboard"
               />
-            )}
 
-            <SidebarButton
-              id="categories"
-              icon={<List size={20} />}
-              label="Categories"
-              activeButton={activeButton}
-              navigate={navigate}
-              destination="/categories"
-            />
+              <SidebarButton
+                id="students"
+                icon={<Users size={20} />}
+                label="Students"
+                activeButton={activeButton}
+                navigate={navigate}
+                destination="/students"
+              />
+              {owner && (
+                <SidebarButton
+                  id="universities"
+                  icon={<University size={20} />}
+                  label="Universities"
+                  activeButton={activeButton}
+                  navigate={navigate}
+                  destination="/universities"
+                />
+              )}
 
-            <SidebarButton
-              id="lost"
-              icon={<PackageOpen size={20} />}
-              label="Lost Items"
-              activeButton={activeButton}
-              navigate={navigate}
-              destination="/lost-items"
-            />
+              <SidebarButton
+                id="categories"
+                icon={<List size={20} />}
+                label="Categories"
+                activeButton={activeButton}
+                navigate={navigate}
+                destination="/categories"
+              />
 
-            <SidebarButton
-              id="found"
-              icon={<ClipboardCheck size={20} />}
-              label="Found Items"
-              activeButton={activeButton}
-              navigate={navigate}
-              destination="/found-items"
-            />
+              <SidebarButton
+                id="lost"
+                icon={<PackageOpen size={20} />}
+                label="Lost Items"
+                activeButton={activeButton}
+                navigate={navigate}
+                destination="/lost-items"
+              />
 
-            <SidebarButton
-              id="matches"
-              icon={<Search size={20} />}
-              label="Matches"
-              activeButton={activeButton}
-              navigate={navigate}
-              destination="/matches"
-            />
-          </div>
-        </nav>
-      </div>
+              <SidebarButton
+                id="found"
+                icon={<ClipboardCheck size={20} />}
+                label="Found Items"
+                activeButton={activeButton}
+                navigate={navigate}
+                destination="/found-items"
+              />
 
-      <div className="relative z-10 border-t border-blue-100/80 px-4 py-4 dark:border-zinc-700">
-        <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
-          Account
-        </p>
-
-        <div className="flex flex-col gap-2">
-          <SidebarButton
-            id="profile"
-            icon={<CircleUserRound size={20} />}
-            label="Profile"
-            activeButton={activeButton}
-            navigate={navigate}
-            destination="/profile"
-          />
-
-          <button
-            className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start text-white transition-colors hover:bg-red-700 disabled:opacity-70 dark:bg-red-700 dark:hover:bg-red-600"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-          >
-            {isLoggingOut ? (
-              <RefreshCw size={20} className="animate-spin" />
-            ) : (
-              <LogOut size={20} />
-            )}
-            <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
-          </button>
+              <SidebarButton
+                id="matches"
+                icon={<Search size={20} />}
+                label="Matches"
+                activeButton={activeButton}
+                navigate={navigate}
+                destination="/matches"
+              />
+            </div>
+          </nav>
         </div>
-      </div>
+
+        <div className="relative z-10 border-t border-blue-100/80 px-4 py-4 dark:border-zinc-700">
+          <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+            Account
+          </p>
+
+          <div className="flex flex-col gap-2">
+            <SidebarButton
+              id="profile"
+              icon={<CircleUserRound size={20} />}
+              label="Profile"
+              activeButton={activeButton}
+              navigate={navigate}
+              destination="/profile"
+            />
+
+            <button
+              className="flex w-full items-center gap-3 rounded-lg bg-red-600 p-3 text-start text-white transition-colors hover:bg-red-700 disabled:opacity-70 dark:bg-red-700 dark:hover:bg-red-600"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <RefreshCw size={20} className="animate-spin" />
+              ) : (
+                <LogOut size={20} />
+              )}
+              <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
+            </button>
+          </div>
+        </div>
       </aside>
     </>
   );
 }
-
-
-
-
-

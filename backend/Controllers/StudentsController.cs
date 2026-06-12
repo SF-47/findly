@@ -58,9 +58,9 @@ public class StudentController : ControllerBase
     {
         var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        if (!Guid.TryParse(studentIdValue, out var studentId))//The ID inside the token is text. This converts it to Guid
+        if (!Guid.TryParse(studentIdValue, out var studentId)) //The ID inside the token is text. This converts it to Guid
         {
-            return Unauthorized();//If the token is invalid, return Unauthorized
+            return Unauthorized(); //If the token is invalid, return Unauthorized
         }
 
         var student = await _studentService.GetCurrentStudent(studentId);
@@ -290,6 +290,44 @@ public class StudentController : ControllerBase
         }
 
         return Ok(ToFullStudentResponse(student));
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateStudentOwnInfo(UpdateStudentOwnInfo request)
+    {
+        var errors = StudentValidator.ValidateOwnInfoUpdate(request);
+
+        if (errors.Count > 0)
+        {
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
+        }
+
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var phoneNbExists = await _studentService.PhoneNbExistsForAnotherStudent(
+            request.PhoneNumber,
+            studentId
+        );
+
+        if (phoneNbExists)
+        {
+            errors.Add("Phone number is already used.");
+            return BadRequest(new ErrorResponse("Validation failed.", errors));
+        }
+
+        var student = await _studentService.UpdateStudentOwnInfo(studentId, request);
+        if (student is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        var response = ToFullStudentResponse(student);
+        return Ok(response);
     }
 
     private bool IsOwner()
