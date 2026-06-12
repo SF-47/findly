@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import { uploadUniversityCardImage } from "../../api/supabaseStorage";
 import { registerStudent } from "../../services/authService";
 import { getAllUniversities } from "../../services/universitiesService";
 
@@ -28,12 +29,70 @@ export default function RegisterScreen({ navigation }) {
     universityCardImageUrl: "",
   });
   const [universities, setUniversities] = useState([]);
+  const [cardImageAsset, setCardImageAsset] = useState(null);
   const [showUniversities, setShowUniversities] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   function updateRegisterForm(name, value) {
     setRegisterForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function getRegistrationErrorMessage(error) {
+    const responseData = error?.response?.data;
+    const validationErrors = responseData?.errors;
+
+    if (validationErrors && typeof validationErrors === "object") {
+      const firstError = Object.values(validationErrors)[0];
+
+      if (Array.isArray(firstError)) {
+        return firstError[0] || responseData?.message;
+      }
+
+      return firstError || responseData?.message;
+    }
+
+    return (
+      responseData?.message ||
+      error?.message ||
+      "Registration failed. Please try again."
+    );
+  }
+
+  function validateRegisterForm() {
+    if (
+      !registerForm.fullName.trim() ||
+      !registerForm.email.trim() ||
+      !registerForm.password.trim() ||
+      !registerForm.phoneNumber.trim() ||
+      !registerForm.universityId.trim() ||
+      !registerForm.universityStudentId.trim() ||
+      !registerForm.universityCardImageUrl.trim() ||
+      !cardImageAsset
+    ) {
+      return "Please fill in all fields and add your university card.";
+    }
+
+    if (registerForm.fullName.trim().length < 3) {
+      return "Full name must be at least 3 characters.";
+    }
+
+    if (
+      !registerForm.email.trim().includes("@") ||
+      !registerForm.email.trim().includes(".")
+    ) {
+      return "Email format is invalid.";
+    }
+
+    if (registerForm.password.length < 6) {
+      return "Password must be at least 6 characters.";
+    }
+
+    if (!/^(03|70|71|76|78|79|81)\d{6}$/.test(registerForm.phoneNumber.trim())) {
+      return "Phone number must be a valid Lebanese mobile number.";
+    }
+
+    return "";
   }
 
   async function handlePickUniversityCard() {
@@ -55,7 +114,10 @@ export default function RegisterScreen({ navigation }) {
     });
 
     if (!result.canceled) {
-      updateRegisterForm("universityCardImageUrl", result.assets[0].uri);
+      const selectedAsset = result.assets[0];
+
+      setCardImageAsset(selectedAsset);
+      updateRegisterForm("universityCardImageUrl", selectedAsset.uri);
     }
   }
 
@@ -64,18 +126,16 @@ export default function RegisterScreen({ navigation }) {
       setError("");
       setIsLoading(true);
 
-      if (
-        !registerForm.fullName.trim() ||
-        !registerForm.email.trim() ||
-        !registerForm.password.trim() ||
-        !registerForm.phoneNumber.trim() ||
-        !registerForm.universityId.trim() ||
-        !registerForm.universityStudentId.trim() ||
-        !registerForm.universityCardImageUrl.trim()
-      ) {
-        setError("Please fill in all fields and add your university card.");
+      const validationError = validateRegisterForm();
+
+      if (validationError) {
+        setError(validationError);
         return;
       }
+
+      const universityCardImageUrl = await uploadUniversityCardImage(
+        cardImageAsset,
+      );
 
       await registerStudent({
         fullName: registerForm.fullName.trim(),
@@ -84,17 +144,14 @@ export default function RegisterScreen({ navigation }) {
         phoneNumber: registerForm.phoneNumber.trim(),
         universityId: registerForm.universityId.trim(),
         universityStudentId: registerForm.universityStudentId.trim(),
-        universityCardImageUrl: registerForm.universityCardImageUrl,
+        universityCardImageUrl,
       });
 
       navigation.replace("PendingVerification");
     } catch (error) {
       console.log(error);
 
-      setError(
-        error?.response?.data?.message ||
-          "Registration failed. Please try again.",
-      );
+      setError(getRegistrationErrorMessage(error));
     } finally {
       setIsLoading(false);
     }
@@ -203,7 +260,6 @@ export default function RegisterScreen({ navigation }) {
             />
           </View>
 
-          {/* University ID */}
           {/* University */}
           <View className="mb-5">
             <Text className="mb-2 text-sm font-semibold text-slate-700">
