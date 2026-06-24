@@ -88,7 +88,9 @@ export default function RegisterScreen({ navigation }) {
       return "Password must be at least 6 characters.";
     }
 
-    if (!/^(03|70|71|76|78|79|81)\d{6}$/.test(registerForm.phoneNumber.trim())) {
+    if (
+      !/^(03|70|71|76|78|79|81)\d{6}$/.test(registerForm.phoneNumber.trim())
+    ) {
       return "Phone number must be a valid Lebanese mobile number.";
     }
 
@@ -133,9 +135,8 @@ export default function RegisterScreen({ navigation }) {
         return;
       }
 
-      const universityCardImageUrl = await uploadUniversityCardImage(
-        cardImageAsset,
-      );
+      const universityCardImageUrl =
+        await uploadUniversityCardImage(cardImageAsset);
 
       await registerStudent({
         fullName: registerForm.fullName.trim(),
@@ -217,7 +218,7 @@ export default function RegisterScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Enter your full name"
               placeholderTextColor="#94a3b8"
               autoCapitalize="words"
@@ -233,7 +234,7 @@ export default function RegisterScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Enter your email"
               placeholderTextColor="#94a3b8"
               keyboardType="email-address"
@@ -251,7 +252,7 @@ export default function RegisterScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Enter your phone number"
               placeholderTextColor="#94a3b8"
               keyboardType="phone-pad"
@@ -267,7 +268,7 @@ export default function RegisterScreen({ navigation }) {
             </Text>
 
             <Pressable
-              className="h-14 flex-row items-center justify-between rounded-xl border border-slate-300 bg-white px-4"
+              className="h-14 flex-row items-center justify-between rounded-xl bg-slate-100 px-4"
               onPress={() => setShowUniversities((prev) => !prev)}
             >
               <Text
@@ -294,7 +295,7 @@ export default function RegisterScreen({ navigation }) {
             </Pressable>
 
             {showUniversities ? (
-              <View className="mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <View className="mt-2 overflow-hidden rounded-xl bg-slate-100">
                 {universities.length === 0 ? (
                   <Text className="px-4 py-3 text-slate-500">
                     No universities found.
@@ -330,7 +331,7 @@ export default function RegisterScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Enter your university student ID"
               placeholderTextColor="#94a3b8"
               autoCapitalize="characters"
@@ -348,7 +349,7 @@ export default function RegisterScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Create a password"
               placeholderTextColor="#94a3b8"
               secureTextEntry
@@ -368,13 +369,13 @@ export default function RegisterScreen({ navigation }) {
             {registerForm.universityCardImageUrl ? (
               <Image
                 source={{ uri: registerForm.universityCardImageUrl }}
-                className="mb-3 h-40 w-full rounded-xl border border-slate-200"
+                className="mb-3 h-40 w-full rounded-xl"
                 resizeMode="cover"
               />
             ) : null}
 
             <Pressable
-              className="h-14 flex-row items-center justify-center rounded-xl border border-dashed border-blue-400 bg-blue-50"
+              className="h-14 flex-row items-center justify-center rounded-xl bg-blue-50"
               onPress={handlePickUniversityCard}
             >
               <Ionicons

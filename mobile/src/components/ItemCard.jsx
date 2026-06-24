@@ -2,7 +2,7 @@ import { Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 function ItemCard({ item }) {
   return (
-    <View className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+    <View className="mb-4 rounded-2xl bg-white p-4 dark:bg-zinc-900">
       <View className="flex-row items-start">
         <View className="mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/40">
           <Ionicons name={item.icon} size={25} color="#3b82f6" />

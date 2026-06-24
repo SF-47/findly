@@ -9,6 +9,10 @@ public interface IFoundItemService
     Task<List<FoundItem>> GetAllByUniversityId(Guid adminUniId);
     Task<FoundItem?> GetById(Guid id);
     Task<FoundItem> Create(CreateFoundItemRequest request);
+    Task<FoundItem> CreateFoundItemByStudent(
+        Guid studentId,
+        CreateFoundItemByStudentRequest request
+    );
     Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request);
     Task<bool> Delete(Guid id);
     Task<bool> StudentExists(Guid id);

@@ -5,6 +5,26 @@ import { Ionicons } from "@expo/vector-icons";
 import ThemeButton from "../../components/ThemeButton";
 import { getCurrentStudent } from "../../services/studentService";
 
+function MenuRow({ icon, label, onPress, showDivider = true }) {
+  return (
+    <Pressable onPress={onPress}>
+      <View
+        className={`flex-row items-center px-4 py-4 ${
+          showDivider ? "border-b border-slate-100 dark:border-zinc-800" : ""
+        }`}
+      >
+        <View className="mr-3 h-9 w-9 items-center justify-center rounded-xl bg-slate-100 dark:bg-zinc-800">
+          <Ionicons name={icon} size={20} color="#64748b" />
+        </View>
+        <Text className="flex-1 font-semibold text-slate-800 dark:text-slate-100">
+          {label}
+        </Text>
+        <Ionicons name="chevron-forward" size={19} color="#94a3b8" />
+      </View>
+    </Pressable>
+  );
+}
+
 export default function MenuScreen({ navigation }) {
   const [studentData, setStudentData] = useState({
     fullName: "",
@@ -48,13 +68,16 @@ export default function MenuScreen({ navigation }) {
   }, []);
 
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      className="flex-1 bg-slate-50 dark:bg-zinc-950"
+      showsVerticalScrollIndicator={false}
+    >
       <ScreenHeader
         title="Menu"
         subtitle="Your account, security, and app preferences."
       />
 
-      <View className="mt-7 mb-5 flex-row items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900">
+      <View className="mb-5 mt-7 flex-row items-center justify-between rounded-2xl bg-white px-4 py-4 dark:bg-zinc-900">
         <View>
           <Text className="font-semibold text-slate-900 dark:text-white">
             Settings
@@ -66,7 +89,7 @@ export default function MenuScreen({ navigation }) {
         <ThemeButton />
       </View>
 
-      <View className="mb-5 items-center rounded-3xl border border-slate-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+      <View className="mb-5 items-center rounded-3xl bg-white p-6 dark:bg-zinc-900">
         <View className="h-20 w-20 items-center justify-center rounded-3xl bg-blue-600 dark:bg-blue-500">
           <Text className="text-3xl font-black text-white">S</Text>
         </View>
@@ -78,39 +101,25 @@ export default function MenuScreen({ navigation }) {
         </Text>
       </View>
 
-      <Pressable onPress={() => navigation.navigate("Profile")}>
-        <View className="mb-3 flex-row items-center justify-between rounded-2xl border border-transparent bg-white px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900">
-          <Text className="font-semibold text-slate-800 dark:text-slate-100">
-            Profile
-          </Text>
-          <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-        </View>
-      </Pressable>
-      <Pressable>
-        <View className="mb-3 flex-row items-center justify-between rounded-2xl border border-transparent bg-white px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900">
-          <Text className="font-semibold text-slate-800 dark:text-slate-100">
-            My reports
-          </Text>
-          <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-        </View>
-      </Pressable>
-      <Pressable>
-        <View className="mb-3 flex-row items-center justify-between rounded-2xl border border-transparent bg-white px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900">
-          <Text className="font-semibold text-slate-800 dark:text-slate-100">
-            Notifications
-          </Text>
-          <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-        </View>
-      </Pressable>
-      <Pressable>
-        
-        <View className="mb-3 flex-row items-center justify-between rounded-2xl border border-transparent bg-white px-4 py-4 dark:border-zinc-700 dark:bg-zinc-900">
-          <Text className="font-semibold text-slate-800 dark:text-slate-100">
-            Change password
-          </Text>
-          <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
-        </View>
-      </Pressable>
+      <View className="overflow-hidden rounded-2xl bg-white dark:bg-zinc-900">
+        <MenuRow
+          icon="person-outline"
+          label="Profile"
+          onPress={() => navigation.navigate("Profile")}
+        />
+        <MenuRow
+          icon="document-text-outline"
+          label="My reports"
+          onPress={() => navigation.navigate("MyReports")}
+        />
+        <MenuRow icon="notifications-outline" label="Notifications" />
+        <MenuRow
+          icon="lock-closed-outline"
+          label="Change password"
+          onPress={() => navigation.navigate("ChangePassword")}
+          showDivider={false}
+        />
+      </View>
 
       <Pressable
         className="mt-4 h-12 items-center justify-center rounded-xl bg-red-600"

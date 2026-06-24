@@ -25,4 +25,6 @@ public interface IStudentServices
         Guid id
     );
     Task<Student?> UpdateStudentOwnInfo(Guid studentId, UpdateStudentOwnInfo request);
+
+    
 }

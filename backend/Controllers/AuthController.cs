@@ -113,9 +113,9 @@ public class AuthController : ControllerBase
             student.FullName,
             student.Email,
             student.UniversityId,
-            student.University.ShortName,
-            student.University.FullName,
-            student.University.Branch,
+            student.University?.ShortName ?? "Unknown university",
+            student.University?.FullName ?? "Unknown university",
+            student.University?.Branch ?? "Unknown branch",
             student.IsVerified,
             token
         );
@@ -151,9 +151,9 @@ public class AuthController : ControllerBase
             student.FullName,
             student.Email,
             student.UniversityId,
-            student.University.ShortName,
-            student.University.FullName,
-            student.University.Branch,
+            student.University?.ShortName ?? "Unknown university",
+            student.University?.FullName ?? "Unknown university",
+            student.University?.Branch ?? "Unknown branch",
             student.IsVerified,
             token
         );

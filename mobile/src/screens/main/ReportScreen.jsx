@@ -41,7 +41,7 @@ export default function ReportScreen() {
         subtitle="Create a clear report so matches can be found faster."
       />
 
-      <View className="mt-7 rounded-3xl border border-gray-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+      <View className="mt-7 rounded-3xl bg-white p-4 dark:bg-zinc-900">
         <Text className="mb-3 text-sm font-bold uppercase text-gray-500 dark:text-gray-400">
           What happened?
         </Text>
@@ -52,10 +52,10 @@ export default function ReportScreen() {
 
             return (
               <Pressable
-                className={`flex-1 rounded-2xl border p-4 ${
+                className={`flex-1 rounded-2xl p-4 ${
                   isSelected
-                    ? "border-blue-500 bg-blue-50 dark:border-blue-500 dark:bg-zinc-800"
-                    : "border-gray-200 bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800"
+                    ? "bg-blue-50 dark:bg-zinc-800"
+                    : "bg-gray-50 dark:bg-zinc-800"
                 }`}
                 key={type.key}
                 onPress={() => setReportType(type.key)}
@@ -63,10 +63,10 @@ export default function ReportScreen() {
                 <View className="mb-4 flex-row items-center justify-between">
                   <Ionicons name={type.icon} size={26} color={type.color} />
                   <View
-                    className={`h-5 w-5 rounded-full border ${
+                    className={`h-5 w-5 rounded-full ${
                       isSelected
-                        ? "border-blue-500 bg-blue-500"
-                        : "border-gray-300 dark:border-zinc-600"
+                        ? "bg-blue-500"
+                        : "bg-gray-300 dark:bg-zinc-600"
                     }`}
                   />
                 </View>
@@ -82,7 +82,7 @@ export default function ReportScreen() {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl border border-gray-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+      <View className="mt-5 rounded-3xl bg-white p-4 dark:bg-zinc-900">
         <Text className="mb-4 text-sm font-bold uppercase text-gray-500 dark:text-gray-400">
           Item details
         </Text>
@@ -93,7 +93,7 @@ export default function ReportScreen() {
               {field.label}
             </Text>
             <TextInput
-              className="h-12 rounded-xl border border-gray-300 bg-gray-50 px-4 text-gray-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+              className="h-12 rounded-xl bg-gray-50 px-4 text-gray-900 dark:bg-zinc-800 dark:text-white"
               placeholder={field.placeholder}
               placeholderTextColor="#71717a"
             />
@@ -105,7 +105,7 @@ export default function ReportScreen() {
             Description
           </Text>
           <TextInput
-            className="min-h-28 rounded-xl border border-gray-300 bg-gray-50 px-4 py-3 text-gray-900 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            className="min-h-28 rounded-xl bg-gray-50 px-4 py-3 text-gray-900 dark:bg-zinc-800 dark:text-white"
             multiline
             placeholder="Add color, brand, unique marks, or anything that helps identify it."
             placeholderTextColor="#71717a"

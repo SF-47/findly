@@ -1,0 +1,84 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+function PasswordField({ label, placeholder }) {
+  return (
+    <View className="mb-5">
+      <Text className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+        {label}
+      </Text>
+      <View className="h-14 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
+        <Ionicons name="lock-closed-outline" size={19} color="#94a3b8" />
+        <TextInput
+          className="ml-3 flex-1 text-base text-slate-900 dark:text-white"
+          placeholder={placeholder}
+          placeholderTextColor="#94a3b8"
+          secureTextEntry
+        />
+      </View>
+    </View>
+  );
+}
+
+export default function ChangePasswordScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <ScrollView
+      className="flex-1 bg-slate-50 px-5 dark:bg-zinc-950"
+      contentContainerStyle={{
+        paddingBottom: 40,
+        paddingTop: Math.max(insets.top, 24) + 12,
+      }}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <View className="mb-6 flex-row items-center">
+        <Pressable
+          className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={22} color="#64748b" />
+        </Pressable>
+        <View className="flex-1">
+          <Text className="text-3xl font-bold text-slate-900 dark:text-white">
+            Change password
+          </Text>
+          <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            Update the password used for your account.
+          </Text>
+        </View>
+      </View>
+
+      <View className="mb-6 rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40">
+        <View className="flex-row">
+          <Ionicons name="shield-checkmark-outline" size={22} color="#2563eb" />
+          <View className="ml-3 flex-1">
+            <Text className="font-bold text-slate-900 dark:text-white">
+              Keep it secure
+            </Text>
+            <Text className="mt-1 text-sm leading-5 text-slate-600 dark:text-slate-300">
+              Use at least 8 characters with a mix of letters, numbers, and
+              symbols.
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      <PasswordField
+        label="Current password"
+        placeholder="Enter current password"
+      />
+      <PasswordField label="New password" placeholder="Enter new password" />
+      <PasswordField
+        label="Confirm new password"
+        placeholder="Re-enter new password"
+      />
+
+      <Pressable className="mt-2 h-14 items-center justify-center rounded-xl bg-blue-600">
+        <Text className="text-base font-bold text-white">Save password</Text>
+      </Pressable>
+    </ScrollView>
+  );
+}

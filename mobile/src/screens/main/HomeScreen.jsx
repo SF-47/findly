@@ -3,16 +3,39 @@ import { Ionicons } from "@expo/vector-icons";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import ItemCard from "../../components/ItemCard";
 import { itemCards } from "../../data/itemCards";
+import { useEffect, useState } from "react";
+import { getCurrentStudent } from "../../services/studentService";
 
 function HomeScreen({ navigation }) {
+  const [studentFullName, setStudentFullName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function fetchStudentData() {
+    try {
+      setIsLoading(true);
+
+      const student = await getCurrentStudent();
+
+      setStudentFullName(student.fullName.split(" ")[0]);
+    } catch (error) {
+      console.log("HOME STUDENT ERROR:", error?.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchStudentData();
+  }, []);
+
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       <ScreenHeader
-        title="Hello, Sami"
+        title={`Hello, ${studentFullName || "Student"}`}
         subtitle="Manage lost and found activity across your campus."
       />
 
-      <View className="mb-6 rounded-3xl bg-blue-600 p-5 mt-7 dark:bg-blue-500">
+      <View className="mb-6 mt-7 rounded-3xl bg-blue-600 p-5 dark:bg-blue-500">
         <Text className="text-xl font-bold text-white">
           Smart matching is ready
         </Text>
@@ -29,7 +52,7 @@ function HomeScreen({ navigation }) {
 
       <View className="mb-6 flex-row">
         <Pressable
-          className="mr-3 flex-1 rounded-2xl border border-red-100 bg-red-50 p-4 dark:border-red-900/40 dark:bg-zinc-900"
+          className="mr-3 flex-1 rounded-2xl bg-white p-4 dark:bg-zinc-900"
           onPress={() => navigation.navigate("Report")}
         >
           <Ionicons name="alert-circle-outline" size={26} color="#dc2626" />
@@ -42,7 +65,7 @@ function HomeScreen({ navigation }) {
         </Pressable>
 
         <Pressable
-          className="flex-1 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 dark:border-green-900/40 dark:bg-zinc-900"
+          className="flex-1 rounded-2xl bg-white p-4 dark:bg-zinc-900"
           onPress={() => navigation.navigate("Report")}
         >
           <Ionicons name="checkmark-circle-outline" size={26} color="#059669" />

@@ -64,6 +64,30 @@ public class LostItemsServices : ILostItemsService
         return await GetById(lostItem.Id) ?? lostItem;
     }
 
+    public async Task<LostItem> CreateLostItemByStudent(
+        Guid studentId,
+        CreateLostItemByStudentRequest request
+    )
+    {
+        var lostItem = new LostItem
+        {
+            StudentId = studentId,
+            CategoryId = request.CategoryId,
+            ItemName = request.ItemName,
+            Description = request.Description,
+            Color = request.Color,
+            Location = request.Location,
+            LostDate = DateTime.SpecifyKind(request.LostDate, DateTimeKind.Utc),
+            ImageUrl = request.ImageUrl,
+            Status = "open",
+            CreatedAt = DateTime.UtcNow,
+        };
+        _db.LostItems.Add(lostItem);
+        await _db.SaveChangesAsync();
+
+        return await GetById(lostItem.Id) ?? lostItem;
+    }
+
     public async Task<LostItem?> Update(Guid id, UpdateLostItemRequest request)
     {
         var lostItem = await GetById(id);

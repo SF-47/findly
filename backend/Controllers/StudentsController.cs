@@ -1,9 +1,18 @@
 using System.Security.Claims;
 using backend.Models;
+using backend.Requests.FoundItems;
+using backend.Requests.LostItems;
 using backend.Requests.Students;
 using backend.Responses.Errors;
+using backend.Responses.FoundItems;
+using backend.Responses.LostItems;
 using backend.Responses.Students;
+using backend.Services.FoundItems;
+using backend.Services.LostItems;
+using backend.Services.N8n;
 using backend.Services.Students;
+using backend.Validators.FoundItems;
+using backend.Validators.LostItems;
 using backend.Validators.Students;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +25,21 @@ namespace backend.Controllers;
 public class StudentController : ControllerBase
 {
     private readonly IStudentServices _studentService;
+    private readonly ILostItemsService _lostItemsService;
+    private readonly IFoundItemService _foundItemsService;
+    private readonly IN8nMatchingService _n8nMatchingService;
 
-    public StudentController(IStudentServices studentServices)
+    public StudentController(
+        IStudentServices studentServices,
+        ILostItemsService lostItemsService,
+        IFoundItemService foundItemService,
+        IN8nMatchingService n8nMatchingService
+    )
     {
         _studentService = studentServices;
+        _lostItemsService = lostItemsService;
+        _foundItemsService = foundItemService;
+        _n8nMatchingService = n8nMatchingService;
     }
 
     [HttpGet]
@@ -330,6 +350,93 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    [Authorize(Roles = "Student")]
+    [HttpPost("me/lost-items")]
+    public async Task<IActionResult> CreateLostItemByStudent(CreateLostItemByStudentRequest request)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var errors = LostItemsValidator.ValidateCreateByStudent(request);
+        if (errors.Count > 0)
+        {
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+        var studentExists = await _studentService.GetCurrentStudent(studentId);
+        if (studentExists is null)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Student does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+        var categoryExists = await _foundItemsService.CategoryExists(request.CategoryId);
+        if (!categoryExists)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Category does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+
+        var lostItem = await _lostItemsService.CreateLostItemByStudent(studentId, request);
+        _ = _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
+
+        var response = ToFullResponse(lostItem);
+        return Created($"/me/lost-items/{lostItem.Id}", response);
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpPost("me/found-items")]
+    public async Task<IActionResult> CreateFoundItemByStudent(
+        CreateFoundItemByStudentRequest request
+    )
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var errors = FoundItemsValidator.ValidateCreateByStudent(request);
+        if (errors.Count > 0)
+        {
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+        var studentExists = await _studentService.GetCurrentStudent(studentId);
+        if (studentExists is null)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Student does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+        var categoryExists = await _lostItemsService.CategoryExists(request.CategoryId);
+        if (!categoryExists)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Category does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+        var foundItem = await _foundItemsService.CreateFoundItemByStudent(studentId, request);
+        _ = _n8nMatchingService.TriggerMatchingAsync(foundItem.Id, "found");
+
+        var response = ToFullFoundResponse(foundItem);
+        return Created($"/me/found-items/{foundItem.Id}", response);
+    }
+
     private bool IsOwner()
     {
         return User.IsInRole("Owner");
@@ -426,6 +533,48 @@ public class StudentController : ControllerBase
             student.UniversityCardImageUrl,
             student.IsVerified,
             student.CreatedAt
+        );
+    }
+
+    private static FullLostItemsResponse ToFullResponse(LostItem lostItem)
+    {
+        return new FullLostItemsResponse(
+            lostItem.Id,
+            lostItem.StudentId,
+            lostItem.Student?.FullName ?? "Unknown student",
+            lostItem.Student?.University?.ShortName ?? "Unknown university",
+            lostItem.Student?.University?.Branch ?? "Unknown branch",
+            lostItem.CategoryId,
+            lostItem.Category?.Name ?? "Unknown category",
+            lostItem.ItemName,
+            lostItem.Description,
+            lostItem.Color,
+            lostItem.Location,
+            lostItem.LostDate,
+            lostItem.ImageUrl,
+            lostItem.Status,
+            lostItem.CreatedAt
+        );
+    }
+
+    private static FullFoundItemsResponse ToFullFoundResponse(FoundItem foundItem)
+    {
+        return new FullFoundItemsResponse(
+            foundItem.Id,
+            foundItem.StudentId,
+            foundItem.Student?.FullName ?? "Unknown student",
+            foundItem.Student?.University?.ShortName ?? "Unknown university",
+            foundItem.Student?.University?.Branch ?? "Unknown branch",
+            foundItem.CategoryId,
+            foundItem.Category?.Name ?? "Unknown category",
+            foundItem.ItemName,
+            foundItem.Description,
+            foundItem.Color,
+            foundItem.Location,
+            foundItem.FoundDate,
+            foundItem.ImageUrl,
+            foundItem.Status,
+            foundItem.CreatedAt
         );
     }
 }

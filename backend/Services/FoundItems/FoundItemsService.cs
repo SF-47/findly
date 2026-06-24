@@ -18,7 +18,7 @@ public class FoundItemsServices : IFoundItemService
     {
         return await _db
             .FoundItems.Include(f => f.Student)
-            .ThenInclude(s => s.University)
+                .ThenInclude(s => s.University)
             .Include(f => f.Category)
             .ToListAsync();
     }
@@ -27,7 +27,7 @@ public class FoundItemsServices : IFoundItemService
     {
         return await _db
             .FoundItems.Include(f => f.Student)
-            .ThenInclude(s => s.University)
+                .ThenInclude(s => s.University)
             .Where(f => f.Student.UniversityId == adminUniId)
             .Include(f => f.Category)
             .ToListAsync();
@@ -37,7 +37,7 @@ public class FoundItemsServices : IFoundItemService
     {
         return await _db
             .FoundItems.Include(f => f.Student)
-            .ThenInclude(s => s.University)
+                .ThenInclude(s => s.University)
             .Include(f => f.Category)
             .FirstOrDefaultAsync(f => f.Id == id);
     }
@@ -62,6 +62,31 @@ public class FoundItemsServices : IFoundItemService
         await _db.SaveChangesAsync();
 
         return await GetById(FoundItem.Id) ?? FoundItem;
+    }
+
+    public async Task<FoundItem> CreateFoundItemByStudent(
+        Guid studentId,
+        CreateFoundItemByStudentRequest request
+    )
+    {
+        var foundItem = new FoundItem
+        {
+            StudentId = studentId,
+            CategoryId = request.CategoryId,
+            ItemName = request.ItemName,
+            Description = request.Description,
+            Color = request.Color,
+            Location = request.Location,
+            FoundDate = DateTime.SpecifyKind(request.FoundDate, DateTimeKind.Utc),
+            ImageUrl = request.ImageUrl,
+            Status = "open",
+            CreatedAt = DateTime.UtcNow,
+        };
+
+        _db.FoundItems.Add(foundItem);
+        await _db.SaveChangesAsync();
+
+        return await GetById(foundItem.Id) ?? foundItem;
     }
 
     public async Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request)

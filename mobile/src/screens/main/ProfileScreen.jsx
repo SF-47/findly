@@ -23,7 +23,7 @@ function ProfileField({ label, value, ...inputProps }) {
         {label}
       </Text>
       <TextInput
-        className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+        className="h-14 rounded-xl bg-white px-4 text-base text-slate-900 dark:bg-zinc-900 dark:text-white"
         value={value ?? ""}
         placeholderTextColor="#94a3b8"
         {...inputProps}
@@ -147,7 +147,7 @@ export default function ProfileScreen({ navigation }) {
       >
         <View className="mb-6 flex-row items-center">
           <Pressable
-            className="mr-4 h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -162,7 +162,7 @@ export default function ProfileScreen({ navigation }) {
           </View>
         </View>
 
-        <View className="mb-6 items-center rounded-3xl border border-slate-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+        <View className="mb-6 items-center rounded-3xl bg-white p-6 dark:bg-zinc-900">
           <View className="h-20 w-20 items-center justify-center rounded-3xl bg-blue-600">
             <Text className="text-3xl font-black uppercase text-white">
               {studentData.fullName.charAt(0)}
@@ -255,12 +255,12 @@ export default function ProfileScreen({ navigation }) {
         {studentData.universityCardImageUrl ? (
           <Image
             source={{ uri: studentData.universityCardImageUrl }}
-            className="h-48 w-full rounded-2xl border border-slate-200 bg-slate-200 dark:border-zinc-700 dark:bg-zinc-800"
+            className="h-48 w-full rounded-2xl bg-slate-200 dark:bg-zinc-800"
             resizeMode="cover"
           />
         ) : null}
 
-        <View className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-900">
+        <View className="mt-6 rounded-2xl bg-white p-4 dark:bg-zinc-900">
           <Text className="text-sm text-slate-500 dark:text-slate-400">
             Member since
           </Text>

@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { loginStudent } from "../../services/authService";
-import { getCurrentStudent } from "../../services/studentService";
 import { saveToken } from "../../storage/tokenStorage";
 
 export default function LoginScreen({ navigation }) {
@@ -40,9 +39,7 @@ export default function LoginScreen({ navigation }) {
 
       saveToken(loginResponse.token);
 
-      const student = await getCurrentStudent();
-
-      if (student.isVerified) {
+      if (loginResponse.isVerified) {
         navigation.replace("Main");
       } else {
         navigation.replace("PendingVerification");
@@ -97,12 +94,13 @@ export default function LoginScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Enter your email"
               placeholderTextColor="#94a3b8"
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              disabled={isLoading}
               value={loginForm.email}
               onChangeText={(text) =>
                 setLoginForm((prev) => ({ ...prev, email: text }))
@@ -116,12 +114,13 @@ export default function LoginScreen({ navigation }) {
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl border border-slate-300 bg-white px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
               placeholder="Enter your password"
               placeholderTextColor="#94a3b8"
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
+              disabled={isLoading}
               value={loginForm.password}
               onChangeText={(text) =>
                 setLoginForm((prev) => ({ ...prev, password: text }))

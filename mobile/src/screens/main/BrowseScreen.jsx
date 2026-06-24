@@ -17,7 +17,7 @@ export default function BrowseScreen({ navigation }) {
         subtitle="Search lost and found reports submitted by students."
       />
 
-      <View className="mb-5 h-12 flex-row items-center rounded-xl border border-slate-200 bg-white px-4  mt-7 dark:border-zinc-700 dark:bg-zinc-800">
+      <View className="mb-5 mt-7 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
         <Ionicons name="search-outline" size={20} color="#64748b" />
         <TextInput
           className="ml-3 flex-1 text-base text-slate-900 dark:text-white"
@@ -32,7 +32,7 @@ export default function BrowseScreen({ navigation }) {
             className={`mr-3 rounded-full px-4 py-2 ${
               index === 0
                 ? "bg-blue-600 dark:bg-blue-500"
-                : "bg-white dark:bg-zinc-900 dark:border dark:border-zinc-700"
+                : "bg-white dark:bg-zinc-900"
             }`}
             key={label}
           >
@@ -46,10 +46,7 @@ export default function BrowseScreen({ navigation }) {
       </View>
 
       {itemCards.map((item) => (
-        <Pressable
-          key={item.title}
-          onPress={() => openItemDetails(item)}
-        >
+        <Pressable key={item.title} onPress={() => openItemDetails(item)}>
           <ItemCard item={item} />
         </Pressable>
       ))}

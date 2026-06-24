@@ -33,7 +33,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
     >
       <View className="mb-5 flex-row items-center justify-between">
         <Pressable
-          className="h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900"
+          className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -43,12 +43,12 @@ export default function ItemDetailsScreen({ route, navigation }) {
           Item details
         </Text>
 
-        <Pressable className="h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
+        <Pressable className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900">
           <Ionicons name="ellipsis-horizontal" size={22} color="#64748b" />
         </Pressable>
       </View>
 
-      <View className="rounded-3xl border border-gray-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
+      <View className="rounded-3xl bg-white p-5 dark:bg-zinc-900">
         <View className="mb-5 h-28 w-28 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-900/40">
           <Ionicons name={item.icon} size={48} color="#3b82f6" />
         </View>
@@ -63,7 +63,9 @@ export default function ItemDetailsScreen({ route, navigation }) {
             </Text>
           </View>
 
-          <Text className={`rounded-full px-3 py-1 text-xs font-bold ${item.color}`}>
+          <Text
+            className={`rounded-full px-3 py-1 text-xs font-bold ${item.color}`}
+          >
             {item.type}
           </Text>
         </View>
@@ -80,7 +82,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl border border-gray-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900">
+      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900">
         <Text className="text-lg font-bold text-gray-900 dark:text-white">
           Quick actions
         </Text>
@@ -91,7 +93,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
           </Text>
         </Pressable>
 
-        <Pressable className="mt-3 h-14 items-center justify-center rounded-xl border border-gray-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+        <Pressable className="mt-3 h-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800">
           <Text className="font-bold text-gray-800 dark:text-white">
             Contact support
           </Text>
