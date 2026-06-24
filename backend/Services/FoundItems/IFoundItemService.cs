@@ -6,8 +6,9 @@ namespace backend.Services.FoundItems;
 public interface IFoundItemService
 {
     Task<List<FoundItem>> GetAll();
-    Task<List<FoundItem>> GetAllByUniversityId(Guid adminUniId);
+    Task<List<FoundItem>> GetAllByUniversityId(Guid universityId);
     Task<FoundItem?> GetById(Guid id);
+    Task<List<FoundItem>> GetAllFoundItemsCreatedByStudent(Guid studentId);
     Task<FoundItem> Create(CreateFoundItemRequest request);
     Task<FoundItem> CreateFoundItemByStudent(
         Guid studentId,

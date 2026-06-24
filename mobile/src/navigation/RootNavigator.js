@@ -1,16 +1,21 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import { useColorScheme } from "nativewind";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 
 import LoginScreen from "../screens/auth/LoginScreen";
 import RegisterScreen from "../screens/auth/RegisterScreen";
 import MainNavigator from "./MainNavigator";
 import PendingVerificationScreen from "../screens/auth/PendingVerificationScreen";
+import { getToken, removeToken } from "../storage/tokenStorage";
+import { getCurrentStudent } from "../services/studentService";
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
   const { colorScheme } = useColorScheme();
+  const [initialRouteName, setInitialRouteName] = useState(null);
   const isDark = colorScheme === "dark";
   const backgroundColor = isDark ? "#09090b" : "#f8fafc";
   const navigationTheme = {
@@ -22,9 +27,52 @@ export default function RootNavigator() {
     },
   };
 
+  useEffect(() => {
+    async function loadInitialRoute() {
+      try {
+        const token = await getToken();
+
+        if (!token) {
+          setInitialRouteName("Login");
+          return;
+        }
+
+        const student = await getCurrentStudent();
+        setInitialRouteName(
+          student?.isVerified ? "Main" : "PendingVerification",
+        );
+      } catch (error) {
+        if (error?.response?.status === 401) {
+          await removeToken();
+          setInitialRouteName("Login");
+          return;
+        }
+
+        setInitialRouteName("Main");
+      }
+    }
+
+    loadInitialRoute();
+  }, []);
+
+  if (!initialRouteName) {
+    return (
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor }}
+      >
+        <ActivityIndicator
+          size="large"
+          color={isDark ? "#60a5fa" : "#2563eb"}
+        />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator
+        initialRouteName={initialRouteName}
         screenOptions={{
           headerShown: false,
           contentStyle: {

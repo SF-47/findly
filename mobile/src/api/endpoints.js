@@ -11,8 +11,11 @@ export const ENDPOINTS = {
     myLostItems: "/students/me/lost-items",
     myFoundItems: "/students/me/found-items",
 
-    createMyLostItem: "/students/me/lost-items",
-    createMyFoundItem: "/students/me/found-items",
+    studentLostItemsByUniversity: "/students/lost-items",
+    studentFoundItemsByUniversity: "/students/found-items",
+
+    createMyLostItem: "/students/me/create/lost-items",
+    createMyFoundItem: "/students/me/create/found-items",
 
     myMatches: "/students/me/matches",
 }

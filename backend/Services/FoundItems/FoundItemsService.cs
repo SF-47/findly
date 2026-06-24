@@ -23,12 +23,12 @@ public class FoundItemsServices : IFoundItemService
             .ToListAsync();
     }
 
-    public async Task<List<FoundItem>> GetAllByUniversityId(Guid adminUniId)
+    public async Task<List<FoundItem>> GetAllByUniversityId(Guid universityId)
     {
         return await _db
             .FoundItems.Include(f => f.Student)
                 .ThenInclude(s => s.University)
-            .Where(f => f.Student.UniversityId == adminUniId)
+            .Where(f => f.Student.UniversityId == universityId)
             .Include(f => f.Category)
             .ToListAsync();
     }
@@ -40,6 +40,16 @@ public class FoundItemsServices : IFoundItemService
                 .ThenInclude(s => s.University)
             .Include(f => f.Category)
             .FirstOrDefaultAsync(f => f.Id == id);
+    }
+
+    public async Task<List<FoundItem>> GetAllFoundItemsCreatedByStudent(Guid studentId)
+    {
+        return await _db
+            .FoundItems.Include(l => l.Student)
+                .ThenInclude(s => s.University)
+            .Where(s => s.StudentId == studentId)
+            .Include(l => l.Category)
+            .ToListAsync();
     }
 
     public async Task<FoundItem> Create(CreateFoundItemRequest request)

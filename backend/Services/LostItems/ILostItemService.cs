@@ -6,7 +6,8 @@ namespace backend.Services.LostItems;
 public interface ILostItemsService
 {
     Task<List<LostItem>> GetAll();
-    Task<List<LostItem>> GetAllByUniversityId(Guid adminUniId);
+    Task<List<LostItem>> GetAllByUniversityId(Guid universityId);
+    Task<List<LostItem>> GetAllLostItemsCreatedByStudent(Guid studentId);
     Task<LostItem?> GetById(Guid id);
     Task<LostItem> Create(CreateLostItemRequest request);
     Task<LostItem> CreateLostItemByStudent(

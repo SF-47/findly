@@ -37,7 +37,7 @@ export default function LoginScreen({ navigation }) {
         password: loginForm.password,
       });
 
-      saveToken(loginResponse.token);
+      await saveToken(loginResponse.token);
 
       if (loginResponse.isVerified) {
         navigation.replace("Main");

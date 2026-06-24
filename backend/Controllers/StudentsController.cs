@@ -351,7 +351,7 @@ public class StudentController : ControllerBase
     }
 
     [Authorize(Roles = "Student")]
-    [HttpPost("me/lost-items")]
+    [HttpPost("me/create/lost-items")]
     public async Task<IActionResult> CreateLostItemByStudent(CreateLostItemByStudentRequest request)
     {
         var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -389,12 +389,12 @@ public class StudentController : ControllerBase
         var lostItem = await _lostItemsService.CreateLostItemByStudent(studentId, request);
         _ = _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
 
-        var response = ToFullResponse(lostItem);
+        var response = ToFullLostResponse(lostItem);
         return Created($"/me/lost-items/{lostItem.Id}", response);
     }
 
     [Authorize(Roles = "Student")]
-    [HttpPost("me/found-items")]
+    [HttpPost("me/create/found-items")]
     public async Task<IActionResult> CreateFoundItemByStudent(
         CreateFoundItemByStudentRequest request
     )
@@ -435,6 +435,70 @@ public class StudentController : ControllerBase
 
         var response = ToFullFoundResponse(foundItem);
         return Created($"/me/found-items/{foundItem.Id}", response);
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpGet("lost-items")]
+    public async Task<IActionResult> GetLostItemsByUniId()
+    {
+        var uniIdValue = User.FindFirst("universityId")?.Value;
+        if (!Guid.TryParse(uniIdValue, out var uniId))
+        {
+            return Unauthorized();
+        }
+
+        var lostItems = await _lostItemsService.GetAllByUniversityId(uniId);
+
+        var response = lostItems.Select(lostItem => ToFullLostResponse(lostItem));
+        return Ok(response);
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpGet("found-items")]
+    public async Task<IActionResult> GetFoundItemsByUniId()
+    {
+        var uniIdValue = User.FindFirst("universityId")?.Value;
+        if (!Guid.TryParse(uniIdValue, out var uniId))
+        {
+            return Unauthorized();
+        }
+
+        var foundItems = await _foundItemsService.GetAllByUniversityId(uniId);
+
+        var response = foundItems.Select(foundItem => ToFullFoundResponse(foundItem));
+        return Ok(response);
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpGet("me/lost-items")]
+    public async Task<IActionResult> GetAllLostItemsCreatedByStudent()
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var lostItems = await _lostItemsService.GetAllLostItemsCreatedByStudent(studentId);
+
+        var response = lostItems.Select(lostItem => ToFullLostResponse(lostItem));
+        return Ok(response);
+    }
+
+    [Authorize(Roles = "Student")]
+    [HttpGet("me/found-items")]
+    public async Task<IActionResult> GetAllFoundItemsCreatedByStudent()
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var foundItems = await _foundItemsService.GetAllFoundItemsCreatedByStudent(studentId);
+
+        var response = foundItems.Select(foundItem => ToFullFoundResponse(foundItem));
+        return Ok(response);
     }
 
     private bool IsOwner()
@@ -536,7 +600,7 @@ public class StudentController : ControllerBase
         );
     }
 
-    private static FullLostItemsResponse ToFullResponse(LostItem lostItem)
+    private static FullLostItemsResponse ToFullLostResponse(LostItem lostItem)
     {
         return new FullLostItemsResponse(
             lostItem.Id,

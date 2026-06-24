@@ -9,14 +9,14 @@ const axiosClient = axios.create({
     timeout: 15000,
 });
 
-axiosClient.interceptors.request.use((config) => {
-    const token = getToken();
+axiosClient.interceptors.request.use(async (config) => {
+  const token = await getToken();
 
-    if(token){
-        config.headers.Authorization = `Bearer ${token}`;
-    }
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
-    return config;
+  return config;
 });
 
 export default axiosClient;

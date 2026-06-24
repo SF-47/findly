@@ -4,6 +4,7 @@ import { Text, View, ScrollView, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ThemeButton from "../../components/ThemeButton";
 import { getCurrentStudent } from "../../services/studentService";
+import { removeToken } from "../../storage/tokenStorage";
 
 function MenuRow({ icon, label, onPress, showDivider = true }) {
   return (
@@ -60,7 +61,20 @@ export default function MenuScreen({ navigation }) {
       });
     } catch {
     } finally {
+      setIsLoading(false);
     }
+  }
+
+  async function handleLogout() {
+    await removeToken();
+    navigation
+      .getParent()
+      ?.getParent()
+      ?.getParent()
+      ?.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
   }
 
   useEffect(() => {
@@ -123,7 +137,7 @@ export default function MenuScreen({ navigation }) {
 
       <Pressable
         className="mt-4 h-12 items-center justify-center rounded-xl bg-red-600"
-        onPress={() => navigation.replace("Login")}
+        onPress={handleLogout}
       >
         <Text className="font-bold text-white">Log out</Text>
       </Pressable>

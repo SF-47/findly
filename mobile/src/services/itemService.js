@@ -11,6 +11,16 @@ export async function getMyFoundItems() {
   return response.data;
 }
 
+export async function getStudentLostItemsByUniversity() {
+  const response = await axiosClient.get(ENDPOINTS.studentLostItemsByUniversity);
+  return response.data;
+}
+
+export async function getStudentFoundItemsByUniversity() {
+  const response = await axiosClient.get(ENDPOINTS.studentFoundItemsByUniversity);
+  return response.data;
+}
+
 export async function createMyLostItem(data) {
   const response = await axiosClient.post(ENDPOINTS.createMyLostItem, data);
   return response.data;

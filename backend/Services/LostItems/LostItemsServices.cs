@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.Models;
 using backend.Requests.LostItems;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.LostItems;
@@ -23,12 +24,12 @@ public class LostItemsServices : ILostItemsService
             .ToListAsync();
     }
 
-    public async Task<List<LostItem>> GetAllByUniversityId(Guid adminUniId)
+    public async Task<List<LostItem>> GetAllByUniversityId(Guid universityId)
     {
         return await _db
             .LostItems.Include(l => l.Student)
                 .ThenInclude(s => s.University)
-            .Where(l => l.Student.UniversityId == adminUniId)
+            .Where(l => l.Student.UniversityId == universityId)
             .Include(l => l.Category)
             .ToListAsync();
     }
@@ -40,6 +41,16 @@ public class LostItemsServices : ILostItemsService
                 .ThenInclude(s => s.University)
             .Include(l => l.Category)
             .FirstOrDefaultAsync(l => l.Id == id);
+    }
+
+    public async Task<List<LostItem>> GetAllLostItemsCreatedByStudent(Guid studentId)
+    {
+        return await _db
+            .LostItems.Include(l => l.Student)
+                .ThenInclude(s => s.University)
+            .Where(s => s.StudentId == studentId)
+            .Include(l => l.Category)
+            .ToListAsync();
     }
 
     public async Task<LostItem> Create(CreateLostItemRequest request)
