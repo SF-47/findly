@@ -1,8 +1,5 @@
-import ScreenHeader from "../../components/ScreenHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text, Pressable, ScrollView } from "react-native";
-import ItemCard from "../../components/ItemCard";
-import { itemCards } from "../../data/itemCards";
 import { useEffect, useState } from "react";
 import { getCurrentStudent } from "../../services/studentService";
 
@@ -30,10 +27,23 @@ function HomeScreen({ navigation }) {
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <ScreenHeader
-        title={`Hello, ${studentFullName || "Student"}`}
-        subtitle="Manage lost and found activity across your campus."
-      />
+      <View className="flex-row items-start justify-between">
+        <View className="flex-1 pr-4">
+          <Text className="text-3xl font-black text-slate-900 dark:text-white">
+            Hello, {studentFullName || "Student"}
+          </Text>
+          <Text className="mt-2 text-base leading-6 text-slate-500 dark:text-gray-400">
+            Manage lost and found activity across your campus.
+          </Text>
+        </View>
+
+        <Pressable
+          className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900"
+          onPress={() => navigation.navigate("Profile")}
+        >
+          <Ionicons name="person-outline" size={22} color="#2563eb" />
+        </Pressable>
+      </View>
 
       <View className="mb-6 mt-7 rounded-3xl bg-blue-600 p-5 dark:bg-blue-500">
         <Text className="text-xl font-bold text-white">
@@ -81,9 +91,6 @@ function HomeScreen({ navigation }) {
       <Text className="mb-4 text-xl font-bold text-slate-900 dark:text-white">
         Recent items
       </Text>
-      {itemCards.slice(0, 2).map((item) => (
-        <ItemCard item={item} key={item.title} />
-      ))}
     </ScrollView>
   );
 }

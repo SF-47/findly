@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ItemDetailsScreen({ route, navigation }) {
@@ -49,9 +49,17 @@ export default function ItemDetailsScreen({ route, navigation }) {
       </View>
 
       <View className="rounded-3xl bg-white p-5 dark:bg-zinc-900">
-        <View className="mb-5 h-28 w-28 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-900/40">
-          <Ionicons name={item.icon} size={48} color="#3b82f6" />
-        </View>
+        {item.imageUrl ? (
+          <Image
+            className="mb-5 h-56 w-full rounded-3xl bg-slate-100 dark:bg-zinc-800"
+            resizeMode="cover"
+            source={{ uri: item.imageUrl }}
+          />
+        ) : (
+          <View className="mb-5 h-28 w-28 items-center justify-center rounded-3xl bg-blue-50 dark:bg-blue-900/40">
+            <Ionicons name={item.icon} size={48} color="#3b82f6" />
+          </View>
+        )}
 
         <View className="flex-row items-start justify-between">
           <View className="flex-1 pr-3">
@@ -75,9 +83,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
             Description
           </Text>
           <Text className="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300">
-            This is where the item description, claim instructions, finder
-            details, and matching notes will appear when the backend is
-            connected.
+            {item.description || "No description added for this item."}
           </Text>
         </View>
       </View>

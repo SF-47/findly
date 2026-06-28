@@ -1,9 +1,14 @@
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function PendingVerificationScreen() {
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <View
+      className="flex-1 bg-slate-50"
+      style={{ paddingBottom: insets.bottom, paddingTop: insets.top }}
+    >
       <View className="flex-1 items-center justify-center px-6">
         <View className="mb-6 h-20 w-20 items-center justify-center rounded-full bg-yellow-100">
           <Text className="text-3xl">⏳</Text>
@@ -18,6 +23,6 @@ export default function PendingVerificationScreen() {
           university admin verifies your student card.
         </Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

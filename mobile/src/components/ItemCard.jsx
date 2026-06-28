@@ -1,11 +1,20 @@
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+
 function ItemCard({ item }) {
   return (
     <View className="mb-4 rounded-2xl bg-white p-4 dark:bg-zinc-900">
       <View className="flex-row items-start">
         <View className="mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/40">
-          <Ionicons name={item.icon} size={25} color="#3b82f6" />
+          {item.imageUrl ? (
+            <Image
+              className="h-14 w-14 rounded-2xl"
+              resizeMode="cover"
+              source={{ uri: item.imageUrl }}
+            />
+          ) : (
+            <Ionicons name={item.icon} size={25} color="#3b82f6" />
+          )}
         </View>
         <View className="flex-1">
           <View className="flex-row items-start justify-between">
