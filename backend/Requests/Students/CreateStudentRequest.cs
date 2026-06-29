@@ -1,5 +1,6 @@
 namespace backend.Requests.Students;
 
+// ! ADMIN PANEL ONLY
 public record CreateStudentRequest(
     string FullName,
     string Email,

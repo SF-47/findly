@@ -1,5 +1,6 @@
 namespace backend.Responses.LostItems;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public record FullLostItemsResponse(
     Guid Id,
     Guid StudentId,

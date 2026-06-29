@@ -1,5 +1,6 @@
 namespace backend.Responses.Students;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public record FullStudentResponse(
     Guid Id,
     string FullName,

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 [Authorize]
 [ApiController]
 [Route("students")]
@@ -42,6 +43,7 @@ public class StudentController : ControllerBase
         _n8nMatchingService = n8nMatchingService;
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpGet]
     public async Task<IActionResult> GetAllStudents()
     {
@@ -72,6 +74,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpGet("me")]
     public async Task<IActionResult> GetCurrentStudent()
@@ -94,6 +97,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetStudentById(Guid id)
     {
@@ -116,6 +120,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpPost]
     public async Task<IActionResult> CreateNewStudent(CreateStudentRequest request)
     {
@@ -175,6 +180,7 @@ public class StudentController : ControllerBase
         return Created($"/students/{student.Id}", response);
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateStudent(Guid id, UpdateStudentRequest request)
     {
@@ -258,6 +264,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteStudent(Guid id)
     {
@@ -285,6 +292,7 @@ public class StudentController : ControllerBase
         return NoContent();
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpPut("{id}/verify")]
     public async Task<IActionResult> VerifyStudent(Guid id)
     {
@@ -312,6 +320,7 @@ public class StudentController : ControllerBase
         return Ok(ToFullStudentResponse(student));
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpPut("me")]
     public async Task<IActionResult> UpdateStudentOwnInfo(UpdateStudentOwnInfo request)
@@ -350,6 +359,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpPost("me/create/lost-items")]
     public async Task<IActionResult> CreateLostItemByStudent(CreateLostItemByStudentRequest request)
@@ -393,6 +403,7 @@ public class StudentController : ControllerBase
         return Created($"/me/lost-items/{lostItem.Id}", response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpPost("me/create/found-items")]
     public async Task<IActionResult> CreateFoundItemByStudent(
@@ -437,6 +448,7 @@ public class StudentController : ControllerBase
         return Created($"/me/found-items/{foundItem.Id}", response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpGet("lost-items")]
     public async Task<IActionResult> GetLostItemsByUniId()
@@ -453,6 +465,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpGet("found-items")]
     public async Task<IActionResult> GetFoundItemsByUniId()
@@ -469,6 +482,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpGet("me/lost-items")]
     public async Task<IActionResult> GetAllLostItemsCreatedByStudent()
@@ -485,6 +499,7 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
     [HttpGet("me/found-items")]
     public async Task<IActionResult> GetAllFoundItemsCreatedByStudent()

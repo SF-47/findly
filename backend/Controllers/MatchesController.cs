@@ -1,13 +1,14 @@
+using System.Security.Claims;
 using backend.Data;
 using backend.Requests.ItemMatches;
 using backend.Responses.ItemMatches;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers;
 
+// ! ADMIN PANEL ONLY
 [Authorize]
 [ApiController]
 [Route("matches")]
@@ -83,7 +84,7 @@ public class MatchesController : ControllerBase
             "pending" => "Pending",
             "confirmed" => "Confirmed",
             "rejected" => "Rejected",
-            _ => null
+            _ => null,
         };
 
         if (status is null)
@@ -115,12 +116,14 @@ public class MatchesController : ControllerBase
 
         await _db.SaveChangesAsync();
 
-        return Ok(new
-        {
-            match.Id,
-            match.Status,
-            match.ReviewedAt
-        });
+        return Ok(
+            new
+            {
+                match.Id,
+                match.Status,
+                match.ReviewedAt,
+            }
+        );
     }
 
     [HttpDelete("{id}")]
@@ -174,8 +177,6 @@ public class MatchesController : ControllerBase
     {
         var universityIdValue = User.FindFirst("universityId")?.Value;
 
-        return Guid.TryParse(universityIdValue, out var universityId)
-            ? universityId
-            : null;
+        return Guid.TryParse(universityIdValue, out var universityId) ? universityId : null;
     }
 }

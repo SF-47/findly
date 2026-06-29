@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// ! ADMIN PANEL ONLY
 [ApiController]
 [Route("admins")]
 [Authorize(Roles = "Owner")] //This means : admins now requires a valid JWT token.

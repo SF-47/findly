@@ -1,5 +1,6 @@
 namespace backend.Requests.LostItems;
 
+// MOBILE APP ONLY
 public record CreateLostItemByStudentRequest(
     int CategoryId,
     string ItemName,

@@ -1,5 +1,6 @@
 namespace backend.Requests.LostItems;
 
+// ! ADMIN PANEL ONLY
 public record UpdateLostItemRequest(
     int CategoryId,
     string ItemName,

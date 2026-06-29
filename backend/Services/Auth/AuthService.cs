@@ -15,6 +15,7 @@ public class AuthService : IAuthService
         _db = db;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Admin?> Login(AdminLoginRequest request)
     {
         var admin = await _db
@@ -36,6 +37,7 @@ public class AuthService : IAuthService
         return admin;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> ChangePassword(Guid adminId, ChangePasswordRequest request)
     {
         var admin = await _db.Admins.FirstOrDefaultAsync(a => a.Id == adminId);
@@ -60,6 +62,7 @@ public class AuthService : IAuthService
         return true;
     }
 
+    // MOBILE APP ONLY
     public async Task<Student?> LoginStudent(StudentLoginRequest request)
     {
         var email = request.Email.Trim().ToLower();
@@ -82,6 +85,7 @@ public class AuthService : IAuthService
         return student;
     }
 
+    // MOBILE APP ONLY
     public async Task<Student?> RegisterStudent(StudentRegisterRequest request)
     {
         var fullName = request.FullName.Trim();

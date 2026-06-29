@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Dashboard;
 
+// ! ADMIN PANEL ONLY
 public class DashboardService : IDashboardService
 {
     private readonly AppDbContext _db;

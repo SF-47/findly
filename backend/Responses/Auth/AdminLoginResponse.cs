@@ -1,5 +1,6 @@
 namespace backend.Responses.Auth;
 
+// ! ADMIN PANEL ONLY
 public record AdminLoginResponse(
     Guid Id,
     string FullName,

@@ -1,5 +1,6 @@
 namespace backend.Responses.Dashboard;
 
+// ! ADMIN PANEL ONLY
 public record DashboardSummaryResponse(
     int TotalStudents,
     int VerifiedStudents,

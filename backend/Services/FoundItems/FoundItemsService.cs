@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.FoundItems;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public class FoundItemsServices : IFoundItemService
 {
     public readonly AppDbContext _db;
@@ -14,6 +15,7 @@ public class FoundItemsServices : IFoundItemService
         _db = db;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<List<FoundItem>> GetAll()
     {
         return await _db
@@ -23,6 +25,7 @@ public class FoundItemsServices : IFoundItemService
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<List<FoundItem>> GetAllByUniversityId(Guid universityId)
     {
         return await _db
@@ -33,6 +36,7 @@ public class FoundItemsServices : IFoundItemService
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<FoundItem?> GetById(Guid id)
     {
         return await _db
@@ -42,6 +46,7 @@ public class FoundItemsServices : IFoundItemService
             .FirstOrDefaultAsync(f => f.Id == id);
     }
 
+    // MOBILE APP ONLY
     public async Task<List<FoundItem>> GetAllFoundItemsCreatedByStudent(Guid studentId)
     {
         return await _db
@@ -52,6 +57,7 @@ public class FoundItemsServices : IFoundItemService
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<FoundItem> Create(CreateFoundItemRequest request)
     {
         var FoundItem = new FoundItem
@@ -74,6 +80,7 @@ public class FoundItemsServices : IFoundItemService
         return await GetById(FoundItem.Id) ?? FoundItem;
     }
 
+    // MOBILE APP ONLY
     public async Task<FoundItem> CreateFoundItemByStudent(
         Guid studentId,
         CreateFoundItemByStudentRequest request
@@ -99,6 +106,7 @@ public class FoundItemsServices : IFoundItemService
         return await GetById(foundItem.Id) ?? foundItem;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request)
     {
         var foundItem = await GetById(id);
@@ -121,6 +129,7 @@ public class FoundItemsServices : IFoundItemService
         return foundItem;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> Delete(Guid id)
     {
         var FoundItem = await GetById(id);
@@ -134,16 +143,19 @@ public class FoundItemsServices : IFoundItemService
         return true;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> StudentExists(Guid studentId)
     {
         return await _db.Students.AnyAsync(s => s.Id == studentId);
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     public async Task<bool> CategoryExists(int categoryId)
     {
         return await _db.Categories.AnyAsync(c => c.Id == categoryId);
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Guid?> GetUniversityIdFromStudentId(Guid studentId)
     {
         var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == studentId);

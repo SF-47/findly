@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// ! ADMIN PANEL ONLY
 [Authorize]
 [ApiController]
 [Route("found-items")]

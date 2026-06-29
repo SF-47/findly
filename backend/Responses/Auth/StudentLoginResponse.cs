@@ -1,5 +1,6 @@
 namespace backend.Responses.Auth;
 
+// MOBILE APP ONLY
 public record StudentLoginResponse(
     Guid Id,
     string FullName,

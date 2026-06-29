@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Students;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public class StudentServices : IStudentServices
 {
     private readonly AppDbContext _db;
@@ -14,16 +15,19 @@ public class StudentServices : IStudentServices
         _db = db;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<List<Student>> GetAll()
     {
         return await _db.Students.Include(s => s.University).ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Student?> GetById(Guid id)
     {
         return await _db.Students.Include(s => s.University).FirstOrDefaultAsync(s => s.Id == id);
     }
 
+    // MOBILE APP ONLY
     public async Task<Student?> GetCurrentStudent(Guid studentId)
     {
         return await _db
@@ -32,6 +36,7 @@ public class StudentServices : IStudentServices
             .FirstOrDefaultAsync(s => s.Id == studentId);
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<List<Student>> GetByUniversityId(Guid uniId)
     {
         return await _db
@@ -40,6 +45,7 @@ public class StudentServices : IStudentServices
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Student> Create(CreateStudentRequest request)
     {
         var student = new Student
@@ -59,6 +65,7 @@ public class StudentServices : IStudentServices
         return student;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Student?> Update(Guid id, UpdateStudentRequest request)
     {
         var student = await GetById(id);
@@ -80,6 +87,7 @@ public class StudentServices : IStudentServices
         return student;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> Delete(Guid id)
     {
         var student = await GetById(id);
@@ -95,6 +103,7 @@ public class StudentServices : IStudentServices
         return true;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Student?> VerifyStudent(Guid id)
     {
         var student = await GetById(id);
@@ -111,21 +120,25 @@ public class StudentServices : IStudentServices
         return student;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> EmailExists(string email)
     {
         return await _db.Students.AnyAsync(s => s.Email.ToLower() == email.Trim().ToLower());
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> PhoneNbExists(string phoneNb)
     {
         return await _db.Students.AnyAsync(s => s.PhoneNumber == phoneNb.Trim());
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> UniversityExists(Guid universityId)
     {
         return await _db.Universities.AnyAsync(u => u.Id == universityId);
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> UniversityStudentIdExists(Guid universityId, string universityStudentId)
     {
         return await _db.Students.AnyAsync(s =>
@@ -133,6 +146,7 @@ public class StudentServices : IStudentServices
         );
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> EmailExistsForAnotherStudent(string email, Guid id)
     {
         return await _db.Students.AnyAsync(s =>
@@ -140,11 +154,13 @@ public class StudentServices : IStudentServices
         );
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     public async Task<bool> PhoneNbExistsForAnotherStudent(string phoneNb, Guid id)
     {
         return await _db.Students.AnyAsync(s => s.Id != id && s.PhoneNumber == phoneNb.Trim());
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> UniversityStudentIdExistsForAnotherStudent(
         Guid universityId,
         string universityStudentId,
@@ -158,6 +174,7 @@ public class StudentServices : IStudentServices
         );
     }
 
+    // MOBILE APP ONLY
     public async Task<Student?> UpdateStudentOwnInfo(Guid studentId, UpdateStudentOwnInfo request)
     {
         var student = await _db

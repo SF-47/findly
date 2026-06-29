@@ -3,6 +3,7 @@ using backend.Requests.Admins;
 
 namespace backend.Services.Admins;
 
+// ! ADMIN PANEL ONLY
 public interface IAdminService
 {
     Task<List<Admin>> GetAll();

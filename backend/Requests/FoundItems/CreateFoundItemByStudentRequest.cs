@@ -1,5 +1,6 @@
 namespace backend.Requests.FoundItems;
 
+// MOBILE APP ONLY
 public record CreateFoundItemByStudentRequest(
     int CategoryId,
     string ItemName,

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Admins;
 
+// ! ADMIN PANEL ONLY
 public class AdminService : IAdminService
 {
     private readonly AppDbContext _db;

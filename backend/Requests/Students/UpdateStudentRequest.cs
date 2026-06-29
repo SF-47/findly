@@ -1,5 +1,6 @@
 namespace backend.Requests.Students;
 
+// ! ADMIN PANEL ONLY
 public record UpdateStudentRequest(
     string FullName,
     string Email,

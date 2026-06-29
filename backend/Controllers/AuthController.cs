@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 [ApiController]
 [Route("auth")]
 public class AuthController : ControllerBase
@@ -24,6 +25,7 @@ public class AuthController : ControllerBase
         _jwtService = jwtService;
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpPost("admin/login")]
     public async Task<IActionResult> AdminLogin(AdminLoginRequest request)
     {
@@ -60,6 +62,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    // ! ADMIN PANEL ONLY
     [Authorize]
     [HttpPut("admin/change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
@@ -91,6 +94,7 @@ public class AuthController : ControllerBase
         return Ok(message);
     }
 
+    // MOBILE APP ONLY
     [HttpPost("student/login")]
     public async Task<IActionResult> LoginStudent(StudentLoginRequest request)
     {
@@ -123,6 +127,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
     [HttpPost("student/register")]
     public async Task<IActionResult> RegisterStudent(StudentRegisterRequest request)
     {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// ! ADMIN PANEL ONLY
 [ApiController]
 [Route("dashboard")]
 [Authorize]

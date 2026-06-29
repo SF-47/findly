@@ -7,6 +7,7 @@ using Npgsql;
 
 namespace backend.Controllers;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 [ApiController]
 [Route("n8n/matching")]
 public class N8nMatchingController : ControllerBase
@@ -29,6 +30,7 @@ public class N8nMatchingController : ControllerBase
             && secretFromHeader == realSecret;
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     [HttpGet("candidates")]
     public async Task<IActionResult> GetCandidates([FromQuery] string type, [FromQuery] Guid itemId)// [FromQuery] string type, [FromQuery] Guid itemId . Take the value from the URL query string. example endpoint : GET /n8n/matching/candidates?type=lost&itemId=019e7999-750a-7647-8413-622f5a23cb2a
     {
@@ -164,6 +166,7 @@ public class N8nMatchingController : ControllerBase
         return BadRequest(new { message = "Invalid type. Use lost or found." });
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     [HttpPost("save-match")]
     public async Task<IActionResult> SaveAiMatch(CreateAiMatchRequest request)
     {

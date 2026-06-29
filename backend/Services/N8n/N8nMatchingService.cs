@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 
 namespace backend.Services.N8n;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public class N8nMatchingService : IN8nMatchingService
 {
     private readonly HttpClient _httpClient;//Sends request to n8n.

@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Services.Jwt;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
@@ -15,6 +16,7 @@ public class JwtService : IJwtService
         _configuration = configuration;
     }
 
+    // ! ADMIN PANEL ONLY
     public string GenerateToken(Admin admin)
     {
         //It reads:
@@ -42,7 +44,7 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.NameIdentifier, admin.Id.ToString()),
             new Claim(ClaimTypes.Email, admin.Email),
             new Claim(ClaimTypes.Name, admin.FullName),
-            new Claim(ClaimTypes.Role, admin.Role),//this enables : User.IsInRole("Owner") and User.IsInRole("UniversityAdmin")
+            new Claim(ClaimTypes.Role, admin.Role), //this enables : User.IsInRole("Owner") and User.IsInRole("UniversityAdmin")
             new Claim("universityId", admin.UniversityId?.ToString() ?? ""), //This lets university admins only access their own university data.
         };
 
@@ -58,8 +60,10 @@ public class JwtService : IJwtService
             signingCredentials: credentials
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);//converts it into a string sent to frontend.
+        return new JwtSecurityTokenHandler().WriteToken(token); //converts it into a string sent to frontend.
     }
+
+    // MOBILE APP ONLY
     public string GenerateStudentToken(Student student)
     {
         var jwtKey = _configuration["Jwt:Key"];
@@ -71,7 +75,7 @@ public class JwtService : IJwtService
         {
             throw new Exception("JWT Key is missing.");
         }
-        
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, student.Id.ToString()),
@@ -79,12 +83,12 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.Name, student.FullName),
             new Claim(ClaimTypes.Role, "Student"),
             new Claim("universityId", student.UniversityId.ToString() ?? ""),
-            new Claim("isVerified" , student.IsVerified.ToString()) 
+            new Claim("isVerified", student.IsVerified.ToString()),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); 
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: jwtIssuer,

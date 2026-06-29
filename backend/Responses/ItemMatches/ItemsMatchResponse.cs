@@ -1,5 +1,6 @@
 namespace backend.Responses.ItemMatches;
 
+// ! ADMIN PANEL ONLY
 public record MatchItemResponse(
     Guid Id,
     string StudentName,
@@ -15,6 +16,7 @@ public record MatchItemResponse(
     string ImageUrl
 );
 
+// ! ADMIN PANEL ONLY
 public record ItemsMatchResponse(
     Guid Id,
     MatchItemResponse LostItem,

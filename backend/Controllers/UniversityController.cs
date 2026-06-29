@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 [ApiController]
 [Route("universities")]
-
 public class UniversityController : ControllerBase
 {
     private readonly IUniversityService _universityService;
@@ -21,6 +21,7 @@ public class UniversityController : ControllerBase
         _universityService = universityService;
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     [HttpGet]
     public async Task<IActionResult> GetAllUniversities()
     {
@@ -30,6 +31,8 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetUniById(Guid id)
@@ -45,6 +48,8 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> CreateNewUniversity(CreateUniversityRequest request)
@@ -82,6 +87,8 @@ public class UniversityController : ControllerBase
 
         return Created($"/universities/{university.Id}", response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUniversity(Guid id, UpdateUniversityRequest request)
@@ -125,6 +132,8 @@ public class UniversityController : ControllerBase
 
         return Ok(response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUniversity(Guid id)

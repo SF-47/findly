@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.LostItems;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public class LostItemsServices : ILostItemsService
 {
     public readonly AppDbContext _db;
@@ -15,6 +16,7 @@ public class LostItemsServices : ILostItemsService
         _db = db;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<List<LostItem>> GetAll()
     {
         return await _db
@@ -24,6 +26,7 @@ public class LostItemsServices : ILostItemsService
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<List<LostItem>> GetAllByUniversityId(Guid universityId)
     {
         return await _db
@@ -34,6 +37,7 @@ public class LostItemsServices : ILostItemsService
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<LostItem?> GetById(Guid id)
     {
         return await _db
@@ -43,6 +47,7 @@ public class LostItemsServices : ILostItemsService
             .FirstOrDefaultAsync(l => l.Id == id);
     }
 
+    // MOBILE APP ONLY
     public async Task<List<LostItem>> GetAllLostItemsCreatedByStudent(Guid studentId)
     {
         return await _db
@@ -53,6 +58,7 @@ public class LostItemsServices : ILostItemsService
             .ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<LostItem> Create(CreateLostItemRequest request)
     {
         var lostItem = new LostItem
@@ -75,6 +81,7 @@ public class LostItemsServices : ILostItemsService
         return await GetById(lostItem.Id) ?? lostItem;
     }
 
+    // MOBILE APP ONLY
     public async Task<LostItem> CreateLostItemByStudent(
         Guid studentId,
         CreateLostItemByStudentRequest request
@@ -99,6 +106,7 @@ public class LostItemsServices : ILostItemsService
         return await GetById(lostItem.Id) ?? lostItem;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<LostItem?> Update(Guid id, UpdateLostItemRequest request)
     {
         var lostItem = await GetById(id);
@@ -121,6 +129,7 @@ public class LostItemsServices : ILostItemsService
         return lostItem;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> Delete(Guid id)
     {
         var lostItem = await GetById(id);
@@ -134,16 +143,19 @@ public class LostItemsServices : ILostItemsService
         return true;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> StudentExists(Guid studentId)
     {
         return await _db.Students.AnyAsync(s => s.Id == studentId);
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     public async Task<bool> CategoryExists(int categoryId)
     {
         return await _db.Categories.AnyAsync(c => c.Id == categoryId);
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Guid?> GetUniversityIdFromStudentId(Guid studentId)
     {
         var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == studentId);

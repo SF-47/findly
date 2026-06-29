@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.Categories;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 public class CategoryService : ICategoryService
 {
     private readonly AppDbContext _db;
@@ -16,11 +17,13 @@ public class CategoryService : ICategoryService
         _db = db;
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     public async Task<List<Category>> GetAll()
     {
         return await _db.Categories.ToListAsync();
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> CategoryNameExists(string name)
     {
         var cleanName = name.Trim().ToLower();
@@ -29,11 +32,13 @@ public class CategoryService : ICategoryService
         return exists;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Category?> GetById(int id)
     {
         return await _db.Categories.FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Category> Create(CreateCategoryRequest request)
     {
         var category = new Category
@@ -48,6 +53,7 @@ public class CategoryService : ICategoryService
         return category;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<Category?> Update(int id, UpdateCategoryRequest request)
     {
         var category = await GetById(id);
@@ -62,7 +68,8 @@ public class CategoryService : ICategoryService
         return category;
     }
 
-    public async Task<bool> CategoryNameExistsExceptId(int id , string name)
+    // ! ADMIN PANEL ONLY
+    public async Task<bool> CategoryNameExistsExceptId(int id, string name)
     {
         var cleanName = name.Trim().ToLower();
         var exists = await _db.Categories.AnyAsync(c =>
@@ -72,6 +79,7 @@ public class CategoryService : ICategoryService
         return exists;
     }
 
+    // ! ADMIN PANEL ONLY
     public async Task<bool> Delete(int id)
     {
         var category = await GetById(id);

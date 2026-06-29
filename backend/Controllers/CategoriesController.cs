@@ -10,18 +10,20 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
 
+// SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
 [Authorize]
 [ApiController]
 [Route("categories")]
 public class CategoriesController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;   
-    
+    private readonly ICategoryService _categoryService;
+
     public CategoriesController(ICategoryService categoryService)
     {
         _categoryService = categoryService;
     }
 
+    // SHARED: USED BY BOTH ADMIN PANEL AND MOBILE APP
     [HttpGet]
     public async Task<IActionResult> GetCategories() //Task<IActionResult> means that : This method returns an HTTP response.
     {
@@ -32,6 +34,7 @@ public class CategoriesController : ControllerBase
         return Ok(response);
     }
 
+    // ! ADMIN PANEL ONLY
     [HttpGet("{id}")]
     public async Task<IActionResult> GetCategoryById(int id)
     {
@@ -44,6 +47,8 @@ public class CategoriesController : ControllerBase
         var response = ToCategoryResponse(category);
         return Ok(response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpPost]
     public async Task<IActionResult> CreateNewCategory(CreateCategoryRequest request)
@@ -67,6 +72,8 @@ public class CategoriesController : ControllerBase
         var response = ToCategoryResponse(category);
         return Created($"/categories/{category.Id}", response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateCategory(int id, UpdateCategoryRequest request)
@@ -77,7 +84,7 @@ public class CategoriesController : ControllerBase
             var errorResponse = new ErrorResponse("Validation failed", errors);
             return BadRequest(errorResponse);
         }
-        var exists = await _categoryService.CategoryNameExistsExceptId(id , request.Name);
+        var exists = await _categoryService.CategoryNameExistsExceptId(id, request.Name);
         if (exists)
         {
             errors.Add("Category name already exists.");
@@ -94,6 +101,8 @@ public class CategoriesController : ControllerBase
         var response = ToCategoryResponse(category);
         return Ok(response);
     }
+
+    // ! ADMIN PANEL ONLY
     [Authorize(Roles = "Owner")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteCategory(int id)

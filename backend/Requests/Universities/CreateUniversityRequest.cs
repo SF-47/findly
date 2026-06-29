@@ -1,7 +1,4 @@
 namespace backend.Requests.Universities;
 
-public record CreateUniversityRequest(
-    string ShortName,
-    string FullName,
-    string Branch
-);
+// ! ADMIN PANEL ONLY
+public record CreateUniversityRequest(string ShortName, string FullName, string Branch);

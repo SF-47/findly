@@ -1,5 +1,6 @@
 namespace backend.Requests.Auth;
 
+// MOBILE APP ONLY
 public record StudentRegisterRequest(
     string FullName,
     string Email,

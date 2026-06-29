@@ -1,5 +1,6 @@
 namespace backend.Responses.Admins;
 
+// ! ADMIN PANEL ONLY
 public record AdminResponse(
     Guid Id,
     string FullName,
