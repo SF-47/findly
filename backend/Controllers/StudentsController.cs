@@ -387,7 +387,7 @@ public class StudentController : ControllerBase
         }
 
         var lostItem = await _lostItemsService.CreateLostItemByStudent(studentId, request);
-        _ = _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
+        await _n8nMatchingService.TriggerMatchingAsync(lostItem.Id, "lost");
 
         var response = ToFullLostResponse(lostItem);
         return Created($"/me/lost-items/{lostItem.Id}", response);
@@ -431,7 +431,7 @@ public class StudentController : ControllerBase
             return BadRequest(errorResponse);
         }
         var foundItem = await _foundItemsService.CreateFoundItemByStudent(studentId, request);
-        _ = _n8nMatchingService.TriggerMatchingAsync(foundItem.Id, "found");
+        await _n8nMatchingService.TriggerMatchingAsync(foundItem.Id, "found");
 
         var response = ToFullFoundResponse(foundItem);
         return Created($"/me/found-items/{foundItem.Id}", response);

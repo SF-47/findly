@@ -24,12 +24,7 @@ function ItemCard({ type, item, students, onDelete }) {
 
   const isLost = type === "lost";
 
-  const student = students?.find(
-    (student) => student.id == item?.studentId,
-  );
-
-  
-
+  const student = students?.find((student) => student.id == item?.studentId);
 
   function formatDate(date) {
     if (!date) return "N/A";

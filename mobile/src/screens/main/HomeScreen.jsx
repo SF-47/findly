@@ -5,6 +5,7 @@ import { getCurrentStudent } from "../../services/studentService";
 
 function HomeScreen({ navigation }) {
   const [studentFullName, setStudentFullName] = useState("");
+  const [studentInitials, setStudentInitials] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   async function fetchStudentData() {
@@ -14,6 +15,16 @@ function HomeScreen({ navigation }) {
       const student = await getCurrentStudent();
 
       setStudentFullName(student.fullName.split(" ")[0]);
+      if (student?.fullName) {
+        const initials = student.fullName
+          .trim()
+          .split(" ")
+          .map((part) => part[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+        setStudentInitials(initials);
+      }
     } catch (error) {
       console.log("HOME STUDENT ERROR:", error?.message);
     } finally {
@@ -23,7 +34,13 @@ function HomeScreen({ navigation }) {
 
   useEffect(() => {
     fetchStudentData();
-  }, []);
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchStudentData();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -38,10 +55,20 @@ function HomeScreen({ navigation }) {
         </View>
 
         <Pressable
-          className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900"
+          className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800/80 shadow-sm active:opacity-80"
           onPress={() => navigation.navigate("Profile")}
         >
-          <Ionicons name="person-outline" size={22} color="#2563eb" />
+          {studentInitials ? (
+            <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+              <Text className="text-xs font-black text-white tracking-wider">
+                {studentInitials}
+              </Text>
+            </View>
+          ) : (
+            <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/40">
+              <Ionicons name="person-outline" size={18} color="#2563eb" />
+            </View>
+          )}
         </Pressable>
       </View>
 

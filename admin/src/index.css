@@ -106,11 +106,11 @@ button:disabled,
 @keyframes confirm-dialog-enter {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%) scale(0.97);
+    transform: scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
 }
 
@@ -227,8 +227,6 @@ button:disabled,
 }
 
 .admin-confirm-dialog-content {
-  left: calc(50% + (var(--admin-sidebar-offset, 18rem) / 2));
-  transition: left 0.3s ease;
   animation: confirm-dialog-enter 0.2s ease-out both;
 }
 

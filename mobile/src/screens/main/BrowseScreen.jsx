@@ -3,11 +3,10 @@ import ScreenHeader from "../../components/ScreenHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View, TextInput, Pressable, FlatList } from "react-native";
 import ItemCard from "../../components/ItemCard";
-import {
-  getStudentFoundItemsByUniversity,
-  getStudentLostItemsByUniversity,
-} from "../../services/itemService";
+import { getStudentFoundItemsByUniversity, getStudentLostItemsByUniversity } from "../../services/itemService";
 import CustomAlert from "../../components/CustomAlert";
+import { getCurrentStudent } from "../../services/studentService";
+
 
 const FILTER_TYPES = [
   {
@@ -130,6 +129,7 @@ export default function BrowseScreen({ navigation }) {
     message: "",
   });
   const [visibleCount, setVisibleCount] = useState(5);
+  const [studentInitials, setStudentInitials] = useState("");
 
   function showAlert(type, title, message) {
     setAlertData({
@@ -181,9 +181,34 @@ export default function BrowseScreen({ navigation }) {
     }
   }
 
+  async function fetchStudentInitials() {
+    try {
+      const student = await getCurrentStudent();
+      if (student?.fullName) {
+        const initials = student.fullName
+          .trim()
+          .split(" ")
+          .map((part) => part[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+        setStudentInitials(initials);
+      }
+    } catch (error) {
+      console.log("BROWSE STUDENT ERROR:", error?.message);
+    }
+  }
+
   useEffect(() => {
     loadItems();
-  }, []);
+    fetchStudentInitials();
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchStudentInitials();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     setVisibleCount(5);
@@ -249,10 +274,31 @@ export default function BrowseScreen({ navigation }) {
         ListEmptyComponent={<EmptyState isLoading={isLoading} />}
         ListHeaderComponent={
           <>
-            <ScreenHeader
-              title="Browse items"
-              subtitle="Search lost and found reports submitted by students."
-            />
+            <View className="flex-row items-start justify-between">
+              <View className="flex-1 pr-4">
+                <ScreenHeader
+                  title="Browse items"
+                  subtitle="Search lost and found reports submitted by students."
+                />
+              </View>
+
+              <Pressable
+                className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800/80 shadow-sm active:opacity-80"
+                onPress={() => navigation.navigate("Profile")}
+              >
+                {studentInitials ? (
+                  <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+                    <Text className="text-xs font-black text-white tracking-wider">
+                      {studentInitials}
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/40">
+                    <Ionicons name="person-outline" size={18} color="#2563eb" />
+                  </View>
+                )}
+              </Pressable>
+            </View>
 
             <View className="mb-5 mt-7 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
               <Ionicons name="search-outline" size={20} color="#64748b" />

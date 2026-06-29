@@ -40,48 +40,46 @@ function ConfirmDialog({
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="admin-modal-overlay fixed inset-y-0 right-0 z-70 bg-black/45 backdrop-blur-sm" />
 
-        <AlertDialog.Content className="admin-confirm-dialog-content fixed top-1/2 z-80 w-[92vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900">
-          <div
-            className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${styles.iconClass}`}
-          >
-            {styles.icon}
-          </div>
+        <div className="admin-modal-overlay fixed inset-y-0 right-0 z-80 flex items-center justify-center px-4 pointer-events-none">
+          <AlertDialog.Content className="admin-confirm-dialog-content pointer-events-auto w-[92vw] max-w-sm rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl outline-none dark:border-zinc-700 dark:bg-zinc-900">
+            <div
+              className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${styles.iconClass}`}
+            >
+              {styles.icon}
+            </div>
 
-          <AlertDialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
-            {title}
-          </AlertDialog.Title>
+            <AlertDialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
+              {title}
+            </AlertDialog.Title>
 
-          <AlertDialog.Description className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
-            {description}
-          </AlertDialog.Description>
+            <AlertDialog.Description className="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">
+              {description}
+            </AlertDialog.Description>
 
-          <div className="mt-5 flex gap-3">
-            <AlertDialog.Cancel asChild>
-              <button
-                onClick={onCancel}
-                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
-              >
-                {cancelText}
-              </button>
-            </AlertDialog.Cancel>
+            <div className="mt-5 flex gap-3">
+              <AlertDialog.Cancel asChild>
+                <button
+                  onClick={onCancel}
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
+                >
+                  {cancelText}
+                </button>
+              </AlertDialog.Cancel>
 
-            <AlertDialog.Action asChild>
-              <button
-                onClick={onConfirm}
-                className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition ${styles.buttonClass}`}
-              >
-                {confirmText}
-              </button>
-            </AlertDialog.Action>
-          </div>
-        </AlertDialog.Content>
+              <AlertDialog.Action asChild>
+                <button
+                  onClick={onConfirm}
+                  className={`w-full rounded-xl px-4 py-2.5 text-sm font-semibold transition ${styles.buttonClass}`}
+                >
+                  {confirmText}
+                </button>
+              </AlertDialog.Action>
+            </div>
+          </AlertDialog.Content>
+        </div>
       </AlertDialog.Portal>
     </AlertDialog.Root>
   );
 }
 
 export default ConfirmDialog;
-
-
-
-
