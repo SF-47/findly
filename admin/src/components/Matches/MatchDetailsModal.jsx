@@ -126,7 +126,7 @@ function ItemDetails({ item, type }) {
         <p className="text-[10px] font-bold uppercase tracking-wider text-gray-450 dark:text-gray-500">
           Description
         </p>
-        <p className="mt-1.5 text-sm leading-relaxed text-gray-600 dark:text-gray-300 break-words line-clamp-3 hover:line-clamp-none transition-all duration-300" title={item.description}>
+        <p className="mt-1.5 text-sm leading-relaxed text-gray-600 dark:text-gray-300 wrap-break-words line-clamp-3 hover:line-clamp-none transition-all duration-300" title={item.description}>
           {item.description || "No description available."}
         </p>
       </div>
