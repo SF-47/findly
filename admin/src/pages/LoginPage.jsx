@@ -9,7 +9,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import axiosClient from "../api/axiosClient";
+import { loginAdmin } from "../services/authService";
 import toast from "react-hot-toast";
 import { Checkbox } from "@mantine/core";
 
@@ -39,12 +39,12 @@ function LoginPage() {
     if (validateForm()) return;
     try {
       setIsLoading(true);
-      const response = await axiosClient.post("/auth/admin/login", formInputs);
+      const data = await loginAdmin(formInputs);
       if (rememberMe) {
-        localStorage.setItem("admin", JSON.stringify(response.data));
+        localStorage.setItem("admin", JSON.stringify(data));
         sessionStorage.removeItem("admin");
       } else {
-        sessionStorage.setItem("admin", JSON.stringify(response.data));
+        sessionStorage.setItem("admin", JSON.stringify(data));
         localStorage.removeItem("admin");
       }
       toast.success("Logged in successfully.");

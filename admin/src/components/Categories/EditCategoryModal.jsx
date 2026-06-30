@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Save, Tags, X } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { createCategory, updateCategory } from "../../services/categoryService";
 import toast from "react-hot-toast";
 
 function EditCategoryModal({ isOpen, category, onClose, onSuccess }) {
@@ -38,12 +38,12 @@ function EditCategoryModal({ isOpen, category, onClose, onSuccess }) {
       setIsLoading(true);
 
       if (isEdit) {
-        await axiosClient.put(`/categories/${category.id}`, {
+        await updateCategory(category.id, {
           name,
           description,
         });
       } else {
-        await axiosClient.post("/categories", {
+        await createCategory({
           name,
           description,
         });

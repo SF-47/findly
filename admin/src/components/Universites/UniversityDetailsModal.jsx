@@ -7,7 +7,8 @@ import {
   X,
   Building2,
 } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { getAllStudents } from "../../services/studentService";
+import { getAllAdmins } from "../../services/adminService";
 import { useEffect, useState } from "react";
 
 function StatPill({ icon, label, value, iconClass }) {
@@ -33,13 +34,13 @@ function UniversityDetailsModal({ isOpen, onClose, university }) {
 
     async function fetchData() {
       try {
-        const [studentResponse, adminResponse] = await Promise.all([
-          axiosClient.get("/students"),
-          axiosClient.get("/admins"),
+        const [studentData, adminData] = await Promise.all([
+          getAllStudents(),
+          getAllAdmins(),
         ]);
         if (isMounted) {
-          setStudents(studentResponse.data);
-          setAdmins(adminResponse.data);
+          setStudents(studentData);
+          setAdmins(adminData);
         }
       } catch (error) {
         console.log(error);

@@ -1,4 +1,4 @@
-import axiosClient from "../../api/axiosClient";
+import { createAdmin } from "../../services/adminService";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import {
@@ -101,7 +101,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
     setIsLoading(true);
 
     try {
-      await axiosClient.post("/admins", inputs);
+      await createAdmin(inputs);
 
       toast.success("Admin added successfully.");
       await onAdminAdded();

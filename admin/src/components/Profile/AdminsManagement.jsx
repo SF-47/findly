@@ -10,7 +10,8 @@ import {
   ShieldUser,
   Trash2,
 } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { getAllUniversities } from "../../services/universitiesService";
+import { getAdminDetails, deleteAdmin } from "../../services/adminService";
 import AddAdminModal from "./AddAdminModal";
 import ConfirmDialog from "../ConfirmDialog";
 import toast from "react-hot-toast";
@@ -39,15 +40,15 @@ function AdminsManagement({ onBack }) {
   );
 
   async function fetchUniversities() {
-    const response = await axiosClient.get("/universities");
-    setUniversities(response.data);
+    const data = await getAllUniversities();
+    setUniversities(data);
   }
 
   async function fetchData() {
     try {
       setIsLoading(true);
-      const response = await axiosClient.get(`/admins/${adminLoggedIn?.id}`);
-      setAdmins(response.data);
+      const data = await getAdminDetails(adminLoggedIn?.id);
+      setAdmins(data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -73,7 +74,7 @@ function AdminsManagement({ onBack }) {
 
   async function handleDelete(id) {
     try {
-      await axiosClient.delete(`/admins/${id}`);
+      await deleteAdmin(id);
       toast.success("Admin deleted successfully.");
 
       await fetchData();

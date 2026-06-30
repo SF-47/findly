@@ -3,7 +3,7 @@ import { Plus, University } from "lucide-react";
 import UniversityCard from "../components/Universites/UniversityCard";
 import UniversityFormModal from "../components/Universites/UniversityFormModal";
 import UniversitiesToolbar from "../components/Universites/UniversityToolBar";
-import axiosClient from "../api/axiosClient";
+import { getAllUniversities } from "../services/universitiesService";
 import toast from "react-hot-toast";
 
 function Universities() {
@@ -17,8 +17,8 @@ function Universities() {
     try {
       setIsLoading(true);
 
-      const response = await axiosClient.get("/universities");
-      setUniversities(response.data);
+      const data = await getAllUniversities();
+      setUniversities(data);
     } catch (error) {
       console.log(error);
       toast.error("Failed to load data.");

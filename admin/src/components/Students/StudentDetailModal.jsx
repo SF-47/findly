@@ -12,7 +12,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { updateStudent, deleteStudent, verifyStudent } from "../../services/studentService";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../ConfirmDialog";
 import PrimeDropdown from "../PrimeDropdown";
@@ -181,7 +181,7 @@ function StudentDetailsModal({
     setIsLoading(true);
 
     try {
-      await axiosClient.put(`/students/${student.id}`, formData);
+      await updateStudent(student.id, formData);
 
       toast.success("Student updated successfully.");
 
@@ -282,7 +282,7 @@ function StudentDetailsModal({
 
   async function handleDelete() {
     try {
-      await axiosClient.delete(`/students/${student.id}`);
+      await deleteStudent(student.id);
 
       toast.success("Student deleted successfully.");
 
@@ -301,7 +301,7 @@ function StudentDetailsModal({
 
   async function handleVerify() {
     try {
-      await axiosClient.put(`/students/${student.id}/verify`);
+      await verifyStudent(student.id);
 
       toast.success("Student verified successfully.");
 

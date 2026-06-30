@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { MapPin, MoreVertical, Pencil, Trash2, University } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { deleteUniversity } from "../../services/universitiesService";
 import toast from "react-hot-toast";
 import UniversityFormModal from "./UniversityFormModal";
 import UniversityDetailsModal from "./UniversityDetailsModal";
@@ -24,7 +24,7 @@ function UniversityCard({ university, onRefresh }) {
     setShowMenu(false);
 
     try {
-      await axiosClient.delete(`/universities/${university.id}`);
+      await deleteUniversity(university.id);
 
       toast.success("University deleted successfully.");
 

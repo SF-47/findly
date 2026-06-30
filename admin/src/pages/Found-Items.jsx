@@ -1,7 +1,9 @@
 import { CalendarDays, ClipboardCheck, Clock, Plus } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
-import axiosClient from "../api/axiosClient";
+import { getAllStudents } from "../services/studentService";
+import { getFoundItems, createFoundItem, deleteFoundItem } from "../services/itemService";
+import { getCategories } from "../services/categoryService";
 import toast from "react-hot-toast";
 import ItemCard from "../components/Items/ItemCard";
 import ItemCardSkeleton from "../components/Items/ItemCardSkeleton";
@@ -32,17 +34,17 @@ function FoundItems() {
       try {
         setIsLoading(true);
 
-        const [studentResponse, foundItemsResponse, categoryResponse] =
+        const [studentData, foundItemsData, categoryData] =
           await Promise.all([
-            axiosClient.get("/students"),
-            axiosClient.get("/found-items"),
-            axiosClient.get("/categories"),
+            getAllStudents(),
+            getFoundItems(),
+            getCategories(),
           ]);
 
         if (isMounted) {
-          setStudents(studentResponse.data);
-          setFoundItems(foundItemsResponse.data);
-          setCategories(categoryResponse.data);
+          setStudents(studentData);
+          setFoundItems(foundItemsData);
+          setCategories(categoryData);
         }
       } catch (error) {
         console.log(error);
@@ -115,11 +117,11 @@ function FoundItems() {
     try {
       setIsSubmitting(true);
 
-      await axiosClient.post("/found-items", requestBody);
+      await createFoundItem(requestBody);
 
-      const response = await axiosClient.get("/found-items");
+      const data = await getFoundItems();
 
-      setFoundItems(response.data);
+      setFoundItems(data);
       setShowCreateModal(false);
       toast.success("Found item created successfully.");
     } catch (error) {
@@ -132,7 +134,7 @@ function FoundItems() {
 
   async function handleDeleteFoundItem(id) {
     try {
-      await axiosClient.delete(`/found-items/${id}`);
+      await deleteFoundItem(id);
       setFoundItems((prev) => prev.filter((item) => item.id !== id));
       toast.success("Found item deleted successfully.");
     } catch (error) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, KeyRound, LockKeyhole, Save, X } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { changePassword } from "../../services/authService";
 import toast from "react-hot-toast";
 
 function ChangePasswordModal({ onClose }) {
@@ -62,7 +62,7 @@ function ChangePasswordModal({ onClose }) {
         currentPassword: inputs.currentPass,
         newPassword: inputs.newPass,
       };
-      await axiosClient.put("/auth/admin/change-password", request);
+      await changePassword(request);
       toast.success("Password changed successfully.");
       onClose();
     } catch (error) {

@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import axiosClient from "../api/axiosClient";
+import { getMatches, updateMatchStatus, deleteMatch } from "../services/matchService";
 import MatchCard from "../components/Matches/MatchCard";
 import MatchesFilter from "../components/Matches/MatchesFilters";
 import MatchStatsCard from "../components/Matches/MatchStatsCard";
@@ -27,8 +27,8 @@ function Matches() {
     async function fetchMatches() {
       try {
         setIsLoading(true);
-        const response = await axiosClient.get("/matches");
-        setMatches(response.data);
+        const data = await getMatches();
+        setMatches(data);
       } catch (error) {
         console.log(error);
         toast.error("Failed to load matches.");
@@ -85,17 +85,15 @@ function Matches() {
 
   async function handleStatusChange(id, status) {
     try {
-      const response = await axiosClient.patch(`/matches/${id}/status`, {
-        status,
-      });
+      const data = await updateMatchStatus(id, status);
 
       setMatches((prev) =>
         prev.map((match) =>
           match.id === id
             ? {
                 ...match,
-                status: response.data.status,
-                reviewedAt: response.data.reviewedAt,
+                status: data.status,
+                reviewedAt: data.reviewedAt,
               }
             : match,
         ),
@@ -110,7 +108,7 @@ function Matches() {
 
   async function handleDeleteMatch(id) {
     try {
-      await axiosClient.delete(`/matches/${id}`);
+      await deleteMatch(id);
       setMatches((prev) => prev.filter((match) => match.id !== id));
       toast.success("Match deleted successfully.");
     } catch (error) {

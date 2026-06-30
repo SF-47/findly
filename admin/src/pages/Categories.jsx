@@ -1,7 +1,8 @@
 import CatCard from "../components/Categories/CatCard";
 import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
-import axiosClient from "../api/axiosClient";
+import { getCategories, deleteCategory } from "../services/categoryService";
+import { getLostItems, getFoundItems } from "../services/itemService";
 import toast from "react-hot-toast";
 import { isOwner } from "../../utils/auth";
 import EditCategoryModal from "../components/Categories/EditCategoryModal";
@@ -39,19 +40,19 @@ function Categories() {
     try {
       setIsLoading(true);
 
-      const [categoryResponse, lostItemsResponse, foundItemsResponse] =
+      const [categoryData, lostItemsData, foundItemsData] =
         await Promise.all([
-          axiosClient.get("/categories"),
-          axiosClient.get("/lost-items"),
-          axiosClient.get("/found-items"),
+          getCategories(),
+          getLostItems(),
+          getFoundItems(),
         ]);
 
       const counts = {};
-      [...lostItemsResponse.data, ...foundItemsResponse.data].forEach((item) => {
+      [...lostItemsData, ...foundItemsData].forEach((item) => {
         counts[item.categoryId] = (counts[item.categoryId] || 0) + 1;
       });
 
-      setCategories(categoryResponse.data);
+      setCategories(categoryData);
       setReportCounts(counts);
     } catch (error) {
       console.log(error);
@@ -73,7 +74,7 @@ function Categories() {
 
   async function handleDeleteCategory(id) {
     try {
-      await axiosClient.delete(`/categories/${id}`);
+      await deleteCategory(id);
       toast.success("Category deleted successfully.");
       await fetchData();
     } catch (error) {

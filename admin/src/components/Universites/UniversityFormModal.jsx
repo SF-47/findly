@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Save, University, X } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { createUniversity, updateUniversity } from "../../services/universitiesService";
 import toast from "react-hot-toast";
 
 function UniversityFormModal({
@@ -104,7 +104,7 @@ function UniversityFormModal({
         branch: inputs.branch.trim(),
       };
 
-      await axiosClient.post("/universities", cleanInputs);
+      await createUniversity(cleanInputs);
 
       toast.success("University added successfully.");
 
@@ -176,10 +176,7 @@ function UniversityFormModal({
         branch: inputs.branch.trim(),
       };
 
-      await axiosClient.put(
-        `/universities/${selectedUniversity.id}`,
-        cleanInputs,
-      );
+      await updateUniversity(selectedUniversity.id, cleanInputs);
 
       toast.success("University updated successfully.");
 

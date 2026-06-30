@@ -7,7 +7,9 @@ import {
 import ItemCard from "../components/Items/ItemCard";
 import ItemStatsCard from "../components/Items/ItemStatsCard";
 import { useEffect, useMemo, useState } from "react";
-import axiosClient from "../api/axiosClient";
+import { getAllStudents } from "../services/studentService";
+import { getLostItems, createLostItem, deleteLostItem } from "../services/itemService";
+import { getCategories } from "../services/categoryService";
 import CreateNewItem from "../components/Items/CreateNewItem";
 import toast from "react-hot-toast";
 import ItemCardSkeleton from "./../components/Items/ItemCardSkeleton.jsx";
@@ -36,16 +38,16 @@ function LostItems() {
     try {
       setIsLoading(true);
 
-      const [studentResponse, lostItemsResponse, categoryResponse] =
+      const [studentData, lostItemsData, categoryData] =
         await Promise.all([
-          axiosClient.get("/students"),
-          axiosClient.get("/lost-items"),
-          axiosClient.get("/categories"),
+          getAllStudents(),
+          getLostItems(),
+          getCategories(),
         ]);
 
-      setStudents(studentResponse.data);
-      setlostItems(lostItemsResponse.data);
-      setCategories(categoryResponse.data);
+      setStudents(studentData);
+      setlostItems(lostItemsData);
+      setCategories(categoryData);
     } catch (error) {
       console.log(error);
       toast.error("Failed to load lost items.");
@@ -117,11 +119,11 @@ function LostItems() {
     try {
       setIsSubmitting(true);
 
-      await axiosClient.post("/lost-items", requestBody);
+      await createLostItem(requestBody);
 
-      const response = await axiosClient.get("/lost-items");
+      const data = await getLostItems();
 
-      setlostItems(response.data);
+      setlostItems(data);
       setShowCreateModal(false);
       toast.success("Lost item created successfully.");
     } catch (error) {
@@ -134,7 +136,7 @@ function LostItems() {
 
   async function handleDeleteLostItem(id) {
     try {
-      await axiosClient.delete(`/lost-items/${id}`);
+      await deleteLostItem(id);
       setlostItems((prev) => prev.filter((item) => item.id !== id));
       toast.success("Lost item deleted successfully.");
     } catch (error) {

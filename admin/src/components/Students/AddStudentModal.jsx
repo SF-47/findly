@@ -10,7 +10,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import axiosClient from "../../api/axiosClient";
+import { createStudent } from "../../services/studentService";
 import toast from "react-hot-toast";
 import PrimeDropdown from "../PrimeDropdown";
 import { supabase } from "../../api/supabaseClient";
@@ -222,7 +222,7 @@ function AddStudentModal({
       const universityCardImageUrl =
         await uploadUniversityCardImage(cardImageFile);
 
-      await axiosClient.post("/students", {
+      await createStudent({
         ...formData,
         universityCardImageUrl,
       });

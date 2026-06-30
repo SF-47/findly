@@ -13,7 +13,10 @@ import {
 
 import DashCard from "../components/Dashboard/DashCard";
 import TableSkeleton from "../components/Dashboard/TableSkeleton";
-import axiosClient from "../api/axiosClient";
+import { getDashboardSummary } from "../services/dashboardService";
+import { getLostItems, getFoundItems } from "../services/itemService";
+import { getAllStudents } from "../services/studentService";
+import { getMatches } from "../services/matchService";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import DashCardSkeleton from "../components/Dashboard/DashCardSkeleton";
@@ -46,17 +49,17 @@ function Dashboard() {
     try {
       setIsLoading(true);
 
-      const response = await axiosClient.get("/dashboard/summary");
+      const data = await getDashboardSummary();
 
       setStatsData({
-        totalStudents: response.data.totalStudents ?? 0,
-        verifiedStudents: response.data.verifiedStudents ?? 0,
-        pendingStudents: response.data.pendingStudents ?? 0,
-        totalCategories: response.data.totalCategories ?? 0,
-        lostItems: response.data.lostItems ?? 0,
-        foundItems: response.data.foundItems ?? 0,
-        possibleMatches: response.data.possibleMatches ?? 0,
-        totalUniversities: response.data.totalUniversities ?? 0,
+        totalStudents: data.totalStudents ?? 0,
+        verifiedStudents: data.verifiedStudents ?? 0,
+        pendingStudents: data.pendingStudents ?? 0,
+        totalCategories: data.totalCategories ?? 0,
+        lostItems: data.lostItems ?? 0,
+        foundItems: data.foundItems ?? 0,
+        possibleMatches: data.possibleMatches ?? 0,
+        totalUniversities: data.totalUniversities ?? 0,
       });
     } catch (error) {
       console.log(error);
@@ -69,23 +72,23 @@ function Dashboard() {
   async function fetchTableData() {
     try {
       const [
-        lostItemsResponse,
-        foundItemsResponse,
-        studentsResponse,
-        possibleMatchesResponse,
+        lostItems,
+        foundItems,
+        students,
+        possibleMatches,
       ] =
         await Promise.all([
-          axiosClient.get("/lost-items"),
-          axiosClient.get("/found-items"),
-          axiosClient.get("/students"),
-          axiosClient.get("/matches"),
+          getLostItems(),
+          getFoundItems(),
+          getAllStudents(),
+          getMatches(),
         ]);
 
       setDataForTables({
-        lostItemsData: lostItemsResponse.data,
-        foundItemsData: foundItemsResponse.data,
-        studentsData: studentsResponse.data,
-        possibleMatchesData: possibleMatchesResponse.data,
+        lostItemsData: lostItems,
+        foundItemsData: foundItems,
+        studentsData: students,
+        possibleMatchesData: possibleMatches,
       });
     } catch (error) {
       console.log(error);

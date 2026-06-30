@@ -1,6 +1,7 @@
 import { CalendarDays, Plus, UserCheck, Clock3, Users } from "lucide-react";
 import { useState, useEffect } from "react";
-import axiosClient from "../api/axiosClient";
+import { getAllStudents } from "../services/studentService";
+import { getAllUniversities } from "../services/universitiesService";
 import AddStudentModal from "../components/Students/AddStudentModal";
 import toast from "react-hot-toast";
 import StudentDetailsModal from "../components/Students/StudentDetailModal";
@@ -69,12 +70,12 @@ function Students() {
     try {
       setIsLoading(true);
 
-      const response = await axiosClient.get("/students");
-      setStudents(response.data);
+      const responseData = await getAllStudents();
+      setStudents(responseData);
       if (owner) {
-        const responseUni = await axiosClient.get("/universities");
+        const responseUniData = await getAllUniversities();
 
-        setUniversities(responseUni.data);
+        setUniversities(responseUniData);
       } else {
         setUniversities([]);
       }
