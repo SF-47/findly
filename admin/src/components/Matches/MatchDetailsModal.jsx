@@ -32,6 +32,7 @@ function getUniversityLabel(item, useFullName = false) {
 }
 
 function ItemDetails({ item, type }) {
+  const [imageLoading, setImageLoading] = useState(true);
   const isLost = type === "lost";
   const styles = isLost
     ? {
@@ -81,7 +82,10 @@ function ItemDetails({ item, type }) {
 
         <div className="flex flex-col sm:flex-row gap-4">
           {item.imageUrl ? (
-            <div className="w-full sm:w-32 h-32 shrink-0">
+            <div className="w-full sm:w-32 h-32 shrink-0 relative overflow-hidden rounded-xl">
+              {imageLoading && (
+                <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-zinc-800" />
+              )}
               <a
                 href={item.imageUrl}
                 target="_blank"
@@ -91,7 +95,11 @@ function ItemDetails({ item, type }) {
                 <img
                   src={item.imageUrl}
                   alt={item.itemName}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover/img:scale-105"
+                  onLoad={() => setImageLoading(false)}
+                  onError={() => setImageLoading(false)}
+                  className={`h-full w-full object-cover transition-all duration-300 group-hover/img:scale-105 ${
+                    imageLoading ? "opacity-0" : "opacity-100"
+                  }`}
                 />
                 <div className="absolute inset-0 bg-black/15 opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                   <span className="text-[10px] bg-black/70 text-white font-semibold rounded-full px-2 py-0.5">View Large</span>

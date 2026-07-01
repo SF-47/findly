@@ -19,7 +19,7 @@ function TableSkeleton({
             {item.itemName || "Untitled"}
           </td>
           <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
-            {item.universityShortName + " ("+ item.universityBranch + ")" || "N/A"}
+            {[item.universityShortName, item.universityBranch].filter(Boolean).join(" - ") || "N/A"}
           </td>
           <td className="px-5 py-4 text-gray-600 dark:text-gray-300">
             {item.studentName || "N/A"}

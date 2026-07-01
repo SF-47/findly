@@ -121,7 +121,7 @@ export default function Sidebar({ isOpen, onToggle }) {
           </div>
 
           <nav className="px-4 py-5">
-            <p className="mb-3 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
+            <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
               Main Menu
             </p>
 

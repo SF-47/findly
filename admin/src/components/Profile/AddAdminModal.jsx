@@ -286,7 +286,7 @@ function AddAdminModal({ onClose, onAdminAdded, universities, admins = [] }) {
                       phoneError: "",
                     }));
                   }}
-                  placeholder="03123456"
+                  placeholder="Example: 03 123 456"
                   className={`w-full rounded-xl border bg-gray-50 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-blue-500 dark:bg-zinc-800 dark:text-white dark:placeholder:text-zinc-500 ${
                     errors.phoneError
                       ? "border-red-400 dark:border-red-500"

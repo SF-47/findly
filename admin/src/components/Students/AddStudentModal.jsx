@@ -336,7 +336,7 @@ function AddStudentModal({
                   fullNameError: "",
                 }));
               }}
-              placeholder="Your full name"
+              placeholder="Enter student's full name"
               errorMessage={inputErrorMessage.fullNameError}
             />
 
@@ -353,7 +353,7 @@ function AddStudentModal({
                   emailError: "",
                 }));
               }}
-              placeholder="xxxx@example.com"
+              placeholder="student@example.com"
               errorMessage={inputErrorMessage.emailError}
             />
 
@@ -370,7 +370,7 @@ function AddStudentModal({
                   passwordError: "",
                 }));
               }}
-              placeholder="At least 6 characters"
+              placeholder="Enter student password"
               errorMessage={inputErrorMessage.passwordError}
             />
 

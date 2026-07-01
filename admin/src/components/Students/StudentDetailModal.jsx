@@ -71,6 +71,7 @@ function StudentDetailsModal({
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [cardImageLoading, setCardImageLoading] = useState(true);
 
   const isPending = !student?.isVerified;
 
@@ -532,18 +533,27 @@ function StudentDetailsModal({
 
                 <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800">
                   {formData.universityCardImageUrl ? (
-                    <a
-                      href={formData.universityCardImageUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block"
-                    >
-                      <img
-                        src={formData.universityCardImageUrl}
-                        alt={`${formData.fullName}'s university card`}
-                        className="max-h-80 w-full object-contain"
-                      />
-                    </a>
+                    <div className="relative overflow-hidden w-full min-h-40">
+                      {cardImageLoading && (
+                        <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-zinc-700 h-40" />
+                      )}
+                      <a
+                        href={formData.universityCardImageUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block"
+                      >
+                        <img
+                          src={formData.universityCardImageUrl}
+                          alt={`${formData.fullName}'s university card`}
+                          onLoad={() => setCardImageLoading(false)}
+                          onError={() => setCardImageLoading(false)}
+                          className={`max-h-80 w-full object-contain transition-opacity duration-300 ${
+                            cardImageLoading ? "opacity-0" : "opacity-100"
+                          }`}
+                        />
+                      </a>
+                    </div>
                   ) : (
                     <div className="flex h-40 items-center justify-center px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
                       No university card image available.

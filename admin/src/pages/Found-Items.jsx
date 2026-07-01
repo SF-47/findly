@@ -88,9 +88,13 @@ function FoundItems() {
       const matchesCategory = !filters.category || item.categoryId === filters.category;
       const matchesStatus =
         !filters.status || item.status?.toLowerCase() === filters.status;
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+
       const matchesDate =
         !filters.date ||
         (filters.date === "today" && itemDate.toDateString() === now.toDateString()) ||
+        (filters.date === "yesterday" && itemDate.toDateString() === yesterday.toDateString()) ||
         (filters.date === "week" && daysDiff <= 7) ||
         (filters.date === "month" && daysDiff <= 31);
 

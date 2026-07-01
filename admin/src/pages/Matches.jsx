@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { getMatches, updateMatchStatus, deleteMatch } from "../services/matchService";
 import MatchCard from "../components/Matches/MatchCard";
+import MatchCardSkeleton from "../components/Matches/MatchCardSkeleton";
 import MatchesFilter from "../components/Matches/MatchesFilters";
 import MatchStatsCard from "../components/Matches/MatchStatsCard";
 
@@ -63,10 +64,15 @@ function Matches() {
       const matchesPercentage =
         !filters.percentage ||
         match.matchPercentage >= Number(filters.percentage);
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+
       const matchesDate =
         !filters.createdDate ||
         (filters.createdDate === "today" &&
           createdDate.toDateString() === now.toDateString()) ||
+        (filters.createdDate === "yesterday" &&
+          createdDate.toDateString() === yesterday.toDateString()) ||
         (filters.createdDate === "week" && daysDiff <= 7) ||
         (filters.createdDate === "month" && daysDiff <= 31);
 
@@ -228,8 +234,10 @@ function Matches() {
       </div>
 
       {isLoading ? (
-        <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center text-sm text-gray-500 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-400">
-          Loading matches...
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <MatchCardSkeleton key={index} />
+          ))}
         </div>
       ) : filteredMatches.length === 0 ? (
         <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">

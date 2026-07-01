@@ -129,7 +129,15 @@ function Students() {
         }
       }
 
-      if (filters.registeredDate === "week") {
+      if (filters.registeredDate === "yesterday") {
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        if (studentDate.toDateString() !== yesterday.toDateString()) {
+          return false;
+        }
+      }
+
+      if (filters.registeredDate === "7days") {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(today.getDate() - 7);
 
@@ -138,11 +146,11 @@ function Students() {
         }
       }
 
-      if (filters.registeredDate === "month") {
-        if (
-          studentDate.getMonth() !== today.getMonth() ||
-          studentDate.getFullYear() !== today.getFullYear()
-        ) {
+      if (filters.registeredDate === "30days") {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        if (studentDate < thirtyDaysAgo) {
           return false;
         }
       }
@@ -336,8 +344,9 @@ function Students() {
               placeholder="All Dates"
               options={[
                 { value: "today", label: "Today" },
-                { value: "week", label: "This Week" },
-                { value: "month", label: "This Month" },
+                { value: "yesterday", label: "Yesterday" },
+                { value: "7days", label: "Last 7 Days" },
+                { value: "30days", label: "Last 30 Days" },
               ]}
             />
           </div>
@@ -506,8 +515,3 @@ function Students() {
 }
 
 export default Students;
-
-
-
-
-

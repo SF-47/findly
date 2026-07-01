@@ -82,8 +82,9 @@ function LostItemsFilter({ filters, categories, onChange, onClear, onClose }) {
             placeholder="All Dates"
             options={[
               { value: "today", label: "Today" },
-              { value: "week", label: "This Week" },
-              { value: "month", label: "This Month" },
+              { value: "yesterday", label: "Yesterday" },
+              { value: "week", label: "Last 7 Days" },
+              { value: "month", label: "Last 30 Days" },
             ]}
           />
         </div>

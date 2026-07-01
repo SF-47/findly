@@ -10,6 +10,7 @@ import {
   User,
   X,
 } from "lucide-react";
+import { useState } from "react";
 import { createPortal } from "react-dom";
 import { isOwner } from "../../../utils/auth";
 
@@ -34,6 +35,7 @@ function formatDate(date) {
 }
 
 function ItemDetailsModal({ type, item, student, onClose }) {
+  const [imageLoading, setImageLoading] = useState(true);
   if (!item) return null;
 
   const isLost = type === "lost";
@@ -103,12 +105,19 @@ function ItemDetailsModal({ type, item, student, onClose }) {
 
           <div className="flex gap-5">
             {item.imageUrl && (
-              <div className="w-40 h-40 shrink-0">
+              <div className="w-40 h-40 shrink-0 relative">
+                {imageLoading && (
+                  <div className="absolute inset-0 animate-pulse rounded-xl bg-gray-200 dark:bg-zinc-800" />
+                )}
                 <a href={item.imageUrl} target="_blank" rel="noreferrer" className="block w-full h-full">
                   <img
                     src={item.imageUrl}
                     alt={item.itemName}
-                    className="h-full w-full rounded-xl border border-gray-200 object-cover dark:border-zinc-700"
+                    onLoad={() => setImageLoading(false)}
+                    onError={() => setImageLoading(false)}
+                    className={`h-full w-full rounded-xl border border-gray-200 object-cover dark:border-zinc-700 transition-opacity duration-300 ${
+                      imageLoading ? "opacity-0" : "opacity-100"
+                    }`}
                   />
                 </a>
               </div>

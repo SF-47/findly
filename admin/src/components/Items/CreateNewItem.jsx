@@ -359,7 +359,7 @@ function CreateNewItem({
                 onChange={handleChange}
                 disabled={isBusy}
                 rows="3"
-                placeholder="Describe the lost item..."
+                placeholder={`Describe the ${itemLabelLower}...`}
                 className={`${fieldClass} resize-none`}
                 required
               />

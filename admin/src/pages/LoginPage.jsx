@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import { Checkbox } from "@mantine/core";
 
 function LoginPage() {
+  
   const navigate = useNavigate();
   const [formInputs, setFormInputs] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({
