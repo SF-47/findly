@@ -1,0 +1,42 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: smart_lost_found_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: smart_lost_found
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smart_lost_found_backend
+    environment:
+      # This overrides the connection string in your appsettings.json
+      - ConnectionStrings__SupabaseDb=Host=db;Port=5432;Database=smart_lost_found;Username=postgres;Password=postgrespassword
+    ports:
+      - "5192:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: smart_lost_found_admin
+    ports:
+      - "3000:80" # Maps localhost:3000 to the Nginx port 80
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

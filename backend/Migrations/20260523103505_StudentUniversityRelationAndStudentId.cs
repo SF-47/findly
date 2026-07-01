@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -10,13 +10,13 @@ namespace backend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Students_Universities_UniversityId",
-                table: "Students");
+            // migrationBuilder.DropForeignKey(
+            //     name: "FK_Students_Universities_UniversityId",
+            //     table: "Students");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Students_UniversityId",
-                table: "Students");
+            // migrationBuilder.DropIndex(
+            //     name: "IX_Students_UniversityId",
+            //     table: "Students");
 
             migrationBuilder.AddColumn<string>(
                 name: "UniversityStudentId",
@@ -31,13 +31,13 @@ namespace backend.Migrations
                 columns: new[] { "UniversityId", "UniversityStudentId" },
                 unique: true);
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_Students_Universities_UniversityId",
-                table: "Students",
-                column: "UniversityId",
-                principalTable: "Universities",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+            // migrationBuilder.AddForeignKey(
+            //     name: "FK_Students_Universities_UniversityId",
+            //     table: "Students",
+            //     column: "UniversityId",
+            //     principalTable: "Universities",
+            //     principalColumn: "Id",
+            //     onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
