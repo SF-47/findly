@@ -3,10 +3,12 @@ import ScreenHeader from "../../components/ScreenHeader";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View, TextInput, Pressable, FlatList } from "react-native";
 import ItemCard from "../../components/ItemCard";
-import { getStudentFoundItemsByUniversity, getStudentLostItemsByUniversity } from "../../services/itemService";
+import {
+  getStudentFoundItemsByUniversity,
+  getStudentLostItemsByUniversity,
+} from "../../services/itemService";
 import CustomAlert from "../../components/CustomAlert";
 import { getCurrentStudent } from "../../services/studentService";
-
 
 const FILTER_TYPES = [
   {

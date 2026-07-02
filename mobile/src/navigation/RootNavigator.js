@@ -10,6 +10,7 @@ import MainNavigator from "./MainNavigator";
 import PendingVerificationScreen from "../screens/auth/PendingVerificationScreen";
 import { getToken, removeToken } from "../storage/tokenStorage";
 import { getCurrentStudent } from "../services/studentService";
+import { navigationRef } from "./navigationRef";
 
 const Stack = createNativeStackNavigator();
 
@@ -70,7 +71,7 @@ export default function RootNavigator() {
   }
 
   return (
-    <NavigationContainer theme={navigationTheme}>
+    <NavigationContainer theme={navigationTheme} ref={navigationRef}>
       <Stack.Navigator
         initialRouteName={initialRouteName}
         screenOptions={{

@@ -1,36 +1,75 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getMyFoundItems, getMyLostItems } from "../../services/itemService";
+import { useEffect, useState } from "react";
 
-const reports = [
+const FILTER_TYPES = [
   {
-    id: "1",
-    title: "Black Backpack",
-    type: "Lost",
-    status: "Open",
-    location: "Main library",
-    date: "Jun 18, 2026",
+    key: "All",
+    title: "All",
+    icon: "apps-outline",
+    color: "#2563eb",
+    bg: "bg-blue-50 dark:bg-blue-950/30",
   },
   {
-    id: "2",
-    title: "Student ID Card",
-    type: "Found",
-    status: "Matched",
-    location: "Engineering block",
-    date: "Jun 14, 2026",
+    key: "Lost",
+    title: "Lost",
+    icon: "alert-circle-outline",
+    color: "#e11d48",
+    bg: "bg-rose-50 dark:bg-rose-950/30",
   },
   {
-    id: "3",
-    title: "Wireless Earbuds",
-    type: "Lost",
-    status: "Closed",
-    location: "Cafeteria",
-    date: "Jun 9, 2026",
+    key: "Found",
+    title: "Found",
+    icon: "checkmark-circle-outline",
+    color: "#059669",
+    bg: "bg-emerald-50 dark:bg-emerald-950/30",
   },
 ];
 
+function TypeFilterOption({ type, isSelected, onPress }) {
+  return (
+    <Pressable
+      className={`h-12 flex-1 flex-row items-center justify-center rounded-2xl ${
+        isSelected ? type.bg : "bg-transparent"
+      }`}
+      onPress={onPress}
+    >
+      <View
+        className={`mr-2 h-8 w-8 items-center justify-center rounded-xl ${
+          isSelected ? type.bg : "bg-white dark:bg-zinc-800"
+        }`}
+      >
+        <Ionicons name={type.icon} size={18} color={type.color} />
+      </View>
+
+      <Text
+        className={`text-sm font-black ${
+          isSelected
+            ? "text-slate-900 dark:text-white"
+            : "text-slate-500 dark:text-slate-400"
+        }`}
+      >
+        {type.title}
+      </Text>
+    </Pressable>
+  );
+}
+
+function formatDate(value) {
+  if (!value) {
+    return "";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return date.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
 function ReportCard({ report }) {
-  const isLost = report.type === "Lost";
+  const isLost = report.itemType === "Lost";
   const statusContainerStyle =
     report.status === "Matched"
       ? "bg-emerald-100 dark:bg-emerald-900/40"
@@ -65,11 +104,11 @@ function ReportCard({ report }) {
               />
             </View>
             <Text className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
-              {report.type} report
+              {report.itemType} report
             </Text>
           </View>
           <Text className="text-lg font-bold text-slate-900 dark:text-white">
-            {report.title}
+            {report.itemName}
           </Text>
           <View className="mt-3 flex-row items-center">
             <Ionicons name="location-outline" size={16} color="#94a3b8" />
@@ -80,7 +119,7 @@ function ReportCard({ report }) {
           <View className="mt-2 flex-row items-center">
             <Ionicons name="calendar-outline" size={16} color="#94a3b8" />
             <Text className="ml-1 text-sm text-slate-500 dark:text-slate-400">
-              {report.date}
+              {formatDate(report.itemType === "Lost" ? report.lostDate : report.foundDate)}
             </Text>
           </View>
         </View>
@@ -95,7 +134,40 @@ function ReportCard({ report }) {
 }
 
 export default function MyReportsScreen({ navigation }) {
+  const [lostItems, setLostItems] = useState([]);
+  const [foundItems, setFoundItems] = useState([]);
+  const [filter, setFilter] = useState("All");
+
+  const allItems = [...lostItems, ...foundItems];
+  
+  const filteredItems = allItems.filter((item) => {
+    if (filter === "All") return true;
+    return item.itemType === filter;
+  });
+
+  const openCount = allItems.filter((item) => item.status === "Open").length;
+  const matchedCount = allItems.filter((item) => item.status === "Matched").length;
+
+
   const insets = useSafeAreaInsets();
+
+  async function fetchReportsCreatedByUser() {
+    const [lostItemsByStudent, foundItemsByStudent] = await Promise.all([
+      getMyLostItems(),
+      getMyFoundItems(),
+    ]);
+
+    setLostItems(
+      lostItemsByStudent.map((item) => ({ ...item, itemType: "Lost" })),
+    );
+    setFoundItems(
+      foundItemsByStudent.map((item) => ({ ...item, itemType: "Found" })),
+    );
+  }
+
+  useEffect(() => {
+    fetchReportsCreatedByUser();
+  }, []);
 
   return (
     <ScrollView
@@ -123,36 +195,87 @@ export default function MyReportsScreen({ navigation }) {
         </View>
       </View>
 
-      <View className="mb-5 flex-row rounded-2xl bg-white p-4 dark:bg-zinc-900">
-        <View className="flex-1">
-          <Text className="text-2xl font-black text-slate-900 dark:text-white">
-            3
+      <View className="mb-5 flex-row gap-3">
+        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
+          <Text className="text-3xl font-black text-slate-900 dark:text-white">
+            {allItems.length}
           </Text>
-          <Text className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
-            Total reports
+          <Text className="mt-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+            Total
           </Text>
         </View>
-        <View className="flex-1">
-          <Text className="text-2xl font-black text-blue-600 dark:text-blue-400">
-            1
+        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
+          <Text className="text-3xl font-black text-blue-600 dark:text-blue-400">
+            {openCount}
           </Text>
-          <Text className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <Text className="mt-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
             Open
           </Text>
         </View>
-        <View className="flex-1">
-          <Text className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-            1
+        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
+          <Text className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+            {matchedCount}
           </Text>
-          <Text className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+          <Text className="mt-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
             Matched
           </Text>
         </View>
       </View>
 
-      {reports.map((report) => (
-        <ReportCard key={report.id} report={report} />
-      ))}
+      <View className="mb-5 flex-row rounded-3xl bg-slate-100 p-1 dark:bg-zinc-900">
+        {FILTER_TYPES.map((type) => (
+          <TypeFilterOption
+            key={type.key}
+            type={type}
+            isSelected={filter === type.key}
+            onPress={() => setFilter(type.key)}
+          />
+        ))}
+      </View>
+
+      {filteredItems.length === 0 ? (
+        <View className="mt-10 items-center justify-center">
+          <Ionicons name="document-text-outline" size={48} color="#94a3b8" />
+          <Text className="mt-4 text-center text-base font-medium text-slate-500 dark:text-slate-400">
+            No {filter !== "All" ? filter.toLowerCase() : ""} reports found.
+          </Text>
+        </View>
+      ) : (
+        filteredItems.map((report) => {
+          const isLost = report.itemType === "Lost";
+          const dateText = formatDate(
+            isLost ? report.lostDate : report.foundDate,
+          );
+          const metaParts = [
+            report.categoryName,
+            report.location,
+            dateText,
+          ].filter(Boolean);
+
+          const cardItem = {
+            ...report,
+            title: report.itemName || "Untitled item",
+            icon: isLost ? "search-outline" : "checkmark-circle-outline",
+            type: report.itemType,
+            color: isLost
+              ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+              : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+            meta:
+              metaParts.length > 0 ? metaParts.join(" - ") : "No details added",
+          };
+
+          return (
+            <Pressable
+              key={report.id || report._id}
+              onPress={() =>
+                navigation.navigate("ItemDetails", { item: cardItem, isMyReport: true })
+              }
+            >
+              <ReportCard report={report} />
+            </Pressable>
+          );
+        })
+      )}
     </ScrollView>
   );
 }

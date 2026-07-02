@@ -1,12 +1,39 @@
 import { Ionicons } from "@expo/vector-icons";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, ActivityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { getCurrentStudent } from "../../services/studentService";
+import { getStudentFoundItemsByUniversity, getStudentLostItemsByUniversity } from "../../services/itemService";
+import ItemCard from "../../components/ItemCard";
+
+function formatDate(value) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString();
+}
+
+function mapItemForCard(item) {
+  const isLost = item.itemType === "Lost";
+  const dateText = formatDate(isLost ? item.lostDate : item.foundDate);
+  const metaParts = [item.categoryName, item.location, dateText].filter(Boolean);
+
+  return {
+    ...item,
+    title: item.itemName || "Untitled item",
+    icon: isLost ? "search-outline" : "checkmark-circle-outline",
+    type: item.itemType,
+    color: isLost
+      ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+      : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+    meta: metaParts.length > 0 ? metaParts.join(" - ") : "No details added",
+  };
+}
 
 function HomeScreen({ navigation }) {
   const [studentFullName, setStudentFullName] = useState("");
   const [studentInitials, setStudentInitials] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [recentItems, setRecentItems] = useState([]);
 
   async function fetchStudentData() {
     try {
@@ -32,11 +59,35 @@ function HomeScreen({ navigation }) {
     }
   }
 
+  async function loadRecentItems() {
+    try {
+      const [lostItemsInUni, foundItemsInUni] = await Promise.all([
+        getStudentLostItemsByUniversity(),
+        getStudentFoundItemsByUniversity(),
+      ]);
+
+      const lost = lostItemsInUni.map((item) => ({ ...item, itemType: "Lost" }));
+      const found = foundItemsInUni.map((item) => ({ ...item, itemType: "Found" }));
+      
+      const allItems = [...lost, ...found].sort((a, b) => {
+        const dateA = new Date(a.lostDate || a.foundDate || a.createdAt);
+        const dateB = new Date(b.lostDate || b.foundDate || b.createdAt);
+        return dateB - dateA;
+      });
+
+      setRecentItems(allItems.slice(0, 3));
+    } catch (error) {
+      console.log("HOME RECENT ITEMS ERROR:", error?.message);
+    }
+  }
+
   useEffect(() => {
     fetchStudentData();
+    loadRecentItems();
 
     const unsubscribe = navigation.addListener("focus", () => {
       fetchStudentData();
+      loadRecentItems();
     });
 
     return unsubscribe;
@@ -115,9 +166,41 @@ function HomeScreen({ navigation }) {
         </Pressable>
       </View>
 
-      <Text className="mb-4 text-xl font-bold text-slate-900 dark:text-white">
-        Recent items
-      </Text>
+      <View className="mb-4 flex-row items-center justify-between">
+        <Text className="text-xl font-bold text-slate-900 dark:text-white">
+          Recent items
+        </Text>
+        <Pressable onPress={() => navigation.navigate("Browse")}>
+          <Text className="font-bold text-blue-600 dark:text-blue-500">
+            See all
+          </Text>
+        </Pressable>
+      </View>
+
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#2563eb" className="mt-5" />
+      ) : recentItems.length > 0 ? (
+        <View className="pb-10">
+          {recentItems.map((item) => {
+            const cardItem = mapItemForCard(item);
+            return (
+              <Pressable 
+                key={`${item.itemType}-${item.id || item._id}`} 
+                onPress={() => navigation.navigate("ItemDetails", { item: cardItem })}
+              >
+                <ItemCard item={cardItem} />
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : (
+        <View className="mt-2 items-center justify-center rounded-2xl bg-white py-10 dark:bg-zinc-900">
+          <Ionicons name="layers-outline" size={32} color="#94a3b8" />
+          <Text className="mt-3 text-sm font-medium text-slate-500 dark:text-gray-400">
+            No recent items found
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 }

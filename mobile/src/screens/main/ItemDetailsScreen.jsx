@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ItemDetailsScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const item = route.params?.item;
+  const isMyReport = route.params?.isMyReport;
 
   if (!item) {
     return (
@@ -90,20 +91,36 @@ export default function ItemDetailsScreen({ route, navigation }) {
 
       <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900">
         <Text className="text-lg font-bold text-gray-900 dark:text-white">
-          Quick actions
+          {isMyReport ? "Manage report" : "Quick actions"}
         </Text>
 
-        <Pressable className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
-          <Text className="font-bold text-white">
-            {item.type === "Found" ? "Claim this item" : "I found a match"}
-          </Text>
-        </Pressable>
+        {isMyReport ? (
+          <>
+            <Pressable className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+              <Text className="font-bold text-white">Edit report</Text>
+            </Pressable>
 
-        <Pressable className="mt-3 h-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800">
-          <Text className="font-bold text-gray-800 dark:text-white">
-            Contact support
-          </Text>
-        </Pressable>
+            <Pressable className="mt-3 h-14 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50">
+              <Text className="font-bold text-rose-600 dark:text-rose-400">
+                Delete report
+              </Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <Pressable className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+              <Text className="font-bold text-white">
+                {item.type === "Found" ? "Claim this item" : "I found a match"}
+              </Text>
+            </Pressable>
+
+            <Pressable className="mt-3 h-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800">
+              <Text className="font-bold text-gray-800 dark:text-white">
+                Contact support
+              </Text>
+            </Pressable>
+          </>
+        )}
       </View>
     </ScrollView>
   );
