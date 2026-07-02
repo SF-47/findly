@@ -19,8 +19,9 @@ services:
       dockerfile: Dockerfile
     container_name: smart_lost_found_backend
     environment:
-      # This overrides the connection string in your appsettings.json
-      - ConnectionStrings__SupabaseDb=Host=db;Port=5432;Database=smart_lost_found;Username=postgres;Password=postgrespassword
+      # Use your actual Supabase DB connection instead of the local db container
+      - ConnectionStrings__SupabaseDb=Host=aws-1-eu-central-1.pooler.supabase.com;Database=postgres;Username=postgres.pkokemlpjntdehmeyvvt;Password=sjRG5X2cRzWlqzK9;SSL Mode=Require;Trust Server Certificate=true
+      - Jwt__Key=THIS_IS_A_SUPER_SECRET_KEY_FOR_SMART_LOST_AND_FOUND_PROJECT_2026
     ports:
       - "5192:8080"
     depends_on:

@@ -27,7 +27,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("SupabaseDb"));
-    options.ConfigureWarnings(warnings => warnings.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
+    options.ConfigureWarnings(warnings =>
+        warnings.Ignore(
+            Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning
+        )
+    );
 });
 
 //hon 3am ba3mel register lal services li 2ele
@@ -128,6 +132,7 @@ app.MapGet(
 app.UseCors("AllowFrontend"); //Allows frontend requests.
 
 app.UseAuthentication();
+
 //This means : Read the token and check who the user is.
 //UseAuthentication() reads the token and extracts:
 // Admin Id
@@ -135,9 +140,10 @@ app.UseAuthentication();
 // Role
 // UniversityId
 app.UseAuthorization();
+
 //This means : After knowing who the user is, check if they are allowed.
 //Example : [Authorize] means Only logged-in users with valid token can access.
 //Example : [Authorize(Roles = "Owner")] means Only logged-in admins with Role = Owner can access.
 
-app.MapControllers();//Activates controller routes.
-app.Run();//Starts the server
+app.MapControllers(); //Activates controller routes.
+app.Run(); //Starts the server
