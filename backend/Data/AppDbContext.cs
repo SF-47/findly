@@ -15,6 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<Admin> Admins { get; set; }
     public DbSet<University> Universities { get; set; }
     public DbSet<ItemsMatch> Matches { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,5 +47,19 @@ public class AppDbContext : DbContext
             .Entity<ItemsMatch>()
             .HasIndex(m => new { m.LostItemId, m.FoundItemId })
             .IsUnique();
+
+        modelBuilder
+            .Entity<Message>()
+            .HasOne(m => m.Sender)
+            .WithMany()
+            .HasForeignKey(m => m.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+            
+        modelBuilder
+            .Entity<Message>()
+            .HasOne(m => m.Receiver)
+            .WithMany()
+            .HasForeignKey(m => m.ReceiverId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

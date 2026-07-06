@@ -15,6 +15,7 @@ import ItemDetailsScreen from "../screens/main/ItemDetailsScreen";
 import ProfileScreen from "../screens/main/ProfileScreen";
 import MyReportsScreen from "./../screens/main/MyReportsScreen";
 import ChangePasswordScreen from "./../screens/main/ChangePasswordScreen";
+import MatchDetailsScreen from "../screens/main/MatchDetailsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -187,6 +188,8 @@ export default function MainNavigator() {
       <Stack.Screen name="MainTabs" component={MainTabs} />
 
       <Stack.Screen name="ItemDetails" component={ItemDetailsScreen} />
+
+      <Stack.Screen name="MatchDetails" component={MatchDetailsScreen} />
 
       <Stack.Screen name="Profile" component={ProfileScreen} />
 

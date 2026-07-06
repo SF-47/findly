@@ -14,6 +14,8 @@ using backend.Services.Students;
 using backend.Validators.FoundItems;
 using backend.Validators.LostItems;
 using backend.Validators.Students;
+using backend.Services.Matches;
+using backend.Responses.ItemMatches;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,18 +31,21 @@ public class StudentController : ControllerBase
     private readonly ILostItemsService _lostItemsService;
     private readonly IFoundItemService _foundItemsService;
     private readonly IN8nMatchingService _n8nMatchingService;
+    private readonly IMatchService _matchService;
 
     public StudentController(
         IStudentServices studentServices,
         ILostItemsService lostItemsService,
         IFoundItemService foundItemService,
-        IN8nMatchingService n8nMatchingService
+        IN8nMatchingService n8nMatchingService,
+        IMatchService matchService
     )
     {
         _studentService = studentServices;
         _lostItemsService = lostItemsService;
         _foundItemsService = foundItemService;
         _n8nMatchingService = n8nMatchingService;
+        _matchService = matchService;
     }
 
     // ! ADMIN PANEL ONLY
@@ -516,6 +521,24 @@ public class StudentController : ControllerBase
         return Ok(response);
     }
 
+    // MOBILE APP ONLY
+    [Authorize(Roles = "Student")]
+    [HttpGet("me/matches")]
+    public async Task<IActionResult> GetStudentMatches()
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var matches = await _matchService.GetMatchesForStudent(studentId);
+
+        var response = matches.Select(ToItemsMatchResponse);
+
+        return Ok(response);
+    }
+
     private bool IsOwner()
     {
         return User.IsInRole("Owner");
@@ -654,6 +677,47 @@ public class StudentController : ControllerBase
             foundItem.ImageUrl,
             foundItem.Status,
             foundItem.CreatedAt
+        );
+    }
+
+    private static ItemsMatchResponse ToItemsMatchResponse(ItemsMatch match)
+    {
+        return new ItemsMatchResponse(
+            match.Id,
+            new MatchItemResponse(
+                match.LostItem.Id,
+                match.LostItem.Student.FullName,
+                match.LostItem.Student.University!.ShortName,
+                match.LostItem.Student.University.FullName,
+                match.LostItem.Student.University.Branch,
+                match.LostItem.Category.Name,
+                match.LostItem.ItemName,
+                match.LostItem.Description,
+                match.LostItem.Color,
+                match.LostItem.Location,
+                match.LostItem.LostDate,
+                match.LostItem.ImageUrl
+            ),
+            new MatchItemResponse(
+                match.FoundItem.Id,
+                match.FoundItem.Student.FullName,
+                match.FoundItem.Student.University!.ShortName,
+                match.FoundItem.Student.University.FullName,
+                match.FoundItem.Student.University.Branch,
+                match.FoundItem.Category.Name,
+                match.FoundItem.ItemName,
+                match.FoundItem.Description,
+                match.FoundItem.Color,
+                match.FoundItem.Location,
+                match.FoundItem.FoundDate,
+                match.FoundItem.ImageUrl
+            ),
+            match.MatchPercentage,
+            match.ConfidenceLevel,
+            match.ReasoningSummary,
+            match.Status,
+            match.CreatedAt,
+            match.ReviewedAt
         );
     }
 }

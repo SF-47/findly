@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
 import ScreenHeader from "../../components/ScreenHeader";
-import { Text, View, ScrollView, Pressable } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ThemeButton from "../../components/ThemeButton";
 import { getCurrentStudent } from "../../services/studentService";
 import { removeToken } from "../../storage/tokenStorage";
+import { resetToLogin } from "../../navigation/navigationRef";
 
 function getInitials(name) {
   if (!name?.trim()) {
@@ -109,16 +117,12 @@ export default function MenuScreen({ navigation }) {
     }
   }
 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
   async function handleLogout() {
+    setIsLoggingOut(true);
     await removeToken();
-    navigation
-      .getParent()
-      ?.getParent()
-      ?.getParent()
-      ?.reset({
-        index: 0,
-        routes: [{ name: "Login" }],
-      });
+    resetToLogin();
   }
 
   useEffect(() => {
@@ -131,7 +135,8 @@ export default function MenuScreen({ navigation }) {
   const initials = getInitials(studentData.fullName);
 
   return (
-    <ScrollView
+    <>
+      <ScrollView
       className="flex-1 bg-slate-50 dark:bg-zinc-950"
       contentContainerStyle={{ paddingBottom: 28 }}
       showsVerticalScrollIndicator={false}
@@ -222,6 +227,18 @@ export default function MenuScreen({ navigation }) {
           Log out
         </Text>
       </Pressable>
-    </ScrollView>
+      </ScrollView>
+
+      {isLoggingOut && (
+        <View className="absolute inset-0 z-50 items-center justify-center bg-black/40">
+          <View className="items-center justify-center rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-800">
+            <ActivityIndicator size="large" color="#3b82f6" />
+            <Text className="mt-4 font-bold text-slate-900 dark:text-white">
+              Logging out...
+            </Text>
+          </View>
+        </View>
+      )}
+    </>
   );
 }

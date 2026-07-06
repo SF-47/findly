@@ -133,6 +133,9 @@ export default function BrowseScreen({ navigation }) {
   const [visibleCount, setVisibleCount] = useState(5);
   const [studentInitials, setStudentInitials] = useState("");
 
+  const [showMyReports, setShowMyReports] = useState(true);
+  const [currentStudentName, setCurrentStudentName] = useState("");
+
   function showAlert(type, title, message) {
     setAlertData({
       visible: true,
@@ -187,6 +190,7 @@ export default function BrowseScreen({ navigation }) {
     try {
       const student = await getCurrentStudent();
       if (student?.fullName) {
+        setCurrentStudentName(student?.fullName);
         const initials = student.fullName
           .trim()
           .split(" ")
@@ -225,6 +229,13 @@ export default function BrowseScreen({ navigation }) {
     const allItems = [...lostItems, ...foundItems];
 
     const filtered = allItems.filter((item) => {
+      if (
+        !showMyReports &&
+        item.studentName?.toLowerCase() === currentStudentName?.toLowerCase()
+      ) {
+        return false;
+      }
+
       const matchesType =
         selectedType === "All" || item.itemType === selectedType;
 
@@ -254,7 +265,7 @@ export default function BrowseScreen({ navigation }) {
 
       return dateB - dateA;
     });
-  }, [foundItems, lostItems, searchText, selectedType]);
+  }, [foundItems, lostItems, searchText, selectedType, showMyReports, currentStudentName]);
 
   const filteredItems = useMemo(
     () => allFilteredItems.slice(0, visibleCount),
@@ -283,23 +294,6 @@ export default function BrowseScreen({ navigation }) {
                   subtitle="Search lost and found reports submitted by students."
                 />
               </View>
-
-              <Pressable
-                className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800/80 shadow-sm active:opacity-80"
-                onPress={() => navigation.navigate("Profile")}
-              >
-                {studentInitials ? (
-                  <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
-                    <Text className="text-xs font-black text-white tracking-wider">
-                      {studentInitials}
-                    </Text>
-                  </View>
-                ) : (
-                  <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/40">
-                    <Ionicons name="person-outline" size={18} color="#2563eb" />
-                  </View>
-                )}
-              </Pressable>
             </View>
 
             <View className="mb-5 mt-7 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
@@ -328,6 +322,29 @@ export default function BrowseScreen({ navigation }) {
                 />
               ))}
             </View>
+            <Pressable
+              className={`mb-5 flex-row items-center justify-center rounded-2xl p-4 ${
+                showMyReports
+                  ? "bg-slate-100 dark:bg-zinc-800"
+                  : "bg-blue-50 dark:bg-blue-900/40"
+              }`}
+              onPress={() => setShowMyReports(!showMyReports)}
+            >
+              <Ionicons
+                name={showMyReports ? "eye-outline" : "eye-off-outline"}
+                size={20}
+                color={showMyReports ? "#64748b" : "#3b82f6"}
+              />
+              <Text
+                className={`ml-2 font-bold ${
+                  showMyReports
+                    ? "text-slate-600 dark:text-zinc-300"
+                    : "text-blue-600 dark:text-blue-400"
+                }`}
+              >
+                {showMyReports ? "Hide my reports" : "Show my reports"}
+              </Text>
+            </Pressable>
           </>
         }
         ListFooterComponent={
