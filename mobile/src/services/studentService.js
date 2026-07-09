@@ -10,3 +10,9 @@ export async function updateCurrentStudent(data) {
   const response = await axiosClient.put(ENDPOINTS.me, data);
   return response.data;
 }
+
+export async function updatePushToken(pushToken) {
+  const response = await axiosClient.put(ENDPOINTS.updatePushToken, { pushToken });
+  return response.data;
+}
+

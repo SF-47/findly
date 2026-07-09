@@ -56,4 +56,6 @@ public interface IStudentServices
 
     // MOBILE APP ONLY
     Task<Student?> UpdateStudentOwnInfo(Guid studentId, UpdateStudentOwnInfo request);
+
+    Task<Student?> UpdatePushToken(Guid studentId, UpdatePushTokenRequest request);
 }

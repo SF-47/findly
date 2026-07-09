@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore; //Allows database setup with EF Core.
 using Microsoft.IdentityModel.Tokens; //Used to configure JWT token validation.
 using backend.Services.Matches;
 using backend.Services.Messages;
+using backend.Services.Notifications;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(); //hayde bt2ello la ASP.NET 2no hayda al project byesta3mel controllers mtl AuthController , LostItemsController ....
@@ -49,6 +50,8 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IN8nMatchingService, N8nMatchingService>();
 builder.Services.AddScoped<IMatchService, MatchService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
 
 builder.Services.AddHttpClient();
 

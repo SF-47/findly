@@ -2,9 +2,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useColorScheme } from "nativewind";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 
 import HomeScreen from "../screens/main/HomeScreen";
 import BrowseScreen from "../screens/main/BrowseScreen";
@@ -16,6 +17,8 @@ import ProfileScreen from "../screens/main/ProfileScreen";
 import MyReportsScreen from "./../screens/main/MyReportsScreen";
 import ChangePasswordScreen from "./../screens/main/ChangePasswordScreen";
 import MatchDetailsScreen from "../screens/main/MatchDetailsScreen";
+import ChatScreen from "../screens/main/ChatScreen";
+import { registerForPushNotificationsAsync } from "../api/pushNotificationService";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -176,6 +179,10 @@ export default function MainNavigator() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -196,6 +203,7 @@ export default function MainNavigator() {
       <Stack.Screen name="MyReports" component={MyReportsScreen} />
 
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
     </Stack.Navigator>
   );
 }

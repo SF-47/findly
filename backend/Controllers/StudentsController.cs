@@ -5,17 +5,17 @@ using backend.Requests.LostItems;
 using backend.Requests.Students;
 using backend.Responses.Errors;
 using backend.Responses.FoundItems;
+using backend.Responses.ItemMatches;
 using backend.Responses.LostItems;
 using backend.Responses.Students;
 using backend.Services.FoundItems;
 using backend.Services.LostItems;
+using backend.Services.Matches;
 using backend.Services.N8n;
 using backend.Services.Students;
 using backend.Validators.FoundItems;
 using backend.Validators.LostItems;
 using backend.Validators.Students;
-using backend.Services.Matches;
-using backend.Responses.ItemMatches;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -620,6 +620,25 @@ public class StudentController : ControllerBase
         return Forbid();
     }
 
+    [Authorize(Roles = "Student")]
+    [HttpPut("me/push-token")]
+    public async Task<IActionResult> UpdatePushToken([FromBody] UpdatePushTokenRequest request)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var student = await _studentService.UpdatePushToken(studentId, request);
+        if (student is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        return NoContent();
+    }
+
     private static FullStudentResponse ToFullStudentResponse(Student student)
     {
         return new FullStudentResponse(
@@ -686,6 +705,7 @@ public class StudentController : ControllerBase
             match.Id,
             new MatchItemResponse(
                 match.LostItem.Id,
+                match.LostItem.StudentId,
                 match.LostItem.Student.FullName,
                 match.LostItem.Student.University!.ShortName,
                 match.LostItem.Student.University.FullName,
@@ -700,6 +720,7 @@ public class StudentController : ControllerBase
             ),
             new MatchItemResponse(
                 match.FoundItem.Id,
+                match.FoundItem.StudentId,
                 match.FoundItem.Student.FullName,
                 match.FoundItem.Student.University!.ShortName,
                 match.FoundItem.Student.University.FullName,

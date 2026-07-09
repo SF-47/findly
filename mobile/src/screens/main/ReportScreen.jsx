@@ -331,18 +331,20 @@ export default function ReportScreen() {
   }
 
   return (
-    <ScrollView
-      className="flex-1"
-      contentContainerStyle={{ paddingBottom: 32 }}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      <ScreenHeader
-        title="Report item"
-        subtitle="Add the key details students need to recognize the item."
-      />
-
-      <View className="mt-7 rounded-3xl bg-blue-600 p-5 dark:bg-blue-500">
+    <View className="flex-1">
+      <View className="pb-4 pt-2">
+        <ScreenHeader
+          title="Report item"
+          subtitle="Add the key details students need to recognize the item."
+        />
+      </View>
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 32 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="mt-2 rounded-3xl bg-blue-600 p-5 dark:bg-blue-500">
         <View className="flex-row items-start">
           <View className="mr-4 h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
             <Ionicons name="sparkles-outline" size={25} color="#ffffff" />
@@ -739,6 +741,7 @@ export default function ReportScreen() {
         message={alertData.message}
         onClose={closeAlert}
       />
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }

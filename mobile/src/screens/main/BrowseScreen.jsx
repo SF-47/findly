@@ -278,6 +278,14 @@ export default function BrowseScreen({ navigation }) {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+      <View className="flex-row items-start justify-between pb-2">
+        <View className="flex-1 pr-4">
+          <ScreenHeader
+            title="Browse items"
+            subtitle="Search lost and found reports submitted by students."
+          />
+        </View>
+      </View>
       <FlatList
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 28 }}
@@ -287,16 +295,7 @@ export default function BrowseScreen({ navigation }) {
         ListEmptyComponent={<EmptyState isLoading={isLoading} />}
         ListHeaderComponent={
           <>
-            <View className="flex-row items-start justify-between">
-              <View className="flex-1 pr-4">
-                <ScreenHeader
-                  title="Browse items"
-                  subtitle="Search lost and found reports submitted by students."
-                />
-              </View>
-            </View>
-
-            <View className="mb-5 mt-7 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
+            <View className="mb-5 mt-2 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
               <Ionicons name="search-outline" size={20} color="#64748b" />
               <TextInput
                 className="ml-3 flex-1 text-base text-slate-900 dark:text-white"

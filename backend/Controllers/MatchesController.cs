@@ -2,6 +2,7 @@ using System.Security.Claims;
 using backend.Data;
 using backend.Requests.ItemMatches;
 using backend.Responses.ItemMatches;
+using backend.Services.Notifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +16,12 @@ namespace backend.Controllers;
 public class MatchesController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly INotificationService _notificationService;
 
-    public MatchesController(AppDbContext db)
+    public MatchesController(AppDbContext db, INotificationService notificationService)
     {
         _db = db;
+        _notificationService = notificationService;
     }
 
     [HttpGet]
@@ -37,6 +40,7 @@ public class MatchesController : ControllerBase
                 match.Id,
                 new MatchItemResponse(
                     match.LostItem.Id,
+                    match.LostItem.StudentId,
                     match.LostItem.Student.FullName,
                     match.LostItem.Student.University!.ShortName,
                     match.LostItem.Student.University.FullName,
@@ -51,6 +55,7 @@ public class MatchesController : ControllerBase
                 ),
                 new MatchItemResponse(
                     match.FoundItem.Id,
+                    match.FoundItem.StudentId,
                     match.FoundItem.Student.FullName,
                     match.FoundItem.Student.University!.ShortName,
                     match.FoundItem.Student.University.FullName,
@@ -98,10 +103,45 @@ public class MatchesController : ControllerBase
             return Forbid();
         }
 
-        var match = await matches.FirstOrDefaultAsync(match => match.Id == id);
+        // Eagerly load the items and the students connected to them
+        var match = await matches
+            .Include(m => m.LostItem)
+                .ThenInclude(l => l.Student)
+            .Include(m => m.FoundItem)
+                .ThenInclude(f => f.Student)
+            .FirstOrDefaultAsync(match => match.Id == id);
+
         if (match is null)
-        {
             return NotFound(new { message = "Match not found." });
+
+        // Track if it was confirmed so we don't send duplicate notifications
+        var wasAlreadyConfirmed = match.Status == "Confirmed";
+
+        // ... existing assignment and saving logic ...
+        match.Status = status;
+        await _db.SaveChangesAsync();
+
+        // Check if it was just confirmed
+        if (status == "Confirmed" && !wasAlreadyConfirmed)
+        {
+            var lostStudentPushToken = match.LostItem?.Student?.ExpoPushToken;
+            var foundStudentPushToken = match.FoundItem?.Student?.ExpoPushToken;
+
+            if (!string.IsNullOrWhiteSpace(lostStudentPushToken))
+                await _notificationService.SendPushNotificationAsync(
+                    lostStudentPushToken,
+                    "Match Confirmed!",
+                    "We found a match for your lost item.",
+                    new { matchId = match.Id }
+                );
+
+            if (!string.IsNullOrWhiteSpace(foundStudentPushToken))
+                await _notificationService.SendPushNotificationAsync(
+                    foundStudentPushToken,
+                    "Match Confirmed!",
+                    "The item you found has been matched.",
+                    new { matchId = match.Id }
+                );
         }
 
         var adminIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

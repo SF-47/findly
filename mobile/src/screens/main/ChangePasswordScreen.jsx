@@ -25,31 +25,37 @@ export default function ChangePasswordScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
   return (
-    <ScrollView
-      className="flex-1 bg-slate-50 px-5 dark:bg-zinc-950"
-      contentContainerStyle={{
-        paddingBottom: 40,
-        paddingTop: Math.max(insets.top, 24) + 12,
-      }}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      <View className="mb-6 flex-row items-center">
-        <Pressable
-          className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={22} color="#64748b" />
-        </Pressable>
-        <View className="flex-1">
-          <Text className="text-3xl font-bold text-slate-900 dark:text-white">
-            Change password
-          </Text>
-          <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Update the password used for your account.
-          </Text>
+    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+      <View
+        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
+        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+      >
+        <View className="flex-row items-center">
+          <Pressable
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={22} color="#64748b" />
+          </Pressable>
+          <View className="flex-1">
+            <Text className="text-3xl font-bold text-slate-900 dark:text-white">
+              Change password
+            </Text>
+            <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Update the password used for your account.
+            </Text>
+          </View>
         </View>
       </View>
+
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{
+          paddingBottom: 40,
+        }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
 
       <View className="mb-6 rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40">
         <View className="flex-row">
@@ -79,6 +85,7 @@ export default function ChangePasswordScreen({ navigation }) {
       <Pressable className="mt-2 h-14 items-center justify-center rounded-xl bg-blue-600">
         <Text className="text-base font-bold text-white">Save password</Text>
       </Pressable>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }

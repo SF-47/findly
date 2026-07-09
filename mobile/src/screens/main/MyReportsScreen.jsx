@@ -170,30 +170,36 @@ export default function MyReportsScreen({ navigation }) {
   }, []);
 
   return (
-    <ScrollView
-      className="flex-1 bg-slate-50 px-5 dark:bg-zinc-950"
-      contentContainerStyle={{
-        paddingBottom: 40,
-        paddingTop: Math.max(insets.top, 24) + 12,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View className="mb-6 flex-row items-center">
-        <Pressable
-          className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={22} color="#64748b" />
-        </Pressable>
-        <View className="flex-1">
-          <Text className="text-3xl font-bold text-slate-900 dark:text-white">
-            My reports
-          </Text>
-          <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Review your lost and found item reports.
-          </Text>
+    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+      <View
+        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
+        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+      >
+        <View className="flex-row items-center">
+          <Pressable
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={22} color="#64748b" />
+          </Pressable>
+          <View className="flex-1">
+            <Text className="text-3xl font-bold text-slate-900 dark:text-white">
+              My reports
+            </Text>
+            <Text className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Review your lost and found item reports.
+            </Text>
+          </View>
         </View>
       </View>
+
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{
+          paddingBottom: 40,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
 
       <View className="mb-5 flex-row gap-3">
         <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
@@ -276,6 +282,7 @@ export default function MyReportsScreen({ navigation }) {
           );
         })
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }

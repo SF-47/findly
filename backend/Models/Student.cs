@@ -20,6 +20,8 @@ public class Student
 
     public bool IsVerified { get; set; } = false;
 
+    public string? ExpoPushToken { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public University? University { get; set; }

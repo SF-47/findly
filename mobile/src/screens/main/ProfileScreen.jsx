@@ -134,18 +134,11 @@ export default function ProfileScreen({ navigation }) {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
-      <ScrollView
-        className="flex-1 px-5"
-        contentContainerStyle={{
-          paddingBottom: 40,
-          paddingTop: Math.max(insets.top, 24) + 12,
-        }}
-        keyboardShouldPersistTaps="handled"
-        pointerEvents={isLoading ? "none" : "auto"}
-        showsVerticalScrollIndicator={false}
-        style={{ opacity: isLoading ? 0.35 : 1 }}
+      <View
+        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
+        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
       >
-        <View className="mb-6 flex-row items-center">
+        <View className="flex-row items-center">
           <Pressable
             className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
             onPress={() => navigation.goBack()}
@@ -161,6 +154,18 @@ export default function ProfileScreen({ navigation }) {
             </Text>
           </View>
         </View>
+      </View>
+
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{
+          paddingBottom: 40,
+        }}
+        keyboardShouldPersistTaps="handled"
+        pointerEvents={isLoading ? "none" : "auto"}
+        showsVerticalScrollIndicator={false}
+        style={{ opacity: isLoading ? 0.35 : 1 }}
+      >
 
         <View className="mb-6 items-center rounded-3xl bg-white p-6 dark:bg-zinc-900">
           <View className="h-20 w-20 items-center justify-center rounded-3xl bg-blue-600">

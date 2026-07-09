@@ -3,6 +3,7 @@ namespace backend.Responses.ItemMatches;
 // ! ADMIN PANEL ONLY
 public record MatchItemResponse(
     Guid Id,
+    Guid StudentId,
     string StudentName,
     string UniversityShortName,
     string UniversityFullName,

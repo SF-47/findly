@@ -193,4 +193,16 @@ public class StudentServices : IStudentServices
 
         return student;
     }
+
+    public async Task<Student?> UpdatePushToken(Guid studentId, UpdatePushTokenRequest request)
+    {
+        var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == studentId);
+        if (student is null)
+            return null;
+
+        student.ExpoPushToken = request.PushToken?.Trim();
+        await _db.SaveChangesAsync();
+
+        return student;
+    }
 }

@@ -43,8 +43,8 @@ function MenuRow({
   onPress,
   showDivider = true,
   trailing,
-  iconColor = "#2563eb",
-  iconBg = "bg-blue-50 dark:bg-blue-950/40",
+  iconColor = "#64748b",
+  iconBg = "bg-slate-100 dark:bg-zinc-800",
 }) {
   return (
     <Pressable disabled={!onPress} onPress={onPress}>
@@ -135,18 +135,19 @@ export default function MenuScreen({ navigation }) {
   const initials = getInitials(studentData.fullName);
 
   return (
-    <>
+    <View className="flex-1">
+      <View className="pb-4">
+        <ScreenHeader
+          title="Menu"
+          subtitle="Your account, security, and app preferences."
+        />
+      </View>
       <ScrollView
-      className="flex-1 bg-slate-50 dark:bg-zinc-950"
-      contentContainerStyle={{ paddingBottom: 28 }}
-      showsVerticalScrollIndicator={false}
-    >
-      <ScreenHeader
-        title="Menu"
-        subtitle="Your account, security, and app preferences."
-      />
-
-      <View className="mt-7 items-center rounded-3xl bg-white p-5 dark:bg-zinc-900">
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 28 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="mt-2 items-center rounded-3xl bg-white p-5 dark:bg-zinc-900">
         <View className="items-center">
           <View className="relative">
             <View className="h-24 w-24 items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500">
@@ -199,8 +200,6 @@ export default function MenuScreen({ navigation }) {
           icon="notifications-outline"
           label="Notifications"
           subtitle="Alerts about matches and reports"
-          iconColor="#7c3aed"
-          iconBg="bg-violet-50 dark:bg-violet-950/40"
           showDivider={false}
         />
       </View>
@@ -212,8 +211,6 @@ export default function MenuScreen({ navigation }) {
           label="Change password"
           subtitle="Keep your account protected"
           onPress={() => navigation.navigate("ChangePassword")}
-          iconColor="#0f766e"
-          iconBg="bg-teal-50 dark:bg-teal-950/40"
           showDivider={false}
         />
       </View>
@@ -228,7 +225,6 @@ export default function MenuScreen({ navigation }) {
         </Text>
       </Pressable>
       </ScrollView>
-
       {isLoggingOut && (
         <View className="absolute inset-0 z-50 items-center justify-center bg-black/40">
           <View className="items-center justify-center rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-800">
@@ -239,6 +235,6 @@ export default function MenuScreen({ navigation }) {
           </View>
         </View>
       )}
-    </>
+    </View>
   );
 }

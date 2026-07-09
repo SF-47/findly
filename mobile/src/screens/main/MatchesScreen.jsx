@@ -124,6 +124,14 @@ function EmptyState({ isLoading, navigation }) {
 
   return (
     <View className="flex-1">
+      <View className="flex-row items-start justify-between pb-2">
+        <View className="flex-1 pr-4">
+          <ScreenHeader
+            title="My Matches"
+            subtitle="Matches found specifically for the items you've reported."
+          />
+        </View>
+      </View>
       {isLoading && !isRefreshing ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#3b82f6" />
@@ -145,16 +153,7 @@ function EmptyState({ isLoading, navigation }) {
           }
           ListHeaderComponent={
             <View className="mb-4">
-              <View className="flex-row items-start justify-between">
-                <View className="flex-1 pr-4">
-                  <ScreenHeader
-                    title="My Matches"
-                    subtitle="Matches found specifically for the items you've reported."
-                  />
-                </View>
-              </View>
-
-              <View className="mt-5 w-full flex-row">
+              <View className="mt-2 w-full flex-row">
                 <TouchableOpacity
                   className="mr-3 flex-1 flex-row items-center justify-center rounded-xl bg-blue-600 py-3 dark:bg-blue-500"
                   onPress={() => navigation.navigate("Report")}

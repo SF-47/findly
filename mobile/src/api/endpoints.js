@@ -18,4 +18,8 @@ export const ENDPOINTS = {
     createMyFoundItem: "/students/me/create/found-items",
 
     myMatches: "/students/me/matches",
+
+    updatePushToken: "/students/me/push-token",
+
+    matchMessages: (matchId) => `/matches/${matchId}/messages`,
 }

@@ -24,30 +24,35 @@ export default function ItemDetailsScreen({ route, navigation }) {
   }
 
   return (
-    <ScrollView
-      className="flex-1 bg-slate-50 px-5 dark:bg-zinc-950"
-      contentContainerStyle={{
-        paddingBottom: 32,
-        paddingTop: Math.max(insets.top, 24) + 12,
-      }}
-      showsVerticalScrollIndicator={false}
-    >
-      <View className="mb-5 flex-row items-center justify-between">
-        <Pressable
-          className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={22} color="#64748b" />
-        </Pressable>
+    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+      <View
+        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
+        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+      >
+        <View className="flex-row items-center justify-between">
+          <Pressable
+            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={22} color="#64748b" />
+          </Pressable>
 
-        <Text className="text-base font-bold text-gray-900 dark:text-white">
-          Item details
-        </Text>
+          <Text className="text-base font-bold text-gray-900 dark:text-white">
+            Item details
+          </Text>
 
-        <Pressable className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900">
-          <Ionicons name="ellipsis-horizontal" size={22} color="#64748b" />
-        </Pressable>
+          <Pressable className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900">
+            <Ionicons name="ellipsis-horizontal" size={22} color="#64748b" />
+          </Pressable>
+        </View>
       </View>
+      <ScrollView
+        className="flex-1 px-5"
+        contentContainerStyle={{
+          paddingBottom: 32,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
 
       <View className="rounded-3xl bg-white p-5 dark:bg-zinc-900">
         {item.imageUrl ? (
@@ -122,6 +127,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
           </>
         )}
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }

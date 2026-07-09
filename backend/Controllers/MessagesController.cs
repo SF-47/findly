@@ -1,8 +1,8 @@
+using System.Security.Claims;
 using backend.Requests.Messages;
 using backend.Services.Messages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace backend.Controllers;
 
@@ -26,10 +26,14 @@ public class MessagesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> SendMessage(Guid matchId, [FromBody] SendMessageRequest request)
+    public async Task<IActionResult> SendMessage(
+        Guid matchId,
+        [FromBody] SendMessageRequest request
+    )
     {
         var senderIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (!Guid.TryParse(senderIdStr, out var senderId)) return Unauthorized();
+        if (!Guid.TryParse(senderIdStr, out var senderId))
+            return Unauthorized();
 
         var message = await _messageService.SendMessageAsync(matchId, senderId, request);
         return Ok(message);
