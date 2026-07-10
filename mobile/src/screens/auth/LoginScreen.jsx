@@ -13,6 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { loginStudent } from "../../services/authService";
 import { saveToken } from "../../storage/tokenStorage";
+import { useColorScheme } from "nativewind";
 
 export default function LoginScreen({ navigation }) {
   const [loginForm, setLoginForm] = useState({
@@ -21,6 +22,7 @@ export default function LoginScreen({ navigation }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const { colorScheme } = useColorScheme();
 
   async function handleLogin() {
     try {
@@ -56,11 +58,11 @@ export default function LoginScreen({ navigation }) {
   }
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-white"
+      className="flex-1 bg-white dark:bg-zinc-950"
       behavior={Platform.OS === "ios" ? "padding" : "padding"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 20}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} backgroundColor={colorScheme === "dark" ? "#09090b" : "#ffffff"} />
 
       <ScrollView
         className="flex-1"
@@ -79,24 +81,24 @@ export default function LoginScreen({ navigation }) {
               <Ionicons name="search-outline" size={34} color="white" />
             </View>
 
-            <Text className="text-3xl font-bold text-slate-900">
+            <Text className="text-3xl font-bold text-slate-900 dark:text-white">
               Welcome Back
             </Text>
 
-            <Text className="mt-3 text-base leading-6 text-slate-500">
+            <Text className="mt-3 text-base leading-6 text-slate-500 dark:text-zinc-400">
               Login to continue using Smart Lost & Found.
             </Text>
           </View>
 
           <View className="mb-5">
-            <Text className="mb-2 text-sm font-semibold text-slate-700">
+            <Text className="mb-2 text-sm font-semibold text-slate-700 dark:text-zinc-300">
               Email
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 dark:bg-zinc-900 px-4 text-base text-slate-900 dark:text-white"
               placeholder="Enter your email"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={colorScheme === "dark" ? "#52525b" : "#94a3b8"}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -109,14 +111,14 @@ export default function LoginScreen({ navigation }) {
           </View>
 
           <View className="mb-3">
-            <Text className="mb-2 text-sm font-semibold text-slate-700">
+            <Text className="mb-2 text-sm font-semibold text-slate-700 dark:text-zinc-300">
               Password
             </Text>
 
             <TextInput
-              className="h-14 rounded-xl bg-slate-100 px-4 text-base text-slate-900"
+              className="h-14 rounded-xl bg-slate-100 dark:bg-zinc-900 px-4 text-base text-slate-900 dark:text-white"
               placeholder="Enter your password"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor={colorScheme === "dark" ? "#52525b" : "#94a3b8"}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
@@ -148,7 +150,7 @@ export default function LoginScreen({ navigation }) {
           </Pressable>
 
           <View className="mt-8 flex-row justify-center">
-            <Text className="text-slate-500">Don&apos;t have an account?</Text>
+            <Text className="text-slate-500 dark:text-zinc-400">Don&apos;t have an account?</Text>
 
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
               <Text className="font-bold text-blue-600"> Create Account</Text>
