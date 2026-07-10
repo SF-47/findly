@@ -106,6 +106,44 @@ public class LostItemsServices : ILostItemsService
         return await GetById(lostItem.Id) ?? lostItem;
     }
 
+    // MOBILE APP ONLY
+    public async Task<LostItem?> UpdateLostItemByStudent(Guid studentId, Guid id, UpdateLostItemRequest request)
+    {
+        var lostItem = await GetById(id);
+
+        if (lostItem is null || lostItem.StudentId != studentId)
+        {
+            return null;
+        }
+
+        lostItem.CategoryId = request.CategoryId;
+        lostItem.ItemName = request.ItemName.Trim();
+        lostItem.Description = request.Description.Trim();
+        lostItem.Color = request.Color.Trim();
+        lostItem.Location = request.Location.Trim();
+        lostItem.LostDate = DateTime.SpecifyKind(request.LostDate, DateTimeKind.Utc);
+        lostItem.ImageUrl = request.ImageUrl.Trim();
+
+        await _db.SaveChangesAsync();
+
+        return lostItem;
+    }
+
+    // MOBILE APP ONLY
+    public async Task<bool> DeleteLostItemByStudent(Guid studentId, Guid id)
+    {
+        var lostItem = await GetById(id);
+        if (lostItem is null || lostItem.StudentId != studentId)
+        {
+            return false;
+        }
+        
+        _db.Remove(lostItem);
+        await _db.SaveChangesAsync();
+
+        return true;
+    }
+
     // ! ADMIN PANEL ONLY
     public async Task<LostItem?> Update(Guid id, UpdateLostItemRequest request)
     {

@@ -106,6 +106,44 @@ public class FoundItemsServices : IFoundItemService
         return await GetById(foundItem.Id) ?? foundItem;
     }
 
+    // MOBILE APP ONLY
+    public async Task<FoundItem?> UpdateFoundItemByStudent(Guid studentId, Guid id, UpdateFoundItemRequest request)
+    {
+        var foundItem = await GetById(id);
+
+        if (foundItem is null || foundItem.StudentId != studentId)
+        {
+            return null;
+        }
+
+        foundItem.CategoryId = request.CategoryId;
+        foundItem.ItemName = request.ItemName.Trim();
+        foundItem.Description = request.Description.Trim();
+        foundItem.Color = request.Color.Trim();
+        foundItem.Location = request.Location.Trim();
+        foundItem.FoundDate = DateTime.SpecifyKind(request.FoundDate, DateTimeKind.Utc);
+        foundItem.ImageUrl = request.ImageUrl.Trim();
+
+        await _db.SaveChangesAsync();
+
+        return foundItem;
+    }
+
+    // MOBILE APP ONLY
+    public async Task<bool> DeleteFoundItemByStudent(Guid studentId, Guid id)
+    {
+        var foundItem = await GetById(id);
+        if (foundItem is null || foundItem.StudentId != studentId)
+        {
+            return false;
+        }
+        
+        _db.Remove(foundItem);
+        await _db.SaveChangesAsync();
+
+        return true;
+    }
+
     // ! ADMIN PANEL ONLY
     public async Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request)
     {

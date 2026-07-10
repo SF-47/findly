@@ -455,6 +455,122 @@ public class StudentController : ControllerBase
 
     // MOBILE APP ONLY
     [Authorize(Roles = "Student")]
+    [HttpPut("me/lost-items/{id}")]
+    public async Task<IActionResult> UpdateLostItemByStudent(Guid id, UpdateLostItemRequest request)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var errors = LostItemsValidator.ValidateUpdate(request);
+        if (errors.Count > 0)
+        {
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
+        var categoryExists = await _lostItemsService.CategoryExists(request.CategoryId);
+        if (!categoryExists)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Category does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+
+        var lostItem = await _lostItemsService.UpdateLostItemByStudent(studentId, id, request);
+        if (lostItem is null)
+        {
+            return NotFound("Item not found or you do not have permission.");
+        }
+
+        var response = ToFullLostResponse(lostItem);
+        return Ok(response);
+    }
+
+    // MOBILE APP ONLY
+    [Authorize(Roles = "Student")]
+    [HttpDelete("me/lost-items/{id}")]
+    public async Task<IActionResult> DeleteLostItemByStudent(Guid id)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _lostItemsService.DeleteLostItemByStudent(studentId, id);
+        if (!result)
+        {
+            return NotFound("Item not found or you do not have permission.");
+        }
+
+        return NoContent();
+    }
+
+    // MOBILE APP ONLY
+    [Authorize(Roles = "Student")]
+    [HttpPut("me/found-items/{id}")]
+    public async Task<IActionResult> UpdateFoundItemByStudent(Guid id, UpdateFoundItemRequest request)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var errors = FoundItemsValidator.ValidateUpdate(request);
+        if (errors.Count > 0)
+        {
+            var errorResponse = new ErrorResponse("Validation failed", errors);
+            return BadRequest(errorResponse);
+        }
+
+        var categoryExists = await _foundItemsService.CategoryExists(request.CategoryId);
+        if (!categoryExists)
+        {
+            var errorResponse = new ErrorResponse(
+                "Validation failed",
+                new List<string> { "Category does not exist." }
+            );
+            return BadRequest(errorResponse);
+        }
+
+        var foundItem = await _foundItemsService.UpdateFoundItemByStudent(studentId, id, request);
+        if (foundItem is null)
+        {
+            return NotFound("Item not found or you do not have permission.");
+        }
+
+        var response = ToFullFoundResponse(foundItem);
+        return Ok(response);
+    }
+
+    // MOBILE APP ONLY
+    [Authorize(Roles = "Student")]
+    [HttpDelete("me/found-items/{id}")]
+    public async Task<IActionResult> DeleteFoundItemByStudent(Guid id)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _foundItemsService.DeleteFoundItemByStudent(studentId, id);
+        if (!result)
+        {
+            return NotFound("Item not found or you do not have permission.");
+        }
+
+        return NoContent();
+    }
+
+    // MOBILE APP ONLY
+    [Authorize(Roles = "Student")]
     [HttpGet("lost-items")]
     public async Task<IActionResult> GetLostItemsByUniId()
     {

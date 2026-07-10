@@ -26,6 +26,12 @@ public interface IFoundItemService
         CreateFoundItemByStudentRequest request
     );
 
+    // MOBILE APP ONLY
+    Task<FoundItem?> UpdateFoundItemByStudent(Guid studentId, Guid id, UpdateFoundItemRequest request);
+
+    // MOBILE APP ONLY
+    Task<bool> DeleteFoundItemByStudent(Guid studentId, Guid id);
+
     // ! ADMIN PANEL ONLY
     Task<FoundItem?> Update(Guid id, UpdateFoundItemRequest request);
 

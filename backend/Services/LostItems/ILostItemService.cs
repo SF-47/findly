@@ -23,6 +23,12 @@ public interface ILostItemsService
     // MOBILE APP ONLY
     Task<LostItem> CreateLostItemByStudent(Guid studentId, CreateLostItemByStudentRequest request);
 
+    // MOBILE APP ONLY
+    Task<LostItem?> UpdateLostItemByStudent(Guid studentId, Guid id, UpdateLostItemRequest request);
+
+    // MOBILE APP ONLY
+    Task<bool> DeleteLostItemByStudent(Guid studentId, Guid id);
+
     // ! ADMIN PANEL ONLY
     Task<LostItem?> Update(Guid id, UpdateLostItemRequest request);
 
