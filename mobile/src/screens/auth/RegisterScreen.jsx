@@ -18,6 +18,7 @@ import { uploadUniversityCardImage } from "../../api/supabaseStorage";
 import { registerStudent } from "../../services/authService";
 import { getAllUniversities } from "../../services/universitiesService";
 import { useColorScheme } from "nativewind";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen({ navigation }) {
   const [registerForm, setRegisterForm] = useState({
@@ -179,19 +180,20 @@ export default function RegisterScreen({ navigation }) {
   );
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-white dark:bg-zinc-950"
-      behavior={Platform.OS === "ios" ? "padding" : "padding"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 20}
-    >
-      <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} backgroundColor={colorScheme === "dark" ? "#09090b" : "#ffffff"} />
+    <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 20}
+      >
+        <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} backgroundColor={colorScheme === "dark" ? "#09090b" : "#ffffff"} />
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 24,
-          paddingTop: 60,
+          paddingTop: 40,
           paddingBottom: 40,
         }}
         keyboardShouldPersistTaps="handled"
@@ -423,6 +425,7 @@ export default function RegisterScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

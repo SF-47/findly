@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { loginStudent } from "../../services/authService";
 import { saveToken } from "../../storage/tokenStorage";
 import { useColorScheme } from "nativewind";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen({ navigation }) {
   const [loginForm, setLoginForm] = useState({
@@ -57,19 +58,20 @@ export default function LoginScreen({ navigation }) {
     }
   }
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-white dark:bg-zinc-950"
-      behavior={Platform.OS === "ios" ? "padding" : "padding"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 20}
-    >
-      <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} backgroundColor={colorScheme === "dark" ? "#09090b" : "#ffffff"} />
+    <SafeAreaView className="flex-1 bg-white dark:bg-zinc-950" edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 20}
+      >
+        <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} backgroundColor={colorScheme === "dark" ? "#09090b" : "#ffffff"} />
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
           flexGrow: 1,
           paddingHorizontal: 24,
-          paddingTop: 70,
+          paddingTop: 40,
           paddingBottom: 40,
         }}
         keyboardShouldPersistTaps="handled"
@@ -158,6 +160,7 @@ export default function LoginScreen({ navigation }) {
           </View>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
