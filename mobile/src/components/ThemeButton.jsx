@@ -1,9 +1,20 @@
 import { Pressable, Text, View } from "react-native";
 import { useColorScheme } from "nativewind";
+import * as SecureStore from "expo-secure-store";
 
 export default function ThemeButton() {
   const { colorScheme, toggleColorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+
+  async function handleToggle() {
+    toggleColorScheme();
+    const newTheme = isDark ? "light" : "dark";
+    try {
+      await SecureStore.setItemAsync("user_theme", newTheme);
+    } catch (e) {
+      console.log("Failed to save theme", e);
+    }
+  }
 
   return (
     <Pressable
@@ -13,7 +24,7 @@ export default function ThemeButton() {
         isDark ? "border-zinc-600 bg-zinc-800" : "border-gray-300 bg-gray-200"
       }`}
       hitSlop={10}
-      onPress={toggleColorScheme}
+      onPress={handleToggle}
     >
       <View
         className={`absolute top-1 h-7 w-7 items-center justify-center rounded-full shadow-md ${
