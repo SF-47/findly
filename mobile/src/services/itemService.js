@@ -30,3 +30,23 @@ export async function createMyFoundItem(data) {
   const response = await axiosClient.post(ENDPOINTS.createMyFoundItem, data);
   return response.data;
 }
+
+export async function updateMyLostItem(id, data) {
+  const response = await axiosClient.put(ENDPOINTS.updateMyLostItem(id), data);
+  return response.data;
+}
+
+export async function deleteMyLostItem(id) {
+  const response = await axiosClient.delete(ENDPOINTS.deleteMyLostItem(id));
+  return response.data;
+}
+
+export async function updateMyFoundItem(id, data) {
+  const response = await axiosClient.put(ENDPOINTS.updateMyFoundItem(id), data);
+  return response.data;
+}
+
+export async function deleteMyFoundItem(id) {
+  const response = await axiosClient.delete(ENDPOINTS.deleteMyFoundItem(id));
+  return response.data;
+}

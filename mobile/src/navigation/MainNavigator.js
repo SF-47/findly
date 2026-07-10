@@ -18,6 +18,9 @@ import MyReportsScreen from "./../screens/main/MyReportsScreen";
 import ChangePasswordScreen from "./../screens/main/ChangePasswordScreen";
 import MatchDetailsScreen from "../screens/main/MatchDetailsScreen";
 import ChatScreen from "../screens/main/ChatScreen";
+import ChatsListScreen from "../screens/main/ChatsListScreen";
+import EditReportScreen from "../screens/main/EditReportScreen";
+import NotificationsScreen from "../screens/main/NotificationsScreen";
 import { registerForPushNotificationsAsync } from "../api/pushNotificationService";
 
 const Tab = createBottomTabNavigator();
@@ -27,6 +30,7 @@ const icons = {
   Home: "home-outline",
   Browse: "search-outline",
   Report: "add-circle-outline",
+  Chats: "chatbubbles-outline",
   Matches: "sparkles-outline",
   Menu: "menu-outline",
 };
@@ -167,7 +171,7 @@ function MainTabs() {
           blur: () => setReportScreenKey((key) => key + 1),
         }}
       >
-        {() => <ReportScreen key={reportScreenKey} />}
+        {(props) => <ReportScreen {...props} key={reportScreenKey} />}
       </Tab.Screen>
       <Tab.Screen name="Matches" component={MatchesScreen} />
       <Tab.Screen name="Menu" component={MenuScreen} />
@@ -201,9 +205,12 @@ export default function MainNavigator() {
       <Stack.Screen name="Profile" component={ProfileScreen} />
 
       <Stack.Screen name="MyReports" component={MyReportsScreen} />
+      <Stack.Screen name="EditReport" component={EditReportScreen} />
 
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+      <Stack.Screen name="Chats" component={ChatsListScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
     </Stack.Navigator>
   );
 }

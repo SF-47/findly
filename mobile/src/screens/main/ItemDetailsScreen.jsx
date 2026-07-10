@@ -1,11 +1,61 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, Text, View, Platform } from "react-native";
+import { deleteMyFoundItem, deleteMyLostItem } from "../../services/itemService";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ItemDetailsScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const item = route.params?.item;
   const isMyReport = route.params?.isMyReport;
+
+  async function handleDelete() {
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm("Are you sure you want to delete this report? This cannot be undone.");
+      if (confirmed) {
+        try {
+          if (item.type === "Lost") {
+            await deleteMyLostItem(item.id);
+          } else {
+            await deleteMyFoundItem(item.id);
+          }
+          window.alert("Report deleted successfully.");
+          navigation.goBack();
+        } catch (error) {
+          window.alert("Could not delete the report. Please try again.");
+        }
+      }
+      return;
+    }
+
+    Alert.alert(
+      "Delete report",
+      "Are you sure you want to delete this report? This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              if (item.type === "Lost") {
+                await deleteMyLostItem(item.id);
+              } else {
+                await deleteMyFoundItem(item.id);
+              }
+              Alert.alert("Success", "Report deleted successfully.");
+              navigation.goBack();
+            } catch (error) {
+              Alert.alert("Error", "Could not delete the report. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  function handleEdit() {
+    navigation.navigate("EditReport", { editItem: item });
+  }
 
   if (!item) {
     return (
@@ -41,8 +91,11 @@ export default function ItemDetailsScreen({ route, navigation }) {
             Item details
           </Text>
 
-          <Pressable className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900">
-            <Ionicons name="ellipsis-horizontal" size={22} color="#64748b" />
+          <Pressable 
+            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            onPress={isMyReport ? handleEdit : undefined}
+          >
+            <Ionicons name="ellipsis-horizontal" size={22} color={isMyReport ? "#2563eb" : "#64748b"} />
           </Pressable>
         </View>
       </View>
@@ -101,11 +154,17 @@ export default function ItemDetailsScreen({ route, navigation }) {
 
         {isMyReport ? (
           <>
-            <Pressable className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+            <Pressable 
+              className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500"
+              onPress={handleEdit}
+            >
               <Text className="font-bold text-white">Edit report</Text>
             </Pressable>
 
-            <Pressable className="mt-3 h-14 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50">
+            <Pressable 
+              className="mt-3 h-14 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50"
+              onPress={handleDelete}
+            >
               <Text className="font-bold text-rose-600 dark:text-rose-400">
                 Delete report
               </Text>

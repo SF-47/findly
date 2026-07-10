@@ -78,8 +78,9 @@ function TypeOption({ type, isSelected, isDisabled, onPress }) {
   );
 }
 
-export default function ReportScreen() {
+export default function ReportScreen({ navigation }) {
   const [reportType, setReportType] = useState("lost");
+
   const [formInputs, setFormInputs] = useState({
     itemName: "",
     categoryId: "",
@@ -299,7 +300,11 @@ export default function ReportScreen() {
     try {
       setIsSubmitting(true);
 
-      const imageUrl = await uploadItemImage(selectedImageAsset, reportType);
+      let imageUrl = formInputs.imageUrl;
+      if (selectedImageAsset) {
+        imageUrl = await uploadItemImage(selectedImageAsset, reportType);
+      }
+      
       const requestBody = {
         categoryId: Number(formInputs.categoryId),
         itemName: formInputs.itemName.trim(),
@@ -316,7 +321,6 @@ export default function ReportScreen() {
         requestBody.foundDate = `${formInputs.date.trim()}T00:00:00Z`;
         await createMyFoundItem(requestBody);
       }
-
       showAlert(
         "success",
         "Report created",
@@ -332,11 +336,20 @@ export default function ReportScreen() {
 
   return (
     <View className="flex-1">
-      <View className="pb-4 pt-2">
-        <ScreenHeader
-          title="Report item"
-          subtitle="Add the key details students need to recognize the item."
-        />
+      <View className="pb-4 pt-2 flex-row justify-between items-start">
+        <View className="flex-1 pr-2">
+          <ScreenHeader
+            title="Report item"
+            subtitle="Add the key details students need to recognize the item."
+          />
+        </View>
+        <Pressable 
+          className="bg-blue-100 dark:bg-blue-900/40 px-3 py-2 rounded-xl flex-row items-center mt-1"
+          onPress={() => navigation.navigate("MyReports")}
+        >
+          <Ionicons name="list-outline" size={18} color="#2563eb" />
+          <Text className="ml-1 font-bold text-sm text-blue-700 dark:text-blue-300">My reports</Text>
+        </Pressable>
       </View>
       <ScrollView
         className="flex-1"
@@ -380,7 +393,7 @@ export default function ReportScreen() {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900">
+      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80">
         <View className="mb-5 flex-row items-center justify-between">
           <View>
             <Text className="text-xl font-black text-slate-900 dark:text-white">
@@ -640,7 +653,7 @@ export default function ReportScreen() {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900">
+      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80">
         <View className="mb-4 flex-row items-center justify-between">
           <View>
             <Text className="text-xl font-black text-slate-900 dark:text-white">
@@ -731,7 +744,7 @@ export default function ReportScreen() {
         )}
 
         <Text className="ml-2 text-base font-black text-white">
-          {isSubmitting ? "Submitting report..." : "Submit report"}
+          {isSubmitting ? "Saving..." : "Submit report"}
         </Text>
       </Pressable>
       <CustomAlert

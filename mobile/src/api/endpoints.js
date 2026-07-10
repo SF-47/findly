@@ -22,4 +22,9 @@ export const ENDPOINTS = {
     updatePushToken: "/students/me/push-token",
 
     matchMessages: (matchId) => `/matches/${matchId}/messages`,
+
+    updateMyLostItem: (id) => `/students/me/lost-items/${id}`,
+    deleteMyLostItem: (id) => `/students/me/lost-items/${id}`,
+    updateMyFoundItem: (id) => `/students/me/found-items/${id}`,
+    deleteMyFoundItem: (id) => `/students/me/found-items/${id}`,
 }

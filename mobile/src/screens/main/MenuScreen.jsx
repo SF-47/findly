@@ -184,6 +184,12 @@ export default function MenuScreen({ navigation }) {
           label="My reports"
           subtitle="Lost and found items you posted"
           onPress={() => navigation.navigate("MyReports")}
+        />
+        <MenuRow
+          icon="chatbubbles-outline"
+          label="Messages"
+          subtitle="Coordinate meetups for your items"
+          onPress={() => navigation.navigate("Chats")}
           showDivider={false}
         />
       </View>
@@ -200,6 +206,7 @@ export default function MenuScreen({ navigation }) {
           icon="notifications-outline"
           label="Notifications"
           subtitle="Alerts about matches and reports"
+          onPress={() => navigation.navigate("Notifications")}
           showDivider={false}
         />
       </View>
