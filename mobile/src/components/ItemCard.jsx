@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 function ItemCard({ item }) {
   return (
-    <View className="mb-4 rounded-2xl bg-white p-4 dark:bg-zinc-900">
+    <View className="mb-4 rounded-2xl bg-white p-4 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
       <View className="flex-row items-start">
         <View className="mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/40">
           {item.imageUrl ? (
@@ -22,7 +22,7 @@ function ItemCard({ item }) {
               {item.title}
             </Text>
             <Text
-              className={`rounded-full px-3 py-1 text-xs font-bold ${item.color}`}
+              className={`rounded-full px-3 py-1 text-xs font-bold ${item.badgeColor}`}
             >
               {item.type}
             </Text>
@@ -40,3 +40,4 @@ function ItemCard({ item }) {
 }
 
 export default ItemCard;
+

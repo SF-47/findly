@@ -123,7 +123,7 @@ function EmptyState({ isLoading, navigation }) {
 }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
       <View className="flex-row items-start justify-between pb-2">
         <View className="flex-1 pr-4">
           <ScreenHeader
@@ -186,7 +186,7 @@ function EmptyState({ isLoading, navigation }) {
           renderItem={({ item: match }) => (
             <TouchableOpacity
               activeOpacity={0.7}
-              className="mb-4 mt-2 rounded-2xl bg-white p-5 shadow-sm dark:bg-zinc-900 shadow-slate-200/50"
+              className="mb-4 mt-2 rounded-2xl bg-white p-5 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900"
               onPress={() => navigation.navigate("MatchDetails", { match, currentStudentName })}
             >
               <View className="flex-row items-center justify-between">
@@ -259,7 +259,7 @@ function EmptyState({ isLoading, navigation }) {
                 </View>
               </View>
               
-              <View className="mt-4 flex-row items-center justify-center border-t border-slate-100 pt-4 dark:border-zinc-800">
+              <View className="mt-4 flex-row items-center justify-center border-t border-slate-200 pt-4 dark:border-zinc-800">
                 <Text className="font-bold text-blue-600 dark:text-blue-500">View Match Details</Text>
                 <Ionicons name="chevron-forward" size={16} color="#3b82f6" className="ml-1" />
               </View>
@@ -270,3 +270,4 @@ function EmptyState({ isLoading, navigation }) {
     </View>
   );
 }
+

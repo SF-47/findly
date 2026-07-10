@@ -9,6 +9,9 @@ export default function CustomAlert({
   message,
   buttonText = "OK",
   onClose,
+  showCancelButton = false,
+  cancelButtonText = "Cancel",
+  onCancel,
 }) {
   const isSuccess = type === "success";
   const isError = type === "error";
@@ -53,12 +56,29 @@ export default function CustomAlert({
             </Text>
           </View>
 
-          <Pressable
-            className={`mt-5 h-11 items-center justify-center rounded-xl ${buttonColor}`}
-            onPress={onClose}
-          >
-            <Text className="text-sm font-black text-white">{buttonText}</Text>
-          </Pressable>
+          {showCancelButton ? (
+            <View className="mt-5 flex-row">
+              <Pressable
+                className="mr-3 h-11 flex-1 items-center justify-center rounded-xl bg-slate-100 dark:bg-zinc-800"
+                onPress={onCancel || onClose}
+              >
+                <Text className="text-sm font-black text-slate-600 dark:text-slate-300">{cancelButtonText}</Text>
+              </Pressable>
+              <Pressable
+                className={`h-11 flex-1 items-center justify-center rounded-xl ${buttonColor}`}
+                onPress={onClose}
+              >
+                <Text className="text-sm font-black text-white">{buttonText}</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Pressable
+              className={`mt-5 h-11 items-center justify-center rounded-xl ${buttonColor}`}
+              onPress={onClose}
+            >
+              <Text className="text-sm font-black text-white">{buttonText}</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </Modal>

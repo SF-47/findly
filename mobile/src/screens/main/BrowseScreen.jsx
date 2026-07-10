@@ -89,7 +89,7 @@ function mapItemForCard(item) {
     title: item.itemName || "Untitled item",
     icon: isLost ? "search-outline" : "checkmark-circle-outline",
     type: item.itemType,
-    color: isLost
+    badgeColor: isLost
       ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
       : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
     meta: metaParts.length > 0 ? metaParts.join(" - ") : "No details added",
@@ -98,7 +98,7 @@ function mapItemForCard(item) {
 
 function EmptyState({ isLoading }) {
   return (
-    <View className="rounded-2xl bg-white px-4 py-8 dark:bg-zinc-900">
+    <View className="rounded-2xl bg-white px-4 py-8 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
       <Ionicons
         name={isLoading ? "hourglass-outline" : "search-outline"}
         size={28}
@@ -295,7 +295,7 @@ export default function BrowseScreen({ navigation }) {
         ListEmptyComponent={<EmptyState isLoading={isLoading} />}
         ListHeaderComponent={
           <>
-            <View className="mb-5 mt-2 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
+            <View className="mb-5 mt-2 h-12 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
               <Ionicons name="search-outline" size={20} color="#64748b" />
               <TextInput
                 className="ml-3 flex-1 text-base text-slate-900 dark:text-white"
@@ -395,3 +395,4 @@ export default function BrowseScreen({ navigation }) {
     </View>
   );
 }
+

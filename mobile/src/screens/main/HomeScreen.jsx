@@ -22,7 +22,7 @@ function mapItemForCard(item) {
     title: item.itemName || "Untitled item",
     icon: isLost ? "search-outline" : "checkmark-circle-outline",
     type: item.itemType,
-    color: isLost
+    badgeColor: isLost
       ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
       : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
     meta: metaParts.length > 0 ? metaParts.join(" - ") : "No details added",
@@ -94,8 +94,8 @@ function HomeScreen({ navigation }) {
   }, [navigation]);
 
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <View className="flex-row items-start justify-between">
+    <ScrollView className="flex-1 bg-slate-50 dark:bg-zinc-950" showsVerticalScrollIndicator={false}>
+      <View className="mb-2 flex-row items-center justify-between">
         <View className="flex-1 pr-4">
           <Text className="text-3xl font-black text-slate-900 dark:text-white">
             Hello, {studentFullName || "Student"}
@@ -106,7 +106,7 @@ function HomeScreen({ navigation }) {
         </View>
 
         <Pressable
-          className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800/80 shadow-sm active:opacity-80"
+          className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none active:opacity-80"
           onPress={() => navigation.navigate("Profile")}
         >
           {studentInitials ? (
@@ -140,7 +140,7 @@ function HomeScreen({ navigation }) {
 
       <View className="mb-6 flex-row">
         <Pressable
-          className="mr-3 flex-1 rounded-2xl bg-white p-4 dark:bg-zinc-900"
+          className="mr-3 flex-1 rounded-2xl bg-white dark:bg-zinc-900 p-4 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none"
           onPress={() => navigation.navigate("Report")}
         >
           <Ionicons name="alert-circle-outline" size={26} color="#dc2626" />
@@ -153,7 +153,7 @@ function HomeScreen({ navigation }) {
         </Pressable>
 
         <Pressable
-          className="flex-1 rounded-2xl bg-white p-4 dark:bg-zinc-900"
+          className="flex-1 rounded-2xl bg-white dark:bg-zinc-900 p-4 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none"
           onPress={() => navigation.navigate("Report")}
         >
           <Ionicons name="checkmark-circle-outline" size={26} color="#059669" />
@@ -194,7 +194,7 @@ function HomeScreen({ navigation }) {
           })}
         </View>
       ) : (
-        <View className="mt-2 items-center justify-center rounded-2xl bg-white py-10 dark:bg-zinc-900">
+        <View className="mt-2 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 py-10 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
           <Ionicons name="layers-outline" size={32} color="#94a3b8" />
           <Text className="mt-3 text-sm font-medium text-slate-500 dark:text-gray-400">
             No recent items found
@@ -206,3 +206,4 @@ function HomeScreen({ navigation }) {
 }
 
 export default HomeScreen;
+

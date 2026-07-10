@@ -124,7 +124,7 @@ export default function ChatScreen({ route, navigation }) {
           className={`max-w-[80%] rounded-2xl px-4 py-3 ${
             isMine
               ? "bg-blue-600 rounded-tr-sm dark:bg-blue-500"
-              : "bg-slate-200 rounded-tl-sm dark:bg-zinc-800"
+              : "bg-white border border-slate-200 shadow-sm shadow-slate-300/60 rounded-tl-sm dark:bg-zinc-800 dark:border-zinc-800 dark:shadow-none"
           }`}
         >
           <Text
@@ -229,3 +229,4 @@ export default function ChatScreen({ route, navigation }) {
     </KeyboardAvoidingView>
   );
 }
+

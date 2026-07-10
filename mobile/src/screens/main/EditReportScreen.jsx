@@ -262,7 +262,7 @@ export default function EditReportScreen({ route, navigation }) {
       >
         <View className="flex-row items-center">
           <Pressable
-            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800"
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -280,7 +280,7 @@ export default function EditReportScreen({ route, navigation }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View className="mt-2 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80">
+        <View className="mt-2 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 shadow-sm shadow-slate-300/60 dark:shadow-none">
           <View className="mb-5 flex-row items-center justify-between">
             <View>
               <Text className="text-xl font-black text-slate-900 dark:text-white">
@@ -378,7 +378,7 @@ export default function EditReportScreen({ route, navigation }) {
                           className={`mb-3 rounded-2xl border px-4 py-4 ${
                             isSelected
                               ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
-                              : "border-slate-100 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
+                              : "border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
                           }`}
                           onPress={() => handleCategorySelect(item)}
                         >
@@ -506,7 +506,7 @@ export default function EditReportScreen({ route, navigation }) {
           </View>
         </View>
 
-        <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80">
+        <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 shadow-sm shadow-slate-300/60 dark:shadow-none">
           <View className="mb-4 flex-row items-center justify-between">
             <View>
               <Text className="text-xl font-black text-slate-900 dark:text-white">
@@ -583,3 +583,4 @@ export default function EditReportScreen({ route, navigation }) {
     </View>
   );
 }
+

@@ -95,12 +95,12 @@ export default function ChatsListScreen({ navigation }) {
   return (
     <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-100 dark:border-zinc-800"
+        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
         style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
       >
         <View className="flex-row items-center">
           <Pressable
-            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800"
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -137,7 +137,7 @@ export default function ChatsListScreen({ navigation }) {
           }
           renderItem={({ item }) => (
             <Pressable
-              className="mb-3 flex-row rounded-3xl bg-white p-4 shadow-sm dark:bg-zinc-900 shadow-slate-200/50"
+              className="mb-3 flex-row rounded-3xl bg-white p-4 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900"
               onPress={() => handleChatPress(item)}
             >
               <View className={`mr-4 h-14 w-14 items-center justify-center rounded-full ${item.color}`}>
@@ -179,3 +179,4 @@ export default function ChatsListScreen({ navigation }) {
     </View>
   );
 }
+

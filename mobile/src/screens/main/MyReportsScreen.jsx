@@ -84,7 +84,7 @@ function ReportCard({ report }) {
         : "text-blue-700 dark:text-blue-300";
 
   return (
-    <View className="mb-4 rounded-2xl bg-white p-4 dark:bg-zinc-900">
+    <View className="mb-4 rounded-2xl bg-white p-4 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
       <View className="flex-row items-start justify-between">
         <View className="mr-3 flex-1">
           <View className="mb-2 flex-row items-center">
@@ -167,7 +167,13 @@ export default function MyReportsScreen({ navigation }) {
 
   useEffect(() => {
     fetchReportsCreatedByUser();
-  }, []);
+
+    const unsubscribe = navigation.addListener("focus", () => {
+      fetchReportsCreatedByUser();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
@@ -202,7 +208,7 @@ export default function MyReportsScreen({ navigation }) {
       >
 
       <View className="mb-5 flex-row gap-3">
-        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
+        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-zinc-800/80 items-center">
           <Text className="text-3xl font-black text-slate-900 dark:text-white">
             {allItems.length}
           </Text>
@@ -210,7 +216,7 @@ export default function MyReportsScreen({ navigation }) {
             Total
           </Text>
         </View>
-        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
+        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-zinc-800/80 items-center">
           <Text className="text-3xl font-black text-blue-600 dark:text-blue-400">
             {openCount}
           </Text>
@@ -218,7 +224,7 @@ export default function MyReportsScreen({ navigation }) {
             Open
           </Text>
         </View>
-        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800/80 items-center">
+        <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-zinc-800/80 items-center">
           <Text className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
             {matchedCount}
           </Text>
@@ -263,7 +269,7 @@ export default function MyReportsScreen({ navigation }) {
             title: report.itemName || "Untitled item",
             icon: isLost ? "search-outline" : "checkmark-circle-outline",
             type: report.itemType,
-            color: isLost
+            badgeColor: isLost
               ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
               : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
             meta:
@@ -286,3 +292,4 @@ export default function MyReportsScreen({ navigation }) {
     </View>
   );
 }
+

@@ -50,7 +50,7 @@ function MenuRow({
     <Pressable disabled={!onPress} onPress={onPress}>
       <View
         className={`flex-row items-center px-4 py-4 ${
-          showDivider ? "border-b border-slate-100 dark:border-zinc-800" : ""
+          showDivider ? "border-b border-slate-200 dark:border-zinc-800" : ""
         }`}
       >
         <View
@@ -135,7 +135,7 @@ export default function MenuScreen({ navigation }) {
   const initials = getInitials(studentData.fullName);
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
       <View className="pb-4">
         <ScreenHeader
           title="Menu"
@@ -147,7 +147,7 @@ export default function MenuScreen({ navigation }) {
         contentContainerStyle={{ paddingBottom: 28 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="mt-2 items-center rounded-3xl bg-white p-5 dark:bg-zinc-900">
+        <View className="mt-2 items-center rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
         <View className="items-center">
           <View className="relative">
             <View className="h-24 w-24 items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500">
@@ -172,7 +172,7 @@ export default function MenuScreen({ navigation }) {
       </View>
 
       <SectionTitle>Account</SectionTitle>
-      <View className="overflow-hidden rounded-3xl bg-white dark:bg-zinc-900">
+      <View className="overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
         <MenuRow
           icon="person-outline"
           label="Profile"
@@ -195,7 +195,7 @@ export default function MenuScreen({ navigation }) {
       </View>
 
       <SectionTitle>Preferences</SectionTitle>
-      <View className="overflow-hidden rounded-3xl bg-white dark:bg-zinc-900">
+      <View className="overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
         <MenuRow
           icon="color-palette-outline"
           label="Appearance"
@@ -212,7 +212,7 @@ export default function MenuScreen({ navigation }) {
       </View>
 
       <SectionTitle>Security</SectionTitle>
-      <View className="overflow-hidden rounded-3xl bg-white dark:bg-zinc-900">
+      <View className="overflow-hidden rounded-3xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none">
         <MenuRow
           icon="lock-closed-outline"
           label="Change password"
@@ -233,10 +233,10 @@ export default function MenuScreen({ navigation }) {
       </Pressable>
       </ScrollView>
       {isLoggingOut && (
-        <View className="absolute inset-0 z-50 items-center justify-center bg-black/40">
-          <View className="items-center justify-center rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-800">
-            <ActivityIndicator size="large" color="#3b82f6" />
-            <Text className="mt-4 font-bold text-slate-900 dark:text-white">
+        <View className="absolute inset-0 z-50 items-center justify-center bg-slate-50/90 dark:bg-zinc-950/90">
+          <View className="items-center justify-center rounded-3xl bg-white p-8 border border-slate-200 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <ActivityIndicator size="large" color="#2563eb" />
+            <Text className="mt-4 text-base font-black text-slate-900 dark:text-white">
               Logging out...
             </Text>
           </View>
@@ -245,3 +245,4 @@ export default function MenuScreen({ navigation }) {
     </View>
   );
 }
+

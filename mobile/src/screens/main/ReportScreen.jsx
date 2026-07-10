@@ -335,7 +335,7 @@ export default function ReportScreen({ navigation }) {
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
       <View className="pb-4 pt-2 flex-row justify-between items-start">
         <View className="flex-1 pr-2">
           <ScreenHeader
@@ -393,7 +393,7 @@ export default function ReportScreen({ navigation }) {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80">
+      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 shadow-sm shadow-slate-300/60 dark:shadow-none">
         <View className="mb-5 flex-row items-center justify-between">
           <View>
             <Text className="text-xl font-black text-slate-900 dark:text-white">
@@ -515,7 +515,7 @@ export default function ReportScreen({ navigation }) {
                         className={`mb-3 rounded-2xl border px-4 py-4 ${
                           isSelected
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
-                            : "border-slate-100 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
+                            : "border-slate-200 bg-slate-50 dark:border-zinc-800 dark:bg-zinc-900"
                         }`}
                         onPress={() => handleCategorySelect(item)}
                       >
@@ -653,7 +653,7 @@ export default function ReportScreen({ navigation }) {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80">
+      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 shadow-sm shadow-slate-300/60 dark:shadow-none">
         <View className="mb-4 flex-row items-center justify-between">
           <View>
             <Text className="text-xl font-black text-slate-900 dark:text-white">
@@ -758,3 +758,4 @@ export default function ReportScreen({ navigation }) {
     </View>
   );
 }
+

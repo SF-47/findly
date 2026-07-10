@@ -1,55 +1,69 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Image, Pressable, ScrollView, Text, View, Platform } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
 import { deleteMyFoundItem, deleteMyLostItem } from "../../services/itemService";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import CustomAlert from "../../components/CustomAlert";
 
 export default function ItemDetailsScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const item = route.params?.item;
   const isMyReport = route.params?.isMyReport;
 
-  async function handleDelete() {
-    if (Platform.OS === "web") {
-      const confirmed = window.confirm("Are you sure you want to delete this report? This cannot be undone.");
-      if (confirmed) {
+  const [alertData, setAlertData] = useState({
+    visible: false,
+    type: "success",
+    title: "",
+    message: "",
+    showCancel: false,
+    buttonText: "OK",
+    onConfirm: () => {},
+  });
+
+  function showAlert(type, title, message, showCancel = false, buttonText = "OK", onConfirm = closeAlert) {
+    setAlertData({
+      visible: true,
+      type,
+      title,
+      message,
+      showCancel,
+      buttonText,
+      onConfirm,
+    });
+  }
+
+  function closeAlert() {
+    setAlertData((prev) => ({ ...prev, visible: false }));
+  }
+
+  function handleDelete() {
+    showAlert(
+      "error",
+      "Delete report",
+      "Are you sure you want to delete this report? This cannot be undone.",
+      true,
+      "Delete",
+      async () => {
         try {
           if (item.type === "Lost") {
             await deleteMyLostItem(item.id);
           } else {
             await deleteMyFoundItem(item.id);
           }
-          window.alert("Report deleted successfully.");
-          navigation.goBack();
+          closeAlert();
+          setTimeout(() => {
+            showAlert("success", "Success", "Report deleted successfully.", false, "OK", () => {
+              closeAlert();
+              navigation.goBack();
+            });
+          }, 500);
         } catch (error) {
-          window.alert("Could not delete the report. Please try again.");
+          closeAlert();
+          setTimeout(() => {
+            showAlert("error", "Error", "Could not delete the report. Please try again.", false, "OK", closeAlert);
+          }, 500);
         }
       }
-      return;
-    }
-
-    Alert.alert(
-      "Delete report",
-      "Are you sure you want to delete this report? This cannot be undone.",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              if (item.type === "Lost") {
-                await deleteMyLostItem(item.id);
-              } else {
-                await deleteMyFoundItem(item.id);
-              }
-              Alert.alert("Success", "Report deleted successfully.");
-              navigation.goBack();
-            } catch (error) {
-              Alert.alert("Error", "Could not delete the report. Please try again.");
-            }
-          },
-        },
-      ]
     );
   }
 
@@ -91,12 +105,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
             Item details
           </Text>
 
-          <Pressable 
-            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
-            onPress={isMyReport ? handleEdit : undefined}
-          >
-            <Ionicons name="ellipsis-horizontal" size={22} color={isMyReport ? "#2563eb" : "#64748b"} />
-          </Pressable>
+          <View className="h-11 w-11" />
         </View>
       </View>
       <ScrollView
@@ -107,7 +116,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
         showsVerticalScrollIndicator={false}
       >
 
-      <View className="rounded-3xl bg-white p-5 dark:bg-zinc-900">
+      <View className="rounded-3xl bg-white p-5 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
         {item.imageUrl ? (
           <Image
             className="mb-5 h-56 w-full rounded-3xl bg-slate-100 dark:bg-zinc-800"
@@ -131,7 +140,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
           </View>
 
           <Text
-            className={`rounded-full px-3 py-1 text-xs font-bold ${item.color}`}
+            className={`rounded-full px-3 py-1 text-xs font-bold ${item.badgeColor}`}
           >
             {item.type}
           </Text>
@@ -147,7 +156,7 @@ export default function ItemDetailsScreen({ route, navigation }) {
         </View>
       </View>
 
-      <View className="mt-5 rounded-3xl bg-white p-5 dark:bg-zinc-900">
+      <View className="mt-5 rounded-3xl bg-white p-5 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
         <Text className="text-lg font-bold text-gray-900 dark:text-white">
           {isMyReport ? "Manage report" : "Quick actions"}
         </Text>
@@ -187,6 +196,17 @@ export default function ItemDetailsScreen({ route, navigation }) {
         )}
       </View>
       </ScrollView>
+      <CustomAlert
+        visible={alertData.visible}
+        type={alertData.type}
+        title={alertData.title}
+        message={alertData.message}
+        showCancelButton={alertData.showCancel}
+        buttonText={alertData.buttonText}
+        onClose={alertData.onConfirm}
+        onCancel={closeAlert}
+      />
     </View>
   );
 }
+

@@ -61,13 +61,13 @@ export default function NotificationsScreen({ navigation }) {
   return (
     <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-100 dark:border-zinc-800"
+        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
         style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
       >
         <View className="flex-row items-start justify-between">
           <View className="flex-1 flex-row items-center">
             <Pressable
-              className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-slate-100 dark:border-zinc-800"
+              className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-zinc-800"
               onPress={() => navigation.goBack()}
             >
               <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -121,9 +121,9 @@ export default function NotificationsScreen({ navigation }) {
         }
         renderItem={({ item }) => (
           <Pressable
-            className={`mb-3 flex-row rounded-3xl p-4 ${
+            className={`mb-3 flex-row rounded-3xl p-4 shadow-sm shadow-slate-300/60 dark:shadow-none ${
               item.read
-                ? "bg-white dark:bg-zinc-900"
+                ? "bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
                 : "bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30"
             }`}
             onPress={() => handleNotificationPress(item.id)}
@@ -156,3 +156,4 @@ export default function NotificationsScreen({ navigation }) {
     </View>
   );
 }
+
