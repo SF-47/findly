@@ -1,3 +1,5 @@
+import { Ionicons } from "@expo/vector-icons";
+
 export interface University {
   id: string;
   shortName: string;
@@ -37,6 +39,9 @@ export interface Student {
   expoPushToken: string | null;
   createdAt: string;
   university: University | null;
+  universityShortName?: string;
+  universityFullName?: string;
+  universityBranch?: string;
 }
 
 export interface FoundItem {
@@ -53,6 +58,9 @@ export interface FoundItem {
   createdAt: string;
   student: Student;
   category: Category;
+  studentName?: string;
+  categoryName?: string;
+  date?: string;
 }
 
 export interface LostItem {
@@ -69,6 +77,9 @@ export interface LostItem {
   createdAt: string;
   student: Student;
   category: Category;
+  studentName?: string;
+  categoryName?: string;
+  date?: string;
 }
 
 export interface ItemsMatch {
@@ -98,3 +109,48 @@ export interface Message {
   content: string;
   createdAt: string;
 }
+
+export interface CardItem {
+  id: string;
+  studentId: string;
+  categoryId: number;
+  itemName: string;
+  description: string;
+  color: string;
+  location: string;
+  lostDate?: string;
+  foundDate?: string;
+  imageUrl?: string;
+  status: string;
+  createdAt: string;
+  student?: Student;
+  category?: Category;
+  itemType: "Lost" | "Found";
+  categoryName?: string;
+  studentName?: string;
+
+  // Mapped properties for ItemCard
+  title: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+  type: string;
+  badgeColor: string;
+  meta: string;
+}
+
+export type MainStackParamList = {
+  MainTabs: undefined;
+  Home: undefined;
+  Browse: undefined;
+  Report: undefined;
+  Matches: undefined;
+  Menu: undefined;
+  ItemDetails: { item: CardItem; isMyReport?: boolean };
+  MatchDetails: { match: ItemsMatch };
+  Profile: undefined;
+  MyReports: undefined;
+  EditReport: { editItem: CardItem };
+  ChangePassword: undefined;
+  Chats: undefined;
+  Chat: { chatId: string; matchId: string; otherUserName?: string };
+  Notifications: undefined;
+};
