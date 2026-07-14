@@ -133,6 +133,9 @@ function EditCategoryModal({ isOpen, category, onClose, onSuccess }: EditCategor
               }
               className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none transition focus:border-blue-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-blue-500"
             />
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              Enter a concise name for the category (e.g., Electronics, Documents).
+            </p>
             {errors.name && (
               <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
                 {errors.name}
@@ -155,6 +158,9 @@ function EditCategoryModal({ isOpen, category, onClose, onSuccess }: EditCategor
               }
               className="w-full resize-none rounded-xl border border-gray-300 bg-gray-50 p-3 text-sm text-gray-900 outline-none transition focus:border-blue-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-blue-500"
             />
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              Provide a brief description of what items should be reported in this category.
+            </p>
             {errors.description && (
               <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
                 {errors.description}

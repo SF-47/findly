@@ -98,7 +98,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               </Text>
 
               <Text className="mt-3 text-base leading-6 text-slate-500 dark:text-zinc-400">
-                Login to continue using Smart Lost & Found.
+                Login to continue using Findly.
               </Text>
             </View>
 

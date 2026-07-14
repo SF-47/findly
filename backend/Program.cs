@@ -107,8 +107,8 @@ builder
             ValidateIssuerSigningKey = true, //This checks : Was this token signed using our secret key?
             //Was the token changed?
 
-            ValidIssuer = jwtIssuer, //Issuer = SmartLostAndFoundApi
-            ValidAudience = jwtAudience, //Audience = SmartLostAndFoundAdminPanel
+            ValidIssuer = jwtIssuer, //Issuer = FindlyApi
+            ValidAudience = jwtAudience, //Audience = FindlyAdminPanel
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
             ClockSkew = TimeSpan.Zero, //If token expires at 10:00, it is invalid exactly at 10:00.
@@ -130,7 +130,7 @@ app.MapGet(
     "/",
     () =>
     {
-        return "Smart Lost & Found API is running.";
+        return "Findly API is running.";
     }
 ); //Good for checking that the backend is alive.
 

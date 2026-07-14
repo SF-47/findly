@@ -96,7 +96,7 @@ function LoginPage() {
               <MapPinned size={20} />
             </div>
             <span className="font-semibold text-white text-sm tracking-wide">
-              Smart Lost & Found
+              Findly
             </span>
           </div>
 
@@ -132,7 +132,7 @@ function LoginPage() {
 
           {/* Footer note */}
           <p className="relative z-10 text-xs text-blue-200/60">
-            Smart Lost & Found · Admin Panel
+            Findly · Admin Panel
           </p>
         </div>
 
@@ -145,7 +145,7 @@ function LoginPage() {
                 <MapPinned size={26} />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Smart Lost & Found
+                Findly
               </h1>
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Admin Dashboard
@@ -158,7 +158,7 @@ function LoginPage() {
                 Welcome back
               </h2>
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Sign in to manage the Smart Lost & Found platform.
+                Sign in to manage the Findly platform.
               </p>
             </div>
 
@@ -290,7 +290,7 @@ function LoginPage() {
             </div>
 
             <p className="text-center text-xs text-gray-400 dark:text-zinc-600">
-              Smart Lost & Found · Admin Panel
+              Findly · Admin Panel
             </p>
           </div>
         </div>

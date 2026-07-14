@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Calendar,
   CircleCheck,
   IdCard,
   Image,
@@ -538,6 +539,24 @@ function StudentDetailsModal({
               errorMessage={inputErrorMessage.phoneNumberError}
             />
 
+            <FormInput
+              icon={<Calendar />}
+              label="Created At"
+              name="createdAt"
+              value={
+                student.createdAt
+                  ? new Date(student.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : ""
+              }
+              disabled={true}
+            />
+
             {isEditing ? (
               <FormInput
                 icon={<Image />}
@@ -563,11 +582,11 @@ function StudentDetailsModal({
                   University Card Image
                 </label>
 
-                <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800">
+                <div className="mx-auto max-w-xs overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800">
                   {formData.universityCardImageUrl ? (
-                    <div className="relative overflow-hidden w-full min-h-40">
+                    <div className="relative overflow-hidden w-full min-h-28">
                       {cardImageLoading && (
-                        <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-zinc-700 h-40" />
+                        <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-zinc-700 h-28" />
                       )}
                       <a
                         href={formData.universityCardImageUrl}
@@ -580,21 +599,21 @@ function StudentDetailsModal({
                           alt={`${formData.fullName}'s university card`}
                           onLoad={() => setCardImageLoading(false)}
                           onError={() => setCardImageLoading(false)}
-                          className={`max-h-80 w-full object-contain transition-opacity duration-300 ${
+                          className={`max-h-36 w-full object-contain transition-opacity duration-300 ${
                             cardImageLoading ? "opacity-0" : "opacity-100"
                           }`}
                         />
                       </a>
                     </div>
                   ) : (
-                    <div className="flex h-40 items-center justify-center px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <div className="flex h-28 items-center justify-center px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
                       No university card image available.
                     </div>
                   )}
                 </div>
 
                 {inputErrorMessage.universityCardImageUrlError && (
-                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400 text-center">
                     {inputErrorMessage.universityCardImageUrlError}
                   </p>
                 )}

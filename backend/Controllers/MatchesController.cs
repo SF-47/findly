@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using backend.Models;
 using backend.Data;
 using backend.Requests.ItemMatches;
 using backend.Responses.ItemMatches;
@@ -127,21 +128,43 @@ public class MatchesController : ControllerBase
             var lostStudentPushToken = match.LostItem?.Student?.ExpoPushToken;
             var foundStudentPushToken = match.FoundItem?.Student?.ExpoPushToken;
 
+            // 1. Lost Item Student
             if (!string.IsNullOrWhiteSpace(lostStudentPushToken))
+            {
                 await _notificationService.SendPushNotificationAsync(
                     lostStudentPushToken,
                     "Match Confirmed!",
                     "We found a match for your lost item.",
                     new { matchId = match.Id }
                 );
+            }
+            var lostNotif = new Notification
+            {
+                StudentId = match.LostItem.StudentId,
+                Title = "Match Confirmed!",
+                Message = $"We found a match for your lost '{match.LostItem.ItemName}'.",
+                Type = "Match",
+            };
+            _db.Notifications.Add(lostNotif);
 
+            // 2. Found Item Student
             if (!string.IsNullOrWhiteSpace(foundStudentPushToken))
+            {
                 await _notificationService.SendPushNotificationAsync(
                     foundStudentPushToken,
                     "Match Confirmed!",
                     "The item you found has been matched.",
                     new { matchId = match.Id }
                 );
+            }
+            var foundNotif = new Notification
+            {
+                StudentId = match.FoundItem.StudentId,
+                Title = "Match Confirmed!",
+                Message = $"The item '{match.FoundItem.ItemName}' you found has been matched.",
+                Type = "Match",
+            };
+            _db.Notifications.Add(foundNotif);
         }
 
         var adminIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

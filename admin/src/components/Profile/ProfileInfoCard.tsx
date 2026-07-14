@@ -17,8 +17,8 @@ function ProfileInfoCard() {
     : "Assigned university access";
 
   const description = owner
-    ? "Smart Lost & Found system owner"
-    : "Smart Lost & Found university administrator";
+    ? "Findly system owner"
+    : "Findly university administrator";
 
   return (
     <div className="h-full overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">

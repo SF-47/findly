@@ -115,7 +115,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
             <div>
               <h1 className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                Lost & Found
+                Findly
               </h1>
 
               <p className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400">

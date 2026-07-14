@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<University> Universities { get; set; }
     public DbSet<ItemsMatch> Matches { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -54,7 +55,7 @@ public class AppDbContext : DbContext
             .WithMany()
             .HasForeignKey(m => m.SenderId)
             .OnDelete(DeleteBehavior.Restrict);
-            
+
         modelBuilder
             .Entity<Message>()
             .HasOne(m => m.Receiver)
