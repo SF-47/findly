@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { FlatList, Pressable, Text, View, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import ScreenHeader from "../../components/ScreenHeader";
 import { getMyMatches, getMatchMessages } from "../../services/matchService";
 import { getCurrentStudent } from "../../services/studentService";
@@ -23,7 +23,7 @@ interface ChatSummary {
 }
 
 export default function ChatsListScreen({ navigation }: ChatsListScreenProps) {
-  const insets = useSafeAreaInsets();
+  // insets removed
   const [chats, setChats] = useState<ChatSummary[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -108,10 +108,10 @@ export default function ChatsListScreen({ navigation }: ChatsListScreenProps) {
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center">
           <Pressable
@@ -135,7 +135,7 @@ export default function ChatsListScreen({ navigation }: ChatsListScreenProps) {
         <FlatList
           data={chats}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ paddingBottom: 100, paddingTop: 12, paddingHorizontal: 20 }}
+          contentContainerStyle={{ paddingBottom: 100, paddingTop: 16, paddingHorizontal: 20 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View className="mt-20 items-center justify-center">
@@ -191,6 +191,6 @@ export default function ChatsListScreen({ navigation }: ChatsListScreenProps) {
           )}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }

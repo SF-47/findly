@@ -12,8 +12,13 @@ export type RootStackParamList = {
 
 export type MainTabParamList = {
   Home: undefined;
-  Browse: undefined;
-  Report: undefined;
+  Browse: { initialFilter?: "All" | "Lost" | "Found" } | undefined;
+  Report: {
+    prefillType?: "lost" | "found";
+    prefillItemName?: string;
+    prefillCategoryId?: string | number;
+    prefillCategoryName?: string;
+  } | undefined;
   Matches: undefined;
   Menu: undefined;
 };

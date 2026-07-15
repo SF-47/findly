@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FlatList, Pressable, Text, View, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { NotificationsScreenProps } from "../../navigation/types";
 import { getMyNotifications, markAsRead, markAllAsRead, NotificationItem } from "../../services/notificationService";
 
 export default function NotificationsScreen({ navigation }: NotificationsScreenProps) {
-  const insets = useSafeAreaInsets();
+  // insets removed
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -52,10 +52,10 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-start justify-between">
           <View className="flex-1 flex-row items-center">
@@ -102,7 +102,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
         <FlatList
           data={notifications}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View className="mt-20 items-center justify-center">
@@ -181,6 +181,6 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
           }}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }

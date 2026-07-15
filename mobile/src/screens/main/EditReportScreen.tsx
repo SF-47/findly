@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import CalendarModal from "../../components/CalendarModal";
 import ScreenHeader from "../../components/ScreenHeader";
@@ -29,7 +29,7 @@ import { CardItem, Category, MainStackParamList } from "../../types";
 type Props = NativeStackScreenProps<MainStackParamList, "EditReport">;
 
 export default function EditReportScreen({ route, navigation }: Props) {
-  const insets = useSafeAreaInsets();
+  // insets removed
   const editItem = route.params.editItem;
   
   const reportType = editItem.itemType === "Lost" ? "lost" : "found";
@@ -273,10 +273,10 @@ export default function EditReportScreen({ route, navigation }: Props) {
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center">
           <Pressable
@@ -294,7 +294,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
 
       <ScrollView
         className="flex-1 px-5"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -317,7 +317,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
               Item name
             </Text>
 
-            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800">
+            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons name="pricetag-outline" size={19} color="#64748b" />
 
               <TextInput
@@ -338,7 +338,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
             </Text>
 
             <Pressable
-              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800"
+              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
               disabled={isSubmitting}
               onPress={handleCategoryPress}
             >
@@ -425,7 +425,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
               Color
             </Text>
 
-            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800">
+            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons name="color-palette-outline" size={19} color="#64748b" />
 
               <TextInput
@@ -445,7 +445,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
               Location
             </Text>
 
-            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800">
+            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons name="location-outline" size={19} color="#64748b" />
 
               <TextInput
@@ -466,7 +466,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
             </Text>
 
             <Pressable
-              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800"
+              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
               disabled={isSubmitting}
               onPress={openDatePicker}
             >
@@ -502,7 +502,7 @@ export default function EditReportScreen({ route, navigation }: Props) {
               Description
             </Text>
 
-            <View className="min-h-32 flex-row items-start rounded-2xl bg-slate-50 px-4 py-4 dark:bg-zinc-800">
+            <View className="min-h-32 flex-row items-start rounded-2xl bg-slate-50 px-4 py-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons
                 name="document-text-outline"
                 size={19}
@@ -598,6 +598,6 @@ export default function EditReportScreen({ route, navigation }: Props) {
           onClose={closeAlert}
         />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

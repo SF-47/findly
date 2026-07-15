@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { MatchDetailsScreenProps } from "../../navigation/types";
 import { FoundItem, LostItem } from "../../types";
 
 export default function MatchDetailsScreen({ route, navigation }: MatchDetailsScreenProps) {
-  const insets = useSafeAreaInsets();
+  // insets removed
   const match = route.params?.match;
   const currentStudentName = route.params?.currentStudentName;
 
@@ -29,7 +29,7 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
     const isYours = item.studentName === currentStudentName;
     const typeLabel = isLost ? "Lost Item" : "Found Item";
     const typeColor = isLost
-      ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+      ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"
       : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
     
     const rawDate = isLost 
@@ -50,10 +50,10 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
           </Text>
           {isYours && (
             <View
-              className={`rounded px-2 py-0.5 ${isLost ? "bg-rose-200 dark:bg-rose-900/40" : "bg-emerald-200 dark:bg-emerald-900/40"}`}
+              className={`rounded px-2 py-0.5 ${isLost ? "bg-red-200 dark:bg-red-900/40" : "bg-emerald-200 dark:bg-emerald-900/40"}`}
             >
               <Text
-                className={`text-[10px] font-bold ${isLost ? "text-rose-700 dark:text-rose-300" : "text-emerald-700 dark:text-emerald-300"}`}
+                className={`text-[10px] font-bold ${isLost ? "text-red-700 dark:text-red-300" : "text-emerald-700 dark:text-emerald-300"}`}
               >
                 Yours
               </Text>
@@ -127,21 +127,21 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center justify-between">
           <Pressable
-            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
           </Pressable>
 
-          <Text className="text-lg font-bold text-gray-900 dark:text-white">
-            Match Details
+          <Text className="text-base font-bold text-gray-900 dark:text-white">
+            Match details
           </Text>
 
           <View className="h-11 w-11" />
@@ -150,9 +150,7 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
 
       <ScrollView
         className="flex-1 px-5"
-        contentContainerStyle={{
-          paddingBottom: 32,
-        }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
         <View className="mb-6 flex-row items-center justify-center rounded-3xl bg-blue-600 p-5 dark:bg-blue-500">
@@ -207,6 +205,6 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
           </Text>
         </Pressable>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getMyFoundItems, getMyLostItems } from "../../services/itemService";
 import { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -27,7 +27,7 @@ const FILTER_TYPES: FilterType[] = [
     title: "Lost",
     icon: "alert-circle-outline",
     color: "#e11d48",
-    bg: "bg-rose-50 dark:bg-rose-950/30",
+    bg: "bg-red-100 dark:bg-red-950/40",
   },
   {
     key: "Found",
@@ -109,15 +109,15 @@ interface ReportCardProps {
 function ReportCard({ report }: ReportCardProps) {
   const isLost = report.itemType === "Lost";
   const statusContainerStyle =
-    report.status === "Matched"
+    report.status?.toLowerCase() === "matched"
       ? "bg-emerald-100 dark:bg-emerald-900/40"
-      : report.status === "Closed"
+      : report.status?.toLowerCase() === "closed"
         ? "bg-slate-100 dark:bg-zinc-800"
         : "bg-blue-100 dark:bg-blue-900/40";
   const statusTextStyle =
-    report.status === "Matched"
+    report.status?.toLowerCase() === "matched"
       ? "text-emerald-700 dark:text-emerald-300"
-      : report.status === "Closed"
+      : report.status?.toLowerCase() === "closed"
         ? "text-slate-600 dark:text-zinc-300"
         : "text-blue-700 dark:text-blue-300";
 
@@ -185,10 +185,10 @@ export default function MyReportsScreen({ navigation }: Props) {
     return item.itemType === filter;
   });
 
-  const openCount = allItems.filter((item) => item.status === "Open").length;
-  const matchedCount = allItems.filter((item) => item.status === "Matched").length;
+  const openCount = allItems.filter((item) => item.status?.toLowerCase() === "open").length;
+  const matchedCount = allItems.filter((item) => item.status?.toLowerCase() === "matched").length;
 
-  const insets = useSafeAreaInsets();
+  // insets removed
 
   async function fetchReportsCreatedByUser() {
     const [lostItemsByStudent, foundItemsByStudent] = await Promise.all([
@@ -215,14 +215,14 @@ export default function MyReportsScreen({ navigation }: Props) {
   }, [navigation]);
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center">
           <Pressable
-            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -241,6 +241,7 @@ export default function MyReportsScreen({ navigation }: Props) {
       <ScrollView
         className="flex-1 px-5"
         contentContainerStyle={{
+          paddingTop: 16,
           paddingBottom: 40,
         }}
         showsVerticalScrollIndicator={false}
@@ -308,7 +309,7 @@ export default function MyReportsScreen({ navigation }: Props) {
               icon: (isLost ? "search-outline" : "checkmark-circle-outline") as keyof typeof Ionicons.glyphMap,
               type: report.itemType,
               badgeColor: isLost
-                ? "bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300"
+                ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"
                 : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300",
               meta:
                 metaParts.length > 0 ? metaParts.join(" - ") : "No details added",
@@ -327,6 +328,6 @@ export default function MyReportsScreen({ navigation }: Props) {
           })
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

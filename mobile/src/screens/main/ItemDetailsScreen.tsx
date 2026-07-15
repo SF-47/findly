@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
-import { useState } from "react";
+import { Image, Pressable, ScrollView, Text, View, ActivityIndicator, Linking } from "react-native";
+import { useState, useEffect } from "react";
 import { deleteMyFoundItem, deleteMyLostItem } from "../../services/itemService";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getCurrentStudent } from "../../services/studentService";
+import { getSupportContact } from "../../services/studentActionsService";
+import { SafeAreaView } from "react-native-safe-area-context";
 import CustomAlert from "../../components/CustomAlert";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MainStackParamList } from "../../types";
@@ -10,9 +12,10 @@ import { MainStackParamList } from "../../types";
 type Props = NativeStackScreenProps<MainStackParamList, "ItemDetails">;
 
 export default function ItemDetailsScreen({ route, navigation }: Props) {
-  const insets = useSafeAreaInsets();
   const item = route.params?.item;
-  const isMyReport = route.params?.isMyReport;
+
+  const [isMyReport, setIsMyReport] = useState<boolean>(false);
+  const [loadingSupport, setLoadingSupport] = useState<boolean>(false);
 
   const [alertData, setAlertData] = useState<{
     visible: boolean;
@@ -53,6 +56,65 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
 
   function closeAlert() {
     setAlertData((prev) => ({ ...prev, visible: false }));
+  }
+
+  // Load auth user and verify ownership
+  useEffect(() => {
+    async function loadAuth() {
+      try {
+        const student = await getCurrentStudent();
+        if (item) {
+          setIsMyReport(item.studentId === student.id || route.params?.isMyReport === true);
+        }
+      } catch (err) {
+        console.error("Failed to load auth student:", err);
+      }
+    }
+    loadAuth();
+  }, [item]);
+
+  // Open WhatsApp Link for Support
+  async function handleContactSupport() {
+    setLoadingSupport(true);
+    try {
+      const contact = await getSupportContact();
+      setLoadingSupport(false);
+      
+      let phone = contact.phoneNumber.replace(/[^0-9]/g, "");
+      if (phone.length === 8 && (phone.startsWith("0") || phone.startsWith("7") || phone.startsWith("3") || phone.startsWith("8"))) {
+        phone = "961" + phone;
+      }
+      
+      const message = `Hello Support! I am writing regarding the item: "${item?.title}" (ID: ${item?.id}). I need assistance.`;
+      const url = `whatsapp://send?phone=${phone}&text=${encodeURIComponent(message)}`;
+
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        await Linking.openURL(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`);
+      }
+    } catch (err) {
+      setLoadingSupport(false);
+      showAlert("error", "Failed", "Could not fetch support contact details at this time.");
+    }
+  }
+
+  // Redirect to Report Screen with Prefills
+  function handleClaimOrMatch() {
+    if (!item) return;
+
+    const targetType = item.type === "Found" ? "lost" : "found";
+
+    (navigation.navigate as any)("MainTabs", {
+      screen: "Report",
+      params: {
+        prefillType: targetType,
+        prefillItemName: item.title,
+        prefillCategoryId: item.categoryId?.toString(),
+        prefillCategoryName: item.categoryName || "",
+      },
+    });
   }
 
   function handleDelete() {
@@ -111,14 +173,14 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center justify-between">
           <Pressable
-            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            className="h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -131,14 +193,23 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
           <View className="h-11 w-11" />
         </View>
       </View>
+
       <ScrollView
         className="flex-1 px-5"
-        contentContainerStyle={{
-          paddingBottom: 32,
-        }}
+        contentContainerStyle={{ paddingTop: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
       >
         <View className="rounded-3xl bg-white p-5 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
+          
+          {/* OWNERSHIP BADGE */}
+          {isMyReport && (
+            <View className="mb-4 self-start rounded-full bg-blue-100 dark:bg-blue-900/40 px-3 py-1">
+              <Text className="text-xs font-black text-blue-600 dark:text-blue-400">
+                Your Report
+              </Text>
+            </View>
+          )}
+
           {item.imageUrl ? (
             <Image
               className="mb-5 h-56 w-full rounded-3xl bg-slate-100 dark:bg-zinc-800"
@@ -161,9 +232,7 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
               </Text>
             </View>
 
-            <Text
-              className={`rounded-full px-3 py-1 text-xs font-bold ${item.badgeColor}`}
-            >
+            <Text className={`rounded-full px-3 py-1 text-xs font-bold ${item.badgeColor}`}>
               {item.type}
             </Text>
           </View>
@@ -176,12 +245,34 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
               {item.description || "No description added for this item."}
             </Text>
           </View>
+
+          {/* REPORTER INFORMATION */}
+          <View className="mt-6 flex-row items-center border-t border-slate-100 pt-4 dark:border-zinc-800">
+            <View className="h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40">
+              <Ionicons name="person" size={18} color="#2563eb" />
+            </View>
+            <View className="ml-3 flex-1">
+              <Text className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold">Reported by</Text>
+              <Text className="text-sm font-bold text-slate-800 dark:text-zinc-200">
+                {item.studentName || "Verified Student"}
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View className="mt-5 rounded-3xl bg-white p-5 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
           <Text className="text-lg font-bold text-gray-900 dark:text-white">
             {isMyReport ? "Manage report" : "Quick actions"}
           </Text>
+
+          {!isMyReport && (
+            <Text className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              {item.type === "Found"
+                ? "If this item belongs to you, click 'Claim this item' to submit a lost report. Our system will automatically match your report and link you both. If you have questions, click 'Contact Support' to open a WhatsApp chat directly with your university admin."
+                : "If you found this item, click 'I found a match' to submit a found report. Our matching engine will compare your details and confirm the match. If you need help, click 'Contact Support' to WhatsApp the admin."
+              }
+            </Text>
+          )}
 
           {isMyReport ? (
             <>
@@ -193,31 +284,44 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
               </Pressable>
 
               <Pressable 
-                className="mt-3 h-14 items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50"
+                className="mt-3 h-14 items-center justify-center rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50"
                 onPress={handleDelete}
               >
-                <Text className="font-bold text-rose-600 dark:text-rose-400">
+                <Text className="font-bold text-red-700 dark:text-red-400">
                   Delete report
                 </Text>
               </Pressable>
             </>
           ) : (
             <>
-              <Pressable className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+              <Pressable 
+                className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500"
+                onPress={handleClaimOrMatch}
+              >
                 <Text className="font-bold text-white">
                   {item.type === "Found" ? "Claim this item" : "I found a match"}
                 </Text>
               </Pressable>
 
-              <Pressable className="mt-3 h-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800">
-                <Text className="font-bold text-gray-800 dark:text-white">
-                  Contact support
-                </Text>
-              </Pressable>
+              {loadingSupport ? (
+                <View className="mt-3 h-14 items-center justify-center rounded-xl bg-slate-100 dark:bg-zinc-850">
+                  <ActivityIndicator size="small" color="#64748b" />
+                </View>
+              ) : (
+                <Pressable 
+                  className="mt-3 h-14 items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800"
+                  onPress={handleContactSupport}
+                >
+                  <Text className="font-bold text-gray-800 dark:text-white">
+                    Contact support
+                  </Text>
+                </Pressable>
+              )}
             </>
           )}
         </View>
       </ScrollView>
+
       <CustomAlert
         visible={alertData.visible}
         type={alertData.type}
@@ -228,6 +332,6 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
         onClose={alertData.onConfirm}
         onCancel={closeAlert}
       />
-    </View>
+    </SafeAreaView>
   );
 }

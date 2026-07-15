@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "Findly",
-    "slug": "mobile",
+    "slug": "findly",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon.jpg",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -12,12 +12,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon.jpg",
         "backgroundColor": "#ffffff"
       },
       "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.mobile",
+      "package": "com.findly.app",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
@@ -27,12 +27,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash-icon.png",
+          "image": "./assets/splash-icon.jpg",
           "imageWidth": 180,
           "resizeMode": "contain",
           "backgroundColor": "#2563eb",
           "dark": {
-            "image": "./assets/splash-icon.png",
+            "image": "./assets/splash-icon.jpg",
             "backgroundColor": "#18181b"
           }
         }

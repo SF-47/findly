@@ -15,7 +15,7 @@ import {
   getCurrentStudent,
   updateCurrentStudent,
 } from "../../services/studentService";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ProfileScreenProps } from "../../navigation/types";
 
 interface ProfileFieldProps extends TextInputProps {
@@ -30,7 +30,7 @@ function ProfileField({ label, value, ...inputProps }: ProfileFieldProps) {
         {label}
       </Text>
       <TextInput
-        className="h-14 rounded-xl bg-white px-4 text-base text-slate-900 dark:bg-zinc-900 dark:text-white"
+        className="h-14 rounded-xl bg-white px-4 text-base text-slate-900 dark:bg-zinc-900 dark:text-white border border-slate-200 dark:border-zinc-800"
         value={value ?? ""}
         placeholderTextColor="#94a3b8"
         {...inputProps}
@@ -54,7 +54,7 @@ interface StudentData {
 }
 
 export default function ProfileScreen({ navigation }: ProfileScreenProps) {
-  const insets = useSafeAreaInsets();
+  // insets removed
   const [studentData, setStudentData] = useState<StudentData>({
     fullName: "",
     email: "",
@@ -157,14 +157,14 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center">
           <Pressable
-            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -183,6 +183,7 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
       <ScrollView
         className="flex-1 px-5"
         contentContainerStyle={{
+          paddingTop: 16,
           paddingBottom: 40,
         }}
         keyboardShouldPersistTaps="handled"
@@ -317,6 +318,6 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           </View>
         </View>
       ) : null}
-    </View>
+    </SafeAreaView>
   );
 }

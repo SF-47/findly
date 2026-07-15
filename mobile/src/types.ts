@@ -141,7 +141,12 @@ export type MainStackParamList = {
   MainTabs: undefined;
   Home: undefined;
   Browse: undefined;
-  Report: undefined;
+  Report: {
+    prefillType?: "lost" | "found";
+    prefillItemName?: string;
+    prefillCategoryId?: string;
+    prefillCategoryName?: string;
+  } | undefined;
   Matches: undefined;
   Menu: undefined;
   ItemDetails: { item: CardItem; isMyReport?: boolean };

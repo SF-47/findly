@@ -140,7 +140,7 @@ public class MatchesController : ControllerBase
             }
             var lostNotif = new Notification
             {
-                StudentId = match.LostItem.StudentId,
+                StudentId = match.LostItem!.StudentId,
                 Title = "Match Confirmed!",
                 Message = $"We found a match for your lost '{match.LostItem.ItemName}'.",
                 Type = "Match",
@@ -159,7 +159,7 @@ public class MatchesController : ControllerBase
             }
             var foundNotif = new Notification
             {
-                StudentId = match.FoundItem.StudentId,
+                StudentId = match.FoundItem!.StudentId,
                 Title = "Match Confirmed!",
                 Message = $"The item '{match.FoundItem.ItemName}' you found has been matched.",
                 Type = "Match",

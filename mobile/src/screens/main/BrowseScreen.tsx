@@ -8,9 +8,9 @@ import {
   getStudentLostItemsByUniversity,
 } from "../../services/itemService";
 import CustomAlert from "../../components/CustomAlert";
+import { CardItem } from "../../types";
+import { BrowseScreenProps } from "../../navigation/types";
 import { getCurrentStudent } from "../../services/studentService";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { CardItem, MainStackParamList } from "../../types";
 
 interface FilterType {
   key: string;
@@ -33,7 +33,7 @@ const FILTER_TYPES: FilterType[] = [
     title: "Lost",
     icon: "alert-circle-outline",
     color: "#e11d48",
-    bg: "bg-rose-50 dark:bg-rose-950/30",
+    bg: "bg-red-100 dark:bg-red-950/40",
   },
   {
     key: "Found",
@@ -124,7 +124,7 @@ function mapItemForCard(item: BrowseItem): CardItem {
     icon: (isLost ? "search-outline" : "checkmark-circle-outline") as keyof typeof Ionicons.glyphMap,
     type: item.itemType,
     badgeColor: isLost
-      ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+      ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"
       : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
     meta: metaParts.length > 0 ? metaParts.join(" - ") : "No details added",
   };
@@ -155,9 +155,7 @@ function EmptyState({ isLoading }: EmptyStateProps) {
   );
 }
 
-type Props = NativeStackScreenProps<MainStackParamList, "Browse">;
-
-export default function BrowseScreen({ navigation }: Props) {
+export default function BrowseScreen({ route, navigation }: BrowseScreenProps) {
   const [lostItems, setLostItems] = useState<BrowseItem[]>([]);
   const [foundItems, setFoundItems] = useState<BrowseItem[]>([]);
   const [searchText, setSearchText] = useState<string>("");
@@ -180,6 +178,7 @@ export default function BrowseScreen({ navigation }: Props) {
 
   const [showMyReports, setShowMyReports] = useState<boolean>(true);
   const [currentStudentName, setCurrentStudentName] = useState<string>("");
+  const [currentStudentId, setCurrentStudentId] = useState<string>("");
 
   function showAlert(type: "success" | "error", title: string, message: string) {
     setAlertData({
@@ -234,6 +233,7 @@ export default function BrowseScreen({ navigation }: Props) {
   async function fetchStudentInitials() {
     try {
       const student = await getCurrentStudent();
+      setCurrentStudentId(student.id);
       if (student?.fullName) {
         setCurrentStudentName(student?.fullName);
         const initials = student.fullName
@@ -265,6 +265,12 @@ export default function BrowseScreen({ navigation }: Props) {
     setVisibleCount(5);
   }, [searchText, selectedType]);
 
+  useEffect(() => {
+    if (route.params?.initialFilter) {
+      setSelectedType(route.params.initialFilter);
+    }
+  }, [route.params?.initialFilter]);
+
   function openItemDetails(item: CardItem) {
     // Navigate via parent if using nested tabs, but navigate directly works in react navigation stack resolver too.
     const parentNav = navigation.getParent();
@@ -280,10 +286,8 @@ export default function BrowseScreen({ navigation }: Props) {
     const allItems = [...lostItems, ...foundItems];
 
     const filtered = allItems.filter((item) => {
-      if (
-        !showMyReports &&
-        item.studentName?.toLowerCase() === currentStudentName?.toLowerCase()
-      ) {
+      // Exclude items reported by the current student
+      if (currentStudentId && item.studentId === currentStudentId) {
         return false;
       }
 
@@ -316,7 +320,7 @@ export default function BrowseScreen({ navigation }: Props) {
 
       return dateB - dateA;
     });
-  }, [foundItems, lostItems, searchText, selectedType, showMyReports, currentStudentName]);
+  }, [foundItems, lostItems, searchText, selectedType, currentStudentId]);
 
   const filteredItems = useMemo(
     () => allFilteredItems.slice(0, visibleCount),
@@ -328,6 +332,7 @@ export default function BrowseScreen({ navigation }: Props) {
   const canShowLess = visibleCount > 10 && totalFilteredCount > 10;
 
   return (
+    
     <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
       <View className="flex-row items-start justify-between pb-2">
         <View className="flex-1 pr-4">
@@ -372,29 +377,13 @@ export default function BrowseScreen({ navigation }: Props) {
                 />
               ))}
             </View>
-            <Pressable
-              className={`mb-5 flex-row items-center justify-center rounded-2xl p-4 ${
-                showMyReports
-                  ? "bg-slate-100 dark:bg-zinc-800"
-                  : "bg-blue-50 dark:bg-blue-900/40"
-              }`}
-              onPress={() => setShowMyReports(!showMyReports)}
-            >
-              <Ionicons
-                name={showMyReports ? "eye-outline" : "eye-off-outline"}
-                size={20}
-                color={showMyReports ? "#64748b" : "#3b82f6"}
-              />
-              <Text
-                className={`ml-2 font-bold ${
-                  showMyReports
-                    ? "text-slate-600 dark:text-zinc-300"
-                    : "text-blue-600 dark:text-blue-400"
-                }`}
-              >
-                {showMyReports ? "Hide my reports" : "Show my reports"}
+
+            <View className="mb-4 flex-row items-center rounded-xl bg-blue-50/50 dark:bg-blue-950/20 px-3 py-2 border border-blue-100/50 dark:border-blue-900/30">
+              <Ionicons name="information-circle-outline" size={16} color="#3b82f6" />
+              <Text className="ml-2 flex-1 text-xs text-blue-700 dark:text-blue-300 font-semibold">
+                Your own submitted reports are excluded from this feed.
               </Text>
-            </Pressable>
+            </View>
           </>
         }
         ListFooterComponent={

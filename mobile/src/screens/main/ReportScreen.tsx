@@ -22,8 +22,8 @@ import {
   createMyLostItem,
 } from "../../services/itemService";
 import CustomAlert from "../../components/CustomAlert";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Category, MainStackParamList } from "../../types";
+import { Category } from "../../types";
+import { ReportScreenProps } from "../../navigation/types";
 
 interface ReportTypeConfig {
   key: string;
@@ -44,10 +44,10 @@ const reportTypes: ReportTypeConfig[] = [
     label: "I lost something",
     hint: "Create a report so matching can search found items.",
     icon: "alert-circle-outline",
-    color: "#e11d48",
-    bg: "bg-rose-50 dark:bg-rose-950/30",
-    text: "text-rose-600 dark:text-rose-300",
-    border: "border-rose-200 dark:border-rose-800",
+    color: "#dc2626",
+    bg: "bg-red-100 dark:bg-red-950/40",
+    text: "text-red-700 dark:text-red-300",
+    border: "border-red-200 dark:border-red-800",
   },
   {
     key: "found",
@@ -99,9 +99,7 @@ function TypeOption({ type, isSelected, isDisabled, onPress }: TypeOptionProps) 
   );
 }
 
-type Props = NativeStackScreenProps<MainStackParamList, "Report">;
-
-export default function ReportScreen({ navigation }: Props) {
+export default function ReportScreen({ route, navigation }: ReportScreenProps) {
   const [reportType, setReportType] = useState<string>("lost");
 
   const [formInputs, setFormInputs] = useState<{
@@ -150,6 +148,25 @@ export default function ReportScreen({ navigation }: Props) {
   useEffect(() => {
     loadCategories();
   }, []);
+
+  useEffect(() => {
+    if (route.params) {
+      if (route.params.prefillType) {
+        setReportType(route.params.prefillType);
+      }
+      
+      const prefillName = route.params.prefillItemName || "";
+      const prefillCatId = route.params.prefillCategoryId?.toString() || "";
+      const prefillCatName = route.params.prefillCategoryName || "";
+
+      setFormInputs((prev) => ({
+        ...prev,
+        itemName: prefillName,
+        categoryId: prefillCatId,
+        categoryName: prefillCatName,
+      }));
+    }
+  }, [route.params]);
 
   function showAlert(type: "success" | "error", title: string, message: string) {
     setAlertData({
@@ -457,7 +474,7 @@ export default function ReportScreen({ navigation }: Props) {
               Item name
             </Text>
 
-            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800">
+            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons name="pricetag-outline" size={19} color="#64748b" />
 
               <TextInput
@@ -478,7 +495,7 @@ export default function ReportScreen({ navigation }: Props) {
             </Text>
 
             <Pressable
-              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800"
+              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
               disabled={isSubmitting}
               onPress={handleCategoryPress}
             >
@@ -591,7 +608,7 @@ export default function ReportScreen({ navigation }: Props) {
               Color
             </Text>
 
-            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800">
+            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons name="color-palette-outline" size={19} color="#64748b" />
 
               <TextInput
@@ -611,7 +628,7 @@ export default function ReportScreen({ navigation }: Props) {
               Location
             </Text>
 
-            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800">
+            <View className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons name="location-outline" size={19} color="#64748b" />
 
               <TextInput
@@ -632,7 +649,7 @@ export default function ReportScreen({ navigation }: Props) {
             </Text>
 
             <Pressable
-              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800"
+              className="h-14 flex-row items-center rounded-2xl bg-slate-50 px-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800"
               disabled={isSubmitting}
               onPress={openDatePicker}
             >
@@ -668,7 +685,7 @@ export default function ReportScreen({ navigation }: Props) {
               Description
             </Text>
 
-            <View className="min-h-32 flex-row items-start rounded-2xl bg-slate-50 px-4 py-4 dark:bg-zinc-800">
+            <View className="min-h-32 flex-row items-start rounded-2xl bg-slate-50 px-4 py-4 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-800">
               <Ionicons
                 name="document-text-outline"
                 size={19}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, ScrollView, Text, TextInput, View, Alert } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ChangePasswordScreenProps } from "../../navigation/types";
 
 interface PasswordFieldProps {
@@ -17,7 +17,7 @@ function PasswordField({ label, placeholder, value, onChangeText }: PasswordFiel
       <Text className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
         {label}
       </Text>
-      <View className="h-14 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900">
+      <View className="h-14 flex-row items-center rounded-xl bg-white px-4 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
         <Ionicons name="lock-closed-outline" size={19} color="#94a3b8" />
         <TextInput
           className="ml-3 flex-1 text-base text-slate-900 dark:text-white"
@@ -33,7 +33,7 @@ function PasswordField({ label, placeholder, value, onChangeText }: PasswordFiel
 }
 
 export default function ChangePasswordScreen({ navigation }: ChangePasswordScreenProps) {
-  const insets = useSafeAreaInsets();
+  // insets removed
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -60,14 +60,14 @@ export default function ChangePasswordScreen({ navigation }: ChangePasswordScree
   }
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-zinc-950">
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
       <View
-        className="px-5 pb-4 bg-slate-50 dark:bg-zinc-950"
-        style={{ paddingTop: Math.max(insets.top, 24) + 12, zIndex: 10 }}
+        className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
+        style={{ zIndex: 10 }}
       >
         <View className="flex-row items-center">
           <Pressable
-            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900"
+            className="mr-4 h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={22} color="#64748b" />
@@ -86,6 +86,7 @@ export default function ChangePasswordScreen({ navigation }: ChangePasswordScree
       <ScrollView
         className="flex-1 px-5"
         contentContainerStyle={{
+          paddingTop: 16,
           paddingBottom: 40,
         }}
         keyboardShouldPersistTaps="handled"
@@ -132,6 +133,6 @@ export default function ChangePasswordScreen({ navigation }: ChangePasswordScree
           <Text className="text-base font-bold text-white">Save password</Text>
         </Pressable>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
