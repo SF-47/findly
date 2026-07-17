@@ -112,8 +112,22 @@ export default function ChatScreen({ route, navigation }: ChatScreenProps) {
         content: messageText,
         receiverId: receiverId,
       });
-      // Add the new message at the beginning of the inverted array
-      setMessages((prev) => [response, ...prev]);
+
+      // Prevent duplicates if Realtime appended it first, and normalize property casing
+      setMessages((prev) => {
+        const responseId = response.id || response.Id || (response as any).ID;
+        if (prev.some((m) => m.id === responseId)) {
+          return prev;
+        }
+
+        const formatted: FormattedMessage = {
+          id: responseId,
+          senderId: response.senderId || response.SenderId || (response as any).senderid,
+          content: response.content || response.Content,
+          createdAt: response.createdAt || response.CreatedAt || (response as any).createdat,
+        };
+        return [formatted, ...prev];
+      });
     } catch (error) {
       console.error("Failed to send message:", error);
     } finally {

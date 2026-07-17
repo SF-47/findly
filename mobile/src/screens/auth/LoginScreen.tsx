@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { loginStudent } from "../../services/authService";
@@ -32,6 +33,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const { colorScheme } = useColorScheme();
 
   async function handleLogin(): Promise<void> {
+    Keyboard.dismiss();
     try {
       setError("");
       setIsLoading(true);

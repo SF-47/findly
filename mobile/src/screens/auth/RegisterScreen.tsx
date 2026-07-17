@@ -10,6 +10,7 @@ import {
   Text,
   TextInput,
   View,
+  Keyboard,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
@@ -138,6 +139,7 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   }
 
   async function handleRegister(): Promise<void> {
+    Keyboard.dismiss();
     try {
       setError("");
       setIsLoading(true);

@@ -1,13 +1,36 @@
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MatchDetailsScreenProps } from "../../navigation/types";
 import { FoundItem, LostItem } from "../../types";
+import { resolveMatch } from "../../services/matchService";
+import CustomAlert from "../../components/CustomAlert";
 
 export default function MatchDetailsScreen({ route, navigation }: MatchDetailsScreenProps) {
-  // insets removed
   const match = route.params?.match;
   const currentStudentName = route.params?.currentStudentName;
+
+  const [matchStatus, setMatchStatus] = useState<string>(match?.status || "Pending");
+  const [isResolving, setIsResolving] = useState<boolean>(false);
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    type: "success" | "error" | "info";
+    title: string;
+    message: string;
+    onClose: () => void;
+    showCancelButton?: boolean;
+    cancelButtonText?: string;
+    onCancel?: () => void;
+  }>({
+    visible: false,
+    type: "info",
+    title: "",
+    message: "",
+    onClose: () => {},
+  });
 
   if (!match) {
     return (
@@ -22,6 +45,52 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
           <Text className="font-bold text-white">Go back</Text>
         </Pressable>
       </View>
+    );
+  }
+
+  function showCustomAlert(
+    type: "success" | "error" | "info",
+    title: string,
+    message: string,
+    onCloseCallback?: () => void,
+    showCancelButton = false,
+    onCancelCallback?: () => void
+  ) {
+    setAlertConfig({
+      visible: true,
+      type,
+      title,
+      message,
+      onClose: () => {
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        if (onCloseCallback) onCloseCallback();
+      },
+      showCancelButton,
+      onCancel: () => {
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        if (onCancelCallback) onCancelCallback();
+      },
+    });
+  }
+
+  async function handleResolveMatch() {
+    showCustomAlert(
+      "info",
+      "Confirm Handover?",
+      "Are you sure you want to mark this match as resolved? This confirms that the lost item has been returned to its owner.",
+      async () => {
+        try {
+          setIsResolving(true);
+          await resolveMatch(match.id);
+          setMatchStatus("Resolved");
+          showCustomAlert("success", "Match Resolved", "The match and reported items have been closed successfully.");
+        } catch (error) {
+          showCustomAlert("error", "Error", "Failed to resolve match. Please try again.");
+        } finally {
+          setIsResolving(false);
+        }
+      },
+      true // showCancelButton
     );
   }
 
@@ -167,8 +236,8 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
             <Text className="text-white/80 text-xs font-bold uppercase tracking-wider">
               Status
             </Text>
-            <Text className="mt-1 text-lg font-bold text-white">
-              {match.status || "Pending"}
+            <Text className="mt-1 text-lg font-bold text-white capitalize">
+              {matchStatus}
             </Text>
           </View>
         </View>
@@ -183,28 +252,79 @@ export default function MatchDetailsScreen({ route, navigation }: MatchDetailsSc
 
         {renderItemDetails(match.foundItem, false)}
 
-        <Pressable
-          className="mt-5 mb-8 flex-row items-center justify-center rounded-2xl bg-blue-600 py-4 dark:bg-blue-500"
-          onPress={() =>
-            navigation.navigate("Chat", {
-              matchId: match.id,
-              otherStudentName:
-                match.lostItem.studentName === currentStudentName
-                  ? match.foundItem.studentName!
-                  : match.lostItem.studentName!,
-              receiverId:
-                match.lostItem.studentName === currentStudentName
-                  ? match.foundItem.studentId
-                  : match.lostItem.studentId,
-            })
-          }
-        >
-          <Ionicons name="chatbubbles" size={24} color="white" />
-          <Text className="ml-2 text-lg font-bold text-white">
-            Chat with Student
-          </Text>
-        </Pressable>
+        {/* Dynamic Buttons based on Match Status */}
+        {matchStatus.toLowerCase() === "confirmed" && (
+          <View className="mt-5 mb-8 space-y-3">
+            <Pressable
+              className="flex-row items-center justify-center rounded-2xl bg-blue-600 py-4 dark:bg-blue-500"
+              onPress={() =>
+                navigation.navigate("Chat", {
+                  matchId: match.id,
+                  otherStudentName:
+                    match.lostItem.studentName === currentStudentName
+                      ? match.foundItem.studentName!
+                      : match.lostItem.studentName!,
+                  receiverId:
+                    match.lostItem.studentName === currentStudentName
+                      ? match.foundItem.studentId
+                      : match.lostItem.studentId,
+                })
+              }
+            >
+              <Ionicons name="chatbubbles" size={24} color="white" />
+              <Text className="ml-2 text-lg font-bold text-white">
+                Chat with Student
+              </Text>
+            </Pressable>
+
+            <Pressable
+              className={`flex-row items-center mt-5 justify-center rounded-2xl bg-emerald-600 py-4 dark:bg-emerald-500 ${isResolving ? "opacity-60" : ""}`}
+              onPress={handleResolveMatch}
+              disabled={isResolving}
+            >
+              {isResolving ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <>
+                  <Ionicons name="checkmark-circle" size={22} color="white" />
+                  <Text className="ml-2 text-lg font-bold text-white">
+                    Confirm Handover & Close
+                  </Text>
+                </>
+              )}
+            </Pressable>
+          </View>
+        )}
+
+        {matchStatus.toLowerCase() === "resolved" && (
+          <View className="mt-5 mb-8 rounded-2xl bg-slate-100 p-4 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 flex-row items-center justify-center">
+            <Ionicons name="lock-closed" size={20} color="#64748b" />
+            <Text className="ml-2 text-base font-bold text-slate-500 dark:text-slate-400">
+              Match Resolved & Closed
+            </Text>
+          </View>
+        )}
+
+        {matchStatus.toLowerCase() !== "confirmed" && matchStatus.toLowerCase() !== "resolved" && (
+          <View className="mt-5 mb-8 rounded-2xl bg-yellow-50 p-4 dark:bg-yellow-950/20 border border-yellow-100 dark:border-yellow-900/30 flex-row items-center justify-center">
+            <Ionicons name="hourglass-outline" size={20} color="#d97706" />
+            <Text className="ml-2 text-base font-bold text-amber-600 dark:text-amber-500">
+              Awaiting Admin Confirmation
+            </Text>
+          </View>
+        )}
       </ScrollView>
+
+      {/* Custom Modal Alert Overlay */}
+      <CustomAlert
+        visible={alertConfig.visible}
+        type={alertConfig.type}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={alertConfig.onClose}
+        showCancelButton={alertConfig.showCancelButton}
+        onCancel={alertConfig.onCancel}
+      />
     </SafeAreaView>
   );
 }

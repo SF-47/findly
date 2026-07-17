@@ -275,23 +275,32 @@ export default function ItemDetailsScreen({ route, navigation }: Props) {
           )}
 
           {isMyReport ? (
-            <>
-              <Pressable 
-                className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500"
-                onPress={handleEdit}
-              >
-                <Text className="font-bold text-white">Edit report</Text>
-              </Pressable>
-
-              <Pressable 
-                className="mt-3 h-14 items-center justify-center rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50"
-                onPress={handleDelete}
-              >
-                <Text className="font-bold text-red-700 dark:text-red-400">
-                  Delete report
+            item?.status?.toLowerCase() === "resolved" || item?.status?.toLowerCase() === "closed" || item?.status?.toLowerCase() === "matched" ? (
+              <View className="mt-4 rounded-xl bg-slate-100 dark:bg-zinc-800 p-4 border border-slate-200 dark:border-zinc-700 flex-row items-center justify-center">
+                <Ionicons name="lock-closed" size={18} color="#64748b" />
+                <Text className="ml-2 font-bold text-slate-500 dark:text-slate-400">
+                  Closed & Resolved (Locked)
                 </Text>
-              </Pressable>
-            </>
+              </View>
+            ) : (
+              <>
+                <Pressable 
+                  className="mt-4 h-14 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500"
+                  onPress={handleEdit}
+                >
+                  <Text className="font-bold text-white">Edit report</Text>
+                </Pressable>
+
+                <Pressable 
+                  className="mt-3 h-14 items-center justify-center rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50"
+                  onPress={handleDelete}
+                >
+                  <Text className="font-bold text-red-700 dark:text-red-400">
+                    Delete report
+                  </Text>
+                </Pressable>
+              </>
+            )
           ) : (
             <>
               <Pressable 

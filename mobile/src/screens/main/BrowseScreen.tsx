@@ -291,6 +291,11 @@ export default function BrowseScreen({ route, navigation }: BrowseScreenProps) {
         return false;
       }
 
+      // Only show active open items
+      if (item.status?.toLowerCase() !== "open") {
+        return false;
+      }
+
       const matchesType =
         selectedType === "All" || item.itemType === selectedType;
 

@@ -857,4 +857,28 @@ public class StudentController : ControllerBase
             match.ReviewedAt
         );
     }
+
+    [Authorize(Roles = "Student")]
+    [HttpPut("me/change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        if (string.IsNullOrWhiteSpace(request.CurrentPassword) || string.IsNullOrWhiteSpace(request.NewPassword))
+        {
+            return BadRequest(new { message = "All password fields are required." });
+        }
+
+        var result = await _studentService.ChangePassword(studentId, request);
+        if (!result)
+        {
+            return BadRequest(new { message = "Incorrect current password." });
+        }
+
+        return Ok(new { message = "Password changed successfully." });
+    }
 }

@@ -177,16 +177,40 @@ export default function MyReportsScreen({ navigation }: Props) {
   const [lostItems, setLostItems] = useState<MyReportItem[]>([]);
   const [foundItems, setFoundItems] = useState<MyReportItem[]>([]);
   const [filter, setFilter] = useState<string>("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | "Active" | "Resolved">("All");
 
   const allItems = [...lostItems, ...foundItems];
   
   const filteredItems = allItems.filter((item) => {
-    if (filter === "All") return true;
-    return item.itemType === filter;
+    // 1. Type Filter (All, Lost, Found)
+    const matchesType = filter === "All" || item.itemType === filter;
+    if (!matchesType) return false;
+
+    // 2. Status Filter (All, Active, Resolved)
+    const isResolved =
+      item.status?.toLowerCase() === "resolved" ||
+      item.status?.toLowerCase() === "closed";
+
+    if (statusFilter === "Active") {
+      return !isResolved; // only show open/matched items
+    } else if (statusFilter === "Resolved") {
+      return isResolved; // only show resolved/closed items
+    }
+
+    return true;
   });
 
-  const openCount = allItems.filter((item) => item.status?.toLowerCase() === "open").length;
-  const matchedCount = allItems.filter((item) => item.status?.toLowerCase() === "matched").length;
+  const activeCount = allItems.filter(
+    (item) =>
+      item.status?.toLowerCase() === "open" ||
+      item.status?.toLowerCase() === "matched"
+  ).length;
+
+  const resolvedCount = allItems.filter(
+    (item) =>
+      item.status?.toLowerCase() === "resolved" ||
+      item.status?.toLowerCase() === "closed"
+  ).length;
 
   // insets removed
 
@@ -247,7 +271,7 @@ export default function MyReportsScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <View className="mb-5 flex-row gap-3">
-          <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-zinc-800/80 items-center">
+          <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-zinc-800/80 items-center">
             <Text className="text-3xl font-black text-slate-900 dark:text-white">
               {allItems.length}
             </Text>
@@ -255,25 +279,26 @@ export default function MyReportsScreen({ navigation }: Props) {
               Total
             </Text>
           </View>
-          <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-zinc-800/80 items-center">
+          <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-zinc-800/80 items-center">
             <Text className="text-3xl font-black text-blue-600 dark:text-blue-400">
-              {openCount}
+              {activeCount}
             </Text>
             <Text className="mt-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              Open
+              Active
             </Text>
           </View>
-          <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm shadow-slate-300/60 dark:shadow-none border border-slate-200 dark:border-zinc-800/80 items-center">
+          <View className="flex-1 rounded-3xl bg-white p-4 dark:bg-zinc-900 shadow-sm border border-slate-200 dark:border-zinc-800/80 items-center">
             <Text className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
-              {matchedCount}
+              {resolvedCount}
             </Text>
             <Text className="mt-1 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              Matched
+              Resolved
             </Text>
           </View>
         </View>
 
-        <View className="mb-5 flex-row rounded-3xl bg-slate-100 p-1 dark:bg-zinc-900">
+        {/* Category Type Filter (Lost, Found, All) */}
+        <View className="mb-4 flex-row rounded-3xl bg-slate-100 p-1 dark:bg-zinc-900">
           {FILTER_TYPES.map((type) => (
             <TypeFilterOption
               key={type.key}
@@ -282,6 +307,34 @@ export default function MyReportsScreen({ navigation }: Props) {
               onPress={() => setFilter(type.key)}
             />
           ))}
+        </View>
+
+        {/* Status Filter (All, Active, Resolved) */}
+        <View className="mb-5 flex-row gap-2 bg-slate-100/50 dark:bg-zinc-900/50 p-1 rounded-2xl">
+          {(["All", "Active", "Resolved"] as const).map((status) => {
+            const isSel = statusFilter === status;
+            return (
+              <Pressable
+                key={status}
+                onPress={() => setStatusFilter(status)}
+                className={`flex-1 h-9 items-center justify-center rounded-xl transition-all ${
+                  isSel
+                    ? "bg-white dark:bg-zinc-800 shadow-xs"
+                    : "bg-transparent"
+                }`}
+              >
+                <Text
+                  className={`text-xs font-bold ${
+                    isSel
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-slate-500 dark:text-slate-400"
+                  }`}
+                >
+                  {status}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         {filteredItems.length === 0 ? (

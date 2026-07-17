@@ -1,7 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CircleCheck, CircleX, Eye, MoreVertical, Sparkles, Trash2 } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
-import MatchDetailsModal from "./MatchDetailsModal";
 import { ItemsMatch } from "../../types";
 
 export interface MatchItem {
@@ -39,8 +39,8 @@ function getUniversityLabel(item: MatchItem): string {
 }
 
 function MatchCard({ match, onStatusChange, onDelete }: MatchCardProps) {
+  const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   const percentage = Math.min(Math.max(match.matchPercentage, 0), 100);
@@ -86,7 +86,7 @@ function MatchCard({ match, onStatusChange, onDelete }: MatchCardProps) {
               <div className="absolute right-0 top-10 z-50 w-36 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
                 <button
                   type="button"
-                  onClick={() => { setShowMenu(false); setShowDetailsModal(true); }}
+                  onClick={() => { setShowMenu(false); navigate(`/matches/${match.id}`); }}
                   className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700"
                 >
                   <Eye size={13} /> View
@@ -148,33 +148,32 @@ function MatchCard({ match, onStatusChange, onDelete }: MatchCardProps) {
             <div className="h-full rounded-full bg-linear-to-r from-purple-500 to-indigo-600" style={{ width: `${percentage}%` }} />
           </div>
 
-          <div className="mt-6 flex gap-3">
-            <button
-              type="button"
-              onClick={() => handleStatusChange("Confirmed")}
-              disabled={isUpdatingStatus || normalizedStatus === "confirmed"}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-60"
-            >
-              <CircleCheck size={16} /> Confirm
-            </button>
-            <button
-              type="button"
-              onClick={() => handleStatusChange("Rejected")}
-              disabled={isUpdatingStatus || normalizedStatus === "rejected"}
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60"
-            >
-              <CircleX size={16} /> Reject
-            </button>
-          </div>
+          {normalizedStatus === "resolved" ? (
+            <div className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-zinc-800 p-3.5 text-sm font-bold text-slate-500 border border-slate-200 dark:border-zinc-700">
+              Match Resolved & Closed
+            </div>
+          ) : (
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => handleStatusChange("Confirmed")}
+                disabled={isUpdatingStatus || normalizedStatus === "confirmed"}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-60"
+              >
+                <CircleCheck size={16} /> Confirm
+              </button>
+              <button
+                type="button"
+                onClick={() => handleStatusChange("Rejected")}
+                disabled={isUpdatingStatus || normalizedStatus === "rejected"}
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60"
+              >
+                <CircleX size={16} /> Reject
+              </button>
+            </div>
+          )}
         </div>
       </div>
-      {showDetailsModal && (
-        <MatchDetailsModal
-          match={match}
-          onStatusChange={handleStatusChange}
-          onClose={() => setShowDetailsModal(false)}
-        />
-      )}
     </>
   );
 }

@@ -10,6 +10,7 @@ import Categories from "./pages/Categories";
 import LostItems from "./pages/Lost-Items";
 import FoundItems from "./pages/Found-Items";
 import Matches from "./pages/Matches";
+import MatchDetailsPage from "./pages/MatchDetailsPage";
 import Profile from "./pages/Profile";
 import LoginPage from "./pages/LoginPage";
 import Universities from "./pages/Universities";
@@ -89,6 +90,7 @@ function AdminLayout() {
             <Route path="/lost-items" element={<LostItems />} />
             <Route path="/found-items" element={<FoundItems />} />
             <Route path="/matches" element={<Matches />} />
+            <Route path="/matches/:id" element={<MatchDetailsPage />} />
             <Route path="/profile" element={<Profile />} />
 
             <Route path="/404" element={<Forbidden />} />

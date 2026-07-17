@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { HomeScreenProps } from "../../navigation/types";
 import { getCurrentStudent } from "../../services/studentService";
 import { getStudentFoundItemsByUniversity, getStudentLostItemsByUniversity, getMyFoundItems, getMyLostItems } from "../../services/itemService";
+import { getMyNotifications } from "../../services/notificationService";
 import ItemCard from "../../components/ItemCard";
 import { CardItem, MainStackParamList } from "../../types";
 
@@ -56,12 +57,24 @@ function HomeScreen({ navigation }: HomeScreenProps) {
   const [lostCount, setLostCount] = useState<number>(0);
   const [foundCount, setFoundCount] = useState<number>(0);
   const [myReportsCount, setMyReportsCount] = useState<number>(0);
+  const [notificationCount, setNotificationCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [recentItems, setRecentItems] = useState<HomeItem[]>([]);
+
+  async function fetchNotifications() {
+    try {
+      const notifications = await getMyNotifications();
+      const unread = notifications.filter((n) => !n.isRead).length;
+      setNotificationCount(unread);
+    } catch (err) {
+      console.log("HOME NOTIFICATION ERROR:", err);
+    }
+  }
 
   async function fetchStudentData() {
     try {
       setIsLoading(true);
+      fetchNotifications();
 
       const student = await getCurrentStudent();
       setCurrentStudentId(student.id);
@@ -99,17 +112,20 @@ function HomeScreen({ navigation }: HomeScreenProps) {
       const targetStudentId = studentId || currentStudentId;
       setLostCount(lostItemsInUni.filter((i: any) => i.status?.toLowerCase() === "open" && i.studentId !== targetStudentId).length);
       setFoundCount(foundItemsInUni.filter((i: any) => i.status?.toLowerCase() === "open" && i.studentId !== targetStudentId).length);
-      setMyReportsCount(myLost.length + myFound.length);
+      setMyReportsCount(
+        myLost.filter((i: any) => i.status?.toLowerCase() === "open").length +
+          myFound.filter((i: any) => i.status?.toLowerCase() === "open").length
+      );
 
       const lost: HomeItem[] = lostItemsInUni.map((item: any) => ({ ...item, itemType: "Lost" }));
       const found: HomeItem[] = foundItemsInUni.map((item: any) => ({ ...item, itemType: "Found" }));
       
       let allItems = [...lost, ...found];
 
-      // Filter out user's own items
-      if (targetStudentId) {
-        allItems = allItems.filter((i) => i.studentId !== targetStudentId);
-      }
+      // Filter out user's own items and show only open ones
+      allItems = allItems.filter(
+        (i) => i.status?.toLowerCase() === "open" && (!targetStudentId || i.studentId !== targetStudentId)
+      );
 
       allItems.sort((a, b) => {
         const dateA = new Date(a.lostDate || a.foundDate || a.createdAt).getTime();
@@ -145,22 +161,38 @@ function HomeScreen({ navigation }: HomeScreenProps) {
           </Text>
         </View>
 
-        <Pressable
-          className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none active:opacity-80"
-          onPress={() => navigation.navigate("Profile")}
-        >
-          {studentInitials ? (
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
-              <Text className="text-xs font-black text-white tracking-wider">
-                {studentInitials}
-              </Text>
-            </View>
-          ) : (
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/40">
-              <Ionicons name="person-outline" size={18} color="#2563eb" />
-            </View>
-          )}
-        </Pressable>
+        <View className="flex-row items-center gap-3">
+          <Pressable
+            className="relative h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none active:opacity-80"
+            onPress={() => navigation.navigate("Notifications")}
+          >
+            <Ionicons name="notifications-outline" size={22} color="#64748b" />
+            {notificationCount > 0 && (
+              <View className="absolute -top-1 -right-1 h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1 border border-white dark:border-zinc-900">
+                <Text className="text-[9px] font-black text-white leading-none">
+                  {notificationCount}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+
+          <Pressable
+            className="h-12 w-12 items-center justify-center rounded-2xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none active:opacity-80"
+            onPress={() => navigation.navigate("Profile")}
+          >
+            {studentInitials ? (
+              <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-600 dark:bg-blue-500">
+                <Text className="text-xs font-black text-white tracking-wider">
+                  {studentInitials}
+                </Text>
+              </View>
+            ) : (
+              <View className="h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-950/40">
+                <Ionicons name="person-outline" size={18} color="#2563eb" />
+              </View>
+            )}
+          </Pressable>
+        </View>
       </View>
 
       <View className="mb-6 mt-7 rounded-3xl bg-blue-600 p-5 dark:bg-blue-500">
@@ -251,23 +283,7 @@ function HomeScreen({ navigation }: HomeScreenProps) {
         </Pressable>
       </View>
 
-      <View className="mb-6 flex-row gap-3">
-        <Pressable
-          className="flex-1 h-12 flex-row items-center justify-center rounded-xl bg-red-600 active:opacity-85 shadow-sm shadow-red-300/40 dark:shadow-none"
-          onPress={() => navigation.navigate("Report", { prefillType: "lost" })}
-        >
-          <Ionicons name="alert-circle-outline" size={18} color="#ffffff" />
-          <Text className="ml-2 text-sm font-bold text-white">Report Lost</Text>
-        </Pressable>
 
-        <Pressable
-          className="flex-1 h-12 flex-row items-center justify-center rounded-xl bg-emerald-600 active:opacity-85 shadow-sm shadow-emerald-300/40 dark:shadow-none"
-          onPress={() => navigation.navigate("Report", { prefillType: "found" })}
-        >
-          <Ionicons name="checkmark-circle-outline" size={18} color="#ffffff" />
-          <Text className="ml-2 text-sm font-bold text-white">Report Found</Text>
-        </Pressable>
-      </View>
 
       <View className="mb-4 flex-row items-center justify-between">
         <Text className="text-xl font-bold text-slate-900 dark:text-white">

@@ -16,3 +16,8 @@ export async function updatePushToken(pushToken: string): Promise<{ message?: st
   const response = await axiosClient.put(ENDPOINTS.updatePushToken, { pushToken });
   return response.data;
 }
+
+export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
+  const response = await axiosClient.put(ENDPOINTS.changePassword, { currentPassword, newPassword });
+  return response.data;
+}

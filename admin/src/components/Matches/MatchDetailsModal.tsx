@@ -22,7 +22,7 @@ function DetailRow({ label, value }: DetailRowProps) {
       <p className="text-[10px] font-bold uppercase tracking-wider text-gray-404 dark:text-gray-500">
         {label}
       </p>
-      <p className="mt-0.5 text-sm font-semibold text-gray-800 dark:text-gray-200 truncate" title={value || ""}>
+      <p className="mt-0.5 text-sm font-semibold text-gray-800 dark:text-gray-200 whitespace-normal break-words" title={value || ""}>
         {value || "N/A"}
       </p>
     </div>

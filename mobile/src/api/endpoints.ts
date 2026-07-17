@@ -20,8 +20,10 @@ export const ENDPOINTS = {
   myMatches: "/students/me/matches" as const,
 
   updatePushToken: "/students/me/push-token" as const,
+  changePassword: "/students/me/change-password" as const,
 
   matchMessages: (matchId: string): string => `/matches/${matchId}/messages`,
+  resolveMatch: (matchId: string): string => `/matches/${matchId}/resolve`,
 
   updateMyLostItem: (id: string): string => `/students/me/lost-items/${id}`,
   deleteMyLostItem: (id: string): string => `/students/me/lost-items/${id}`,

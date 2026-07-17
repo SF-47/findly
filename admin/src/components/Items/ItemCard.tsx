@@ -11,6 +11,12 @@ import {
   Palette,
   Trash2,
   User,
+  // Dynamic Category Icons
+  FileText,
+  Smartphone,
+  Key,
+  Wallet,
+  Shirt,
 } from "lucide-react";
 import { isOwner } from "../../../utils/auth";
 import ConfirmDialog from "../ConfirmDialog";
@@ -24,6 +30,26 @@ interface ItemCardProps {
   onDelete?: (id: string) => void;
 }
 
+function getCategoryIcon(categoryName?: string | null, isLost = true) {
+  const name = categoryName?.toLowerCase() || "";
+  if (name.includes("document") || name.includes("card") || name.includes("stationery") || name.includes("id")) {
+    return <FileText size={22} />;
+  }
+  if (name.includes("electronic") || name.includes("phone") || name.includes("laptop") || name.includes("mobile")) {
+    return <Smartphone size={22} />;
+  }
+  if (name.includes("key")) {
+    return <Key size={22} />;
+  }
+  if (name.includes("wallet") || name.includes("bag") || name.includes("purse") || name.includes("backpack")) {
+    return <Wallet size={22} />;
+  }
+  if (name.includes("clothing") || name.includes("cloth") || name.includes("apparel") || name.includes("shirt") || name.includes("wear")) {
+    return <Shirt size={22} />;
+  }
+  return isLost ? <PackageOpen size={22} /> : <ClipboardCheck size={22} />;
+}
+
 function ItemCard({ type, item, students, onDelete }: ItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -34,6 +60,8 @@ function ItemCard({ type, item, students, onDelete }: ItemCardProps) {
 
   const student = students?.find((student) => String(student.id) === String(item?.studentId));
 
+  const categoryIcon = getCategoryIcon(item?.categoryName, isLost);
+
   function formatDate(date?: string | null) {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString();
@@ -43,14 +71,12 @@ function ItemCard({ type, item, students, onDelete }: ItemCardProps) {
     ? {
         header: "from-blue-500 via-indigo-500 to-red-500",
         badge: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-        icon: <PackageOpen />,
         focus: "focus:border-red-400 dark:focus:border-red-500",
       }
     : {
         header: "from-blue-500 via-indigo-500 to-emerald-500",
         badge:
           "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
-        icon: <ClipboardCheck />,
         focus: "focus:border-emerald-400 dark:focus:border-emerald-500",
       };
 
@@ -67,12 +93,12 @@ function ItemCard({ type, item, students, onDelete }: ItemCardProps) {
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-2xl text-white shadow-md backdrop-blur-sm">
-              {accent.icon}
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-white shadow-md backdrop-blur-sm">
+              {categoryIcon}
             </div>
 
             <div>
-              <h2 className="mt-3 text-xl font-bold text-white">
+              <h2 className="text-xl font-bold text-white">
                 {item?.itemName || "Untitled Item"}
               </h2>
             </div>

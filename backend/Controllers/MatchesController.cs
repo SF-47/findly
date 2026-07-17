@@ -242,4 +242,38 @@ public class MatchesController : ControllerBase
 
         return Guid.TryParse(universityIdValue, out var universityId) ? universityId : null;
     }
+
+    [Authorize(Roles = "Student")]
+    [HttpPost("{id}/resolve")]
+    public async Task<IActionResult> ResolveMatch(Guid id)
+    {
+        var studentIdValue = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(studentIdValue, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var match = await _db.Matches
+            .Include(m => m.LostItem)
+            .Include(m => m.FoundItem)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (match is null)
+        {
+            return NotFound(new { message = "Match not found." });
+        }
+
+        if (match.LostItem.StudentId != studentId && match.FoundItem.StudentId != studentId)
+        {
+            return Forbid();
+        }
+
+        match.Status = "Resolved";
+        match.LostItem.Status = "Resolved";
+        match.FoundItem.Status = "Resolved";
+
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Match and reported items resolved successfully." });
+    }
 }

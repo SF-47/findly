@@ -36,14 +36,24 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
     }
   }
 
-  async function handleNotificationPress(id: string) {
+  async function handleNotificationPress(item: NotificationItem) {
     try {
-      await markAsRead(id);
+      await markAsRead(item.id);
       setNotifications((prev) =>
         prev.map((notif) =>
-          notif.id === id ? { ...notif, isRead: true } : notif
+          notif.id === item.id ? { ...notif, isRead: true } : notif
         )
       );
+
+      // Navigate dynamically based on type
+      if (item.type?.toLowerCase() === "match") {
+        (navigation.navigate as any)("MainTabs", { screen: "Matches" });
+      } else if (
+        item.type?.toLowerCase() === "message" ||
+        item.type?.toLowerCase() === "chat"
+      ) {
+        navigation.navigate("Chats");
+      }
     } catch (e) {
       console.error("Failed to mark notification as read", e);
     }
@@ -126,7 +136,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
                     ? "bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
                     : "bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30"
                 }`}
-                onPress={() => handleNotificationPress(item.id)}
+                onPress={() => handleNotificationPress(item)}
               >
                 <View
                   className={`mr-4 h-12 w-12 items-center justify-center rounded-2xl ${

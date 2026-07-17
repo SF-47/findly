@@ -24,13 +24,31 @@ interface ProfileFieldProps extends TextInputProps {
 }
 
 function ProfileField({ label, value, ...inputProps }: ProfileFieldProps) {
+  const isEditable = inputProps.editable !== false;
   return (
     <View className="mb-5">
-      <Text className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-        {label}
-      </Text>
+      <View className="flex-row items-center mb-2">
+        <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          {label}
+        </Text>
+        <Ionicons 
+          name={isEditable ? "create-outline" : "lock-closed-outline"} 
+          size={13} 
+          color={isEditable ? "#2563eb" : "#94a3b8"} 
+          style={{ marginLeft: 6 }} 
+        />
+        {isEditable && (
+          <Text className="ml-1 text-[9px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">
+            (Editable)
+          </Text>
+        )}
+      </View>
       <TextInput
-        className="h-14 rounded-xl bg-white px-4 text-base text-slate-900 dark:bg-zinc-900 dark:text-white border border-slate-200 dark:border-zinc-800"
+        className={`h-14 rounded-xl px-4 text-base border border-slate-200 dark:border-zinc-800 ${
+          isEditable 
+            ? "text-slate-900 dark:text-white bg-white dark:bg-zinc-900" 
+            : "text-slate-400 dark:text-slate-500 bg-slate-100/40 dark:bg-zinc-900/30"
+        }`}
         value={value ?? ""}
         placeholderTextColor="#94a3b8"
         {...inputProps}

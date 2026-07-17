@@ -205,4 +205,23 @@ public class StudentServices : IStudentServices
 
         return student;
     }
+
+    public async Task<bool> ChangePassword(Guid studentId, ChangePasswordRequest request)
+    {
+        var student = await _db.Students.FirstOrDefaultAsync(s => s.Id == studentId);
+        if (student is null)
+            return false;
+
+        // Verify current password
+        if (!BCrypt.Net.BCrypt.Verify(request.CurrentPassword, student.PasswordHash))
+        {
+            return false;
+        }
+
+        // Hash and update new password
+        student.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+        await _db.SaveChangesAsync();
+
+        return true;
+    }
 }
