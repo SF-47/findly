@@ -12,13 +12,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.jpg",
+        "foregroundImage": "./assets/icon.jpg",
         "backgroundColor": "#ffffff"
       },
       "softwareKeyboardLayoutMode": "resize",
       "edgeToEdgeEnabled": true,
       "package": "com.findly.app",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

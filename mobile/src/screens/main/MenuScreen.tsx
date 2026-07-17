@@ -129,16 +129,16 @@ export default function MenuScreen({ navigation }: Props) {
       const student = await getCurrentStudent();
 
       setStudentData({
-        fullName: student.fullName,
-        email: student.email,
-        universityId: student.universityId,
-        universityStudentId: student.universityStudentId,
-        universityShortName: student.universityShortName,
-        universityFullName: student.universityFullName,
-        universityBranch: student.universityBranch,
-        phoneNumber: student.phoneNumber,
-        universityCardImageUrl: student.universityCardImageUrl,
-        createdAt: student.createdAt,
+        fullName: student.fullName || "",
+        email: student.email || "",
+        universityId: student.universityId || "",
+        universityStudentId: student.universityStudentId || "",
+        universityShortName: student.universityShortName || "",
+        universityFullName: student.universityFullName || "",
+        universityBranch: student.universityBranch || "",
+        phoneNumber: student.phoneNumber || "",
+        universityCardImageUrl: student.universityCardImageUrl || "",
+        createdAt: student.createdAt || "",
       });
     } catch {
     } finally {
@@ -180,7 +180,7 @@ export default function MenuScreen({ navigation }: Props) {
           <View className="items-center">
             <View className="relative">
               <View className="h-24 w-24 items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500">
-                <Text className="text-3xl font-black text-white">{initials}</Text>
+                <Text className="text-xl font-black text-white">{initials}</Text>
               </View>
 
               <View className="absolute bottom-1 right-1 h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-green-500 dark:border-zinc-900">
@@ -195,7 +195,7 @@ export default function MenuScreen({ navigation }: Props) {
             </View>
           </View>
 
-          <Text className="mt-4 text-xl font-black text-slate-900 dark:text-white">
+          <Text className="mt-4 text-xl font-black text-slate-900 dark:text-white text-center" numberOfLines={1}>
             {displayName}
           </Text>
         </View>

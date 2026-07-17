@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -14,6 +13,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
+import CustomAlert from "../../components/CustomAlert";
 import { uploadUniversityCardImage } from "../../api/supabaseStorage";
 import { registerStudent } from "../../services/authService";
 import { getAllUniversities } from "../../services/universitiesService";
@@ -48,6 +48,39 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const { colorScheme } = useColorScheme();
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    type: "success" | "error" | "info";
+    title: string;
+    message: string;
+    onClose: () => void;
+  }>({
+    visible: false,
+    type: "info",
+    title: "",
+    message: "",
+    onClose: () => {},
+  });
+
+  function showCustomAlert(
+    type: "success" | "error" | "info",
+    title: string,
+    message: string,
+    onCloseCallback?: () => void
+  ) {
+    setAlertConfig({
+      visible: true,
+      type,
+      title,
+      message,
+      onClose: () => {
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        if (onCloseCallback) onCloseCallback();
+      },
+    });
+  }
 
   function updateRegisterForm(name: keyof RegisterForm, value: string): void {
     setRegisterForm((prev) => ({ ...prev, [name]: value }));
@@ -116,9 +149,10 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
-      Alert.alert(
+      showCustomAlert(
+        "error",
         "Permission needed",
-        "Please allow photo access to upload your university card.",
+        "Please allow photo access to upload your university card."
       );
       return;
     }
@@ -447,6 +481,15 @@ export default function RegisterScreen({ navigation }: RegisterScreenProps) {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* Custom Modal Alert Overlay */}
+      <CustomAlert
+        visible={alertConfig.visible}
+        type={alertConfig.type}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={alertConfig.onClose}
+      />
     </SafeAreaView>
   );
 }

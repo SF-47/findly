@@ -80,14 +80,14 @@ function ItemDetails({ item, type }: ItemDetailsProps) {
         background: "bg-red-50/50 dark:bg-red-950/25",
         badgeClass: "bg-red-100/80 text-red-700 dark:bg-red-900/30 dark:text-red-300",
         icon: categoryIcon,
-        iconBg: "bg-red-500",
+        iconBg: "bg-blue-600",
         title: "Lost Item Report",
       }
     : {
         background: "bg-emerald-50/50 dark:bg-emerald-950/25",
         badgeClass: "bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
         icon: categoryIcon,
-        iconBg: "bg-emerald-500",
+        iconBg: "bg-blue-600",
         title: "Found Item Report",
       };
 

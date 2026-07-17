@@ -68,6 +68,7 @@ function MatchesFilter({ filters, onChange, onClear, onClose }: MatchesFilterPro
               { value: "pending", label: "Pending" },
               { value: "confirmed", label: "Confirmed" },
               { value: "rejected", label: "Rejected" },
+              { value: "resolved", label: "Resolved" },
             ]}
           />
         </div>

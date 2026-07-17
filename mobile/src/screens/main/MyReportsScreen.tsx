@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getMyFoundItems, getMyLostItems } from "../../services/itemService";
 import { useEffect, useState } from "react";
@@ -123,31 +123,42 @@ function ReportCard({ report }: ReportCardProps) {
 
   return (
     <View className="mb-4 rounded-2xl bg-white p-4 border border-slate-200 dark:border-zinc-800 shadow-sm shadow-slate-300/60 dark:shadow-none dark:bg-zinc-900">
-      <View className="flex-row items-start justify-between">
-        <View className="mr-3 flex-1">
-          <View className="mb-2 flex-row items-center">
-            <View
-              className={`mr-2 h-9 w-9 items-center justify-center rounded-xl ${
-                isLost
-                  ? "bg-rose-100 dark:bg-rose-900/40"
-                  : "bg-emerald-100 dark:bg-emerald-900/40"
-              }`}
-            >
-              <Ionicons
-                name={
-                  isLost ? "alert-circle-outline" : "checkmark-circle-outline"
-                }
-                size={20}
-                color={isLost ? "#e11d48" : "#059669"}
-              />
+      <View className="flex-row items-start">
+        {/* Left Side: Image or Icon */}
+        <View className="mr-4 h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 dark:bg-blue-900/40">
+          {report.imageUrl ? (
+            <Image
+              className="h-14 w-14 rounded-2xl"
+              resizeMode="cover"
+              source={{ uri: report.imageUrl }}
+            />
+          ) : (
+            <Ionicons
+              name={isLost ? "alert-circle-outline" : "checkmark-circle-outline"}
+              size={25}
+              color={isLost ? "#e11d48" : "#059669"}
+            />
+          )}
+        </View>
+
+        {/* Right Side: Details */}
+        <View className="flex-1">
+          <View className="flex-row items-start justify-between">
+            <View className="flex-1 pr-2">
+              <Text className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
+                {report.itemType} report
+              </Text>
+              <Text className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
+                {report.itemName}
+              </Text>
             </View>
-            <Text className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">
-              {report.itemType} report
-            </Text>
+            <View className={`rounded-full px-3 py-1 ${statusContainerStyle}`}>
+              <Text className={`text-xs font-bold ${statusTextStyle}`}>
+                {report.status}
+              </Text>
+            </View>
           </View>
-          <Text className="text-lg font-bold text-slate-900 dark:text-white">
-            {report.itemName}
-          </Text>
+
           <View className="mt-3 flex-row items-center">
             <Ionicons name="location-outline" size={16} color="#94a3b8" />
             <Text className="ml-1 text-sm text-slate-500 dark:text-slate-400">
@@ -160,11 +171,6 @@ function ReportCard({ report }: ReportCardProps) {
               {formatDate(report.itemType === "Lost" ? report.lostDate : report.foundDate)}
             </Text>
           </View>
-        </View>
-        <View className={`rounded-full px-3 py-1 ${statusContainerStyle}`}>
-          <Text className={`text-xs font-bold ${statusTextStyle}`}>
-            {report.status}
-          </Text>
         </View>
       </View>
     </View>

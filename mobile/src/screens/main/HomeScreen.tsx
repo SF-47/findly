@@ -113,8 +113,14 @@ function HomeScreen({ navigation }: HomeScreenProps) {
       setLostCount(lostItemsInUni.filter((i: any) => i.status?.toLowerCase() === "open" && i.studentId !== targetStudentId).length);
       setFoundCount(foundItemsInUni.filter((i: any) => i.status?.toLowerCase() === "open" && i.studentId !== targetStudentId).length);
       setMyReportsCount(
-        myLost.filter((i: any) => i.status?.toLowerCase() === "open").length +
-          myFound.filter((i: any) => i.status?.toLowerCase() === "open").length
+        myLost.filter((i: any) => {
+          const s = i.status?.toLowerCase();
+          return s === "open" || s === "resolved" || s === "confirmed";
+        }).length +
+          myFound.filter((i: any) => {
+            const s = i.status?.toLowerCase();
+            return s === "open" || s === "resolved" || s === "confirmed";
+          }).length
       );
 
       const lost: HomeItem[] = lostItemsInUni.map((item: any) => ({ ...item, itemType: "Lost" }));
@@ -275,8 +281,8 @@ function HomeScreen({ navigation }: HomeScreenProps) {
             </View>
           </View>
           <View className="flex-row items-center">
-            <View className="mr-2 h-7 min-w-[28px] items-center justify-center rounded-full bg-blue-600 px-2">
-              <Text className="text-xs font-black text-white">{myReportsCount}</Text>
+            <View className="mr-2 h-7 min-w-[28px] items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30 px-2 border border-blue-200 dark:border-blue-900/40">
+              <Text className="text-xs font-bold text-blue-600 dark:text-blue-400">{myReportsCount}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color="#2563eb" />
           </View>

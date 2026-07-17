@@ -21,3 +21,7 @@ export async function markAsRead(id: string): Promise<void> {
 export async function markAllAsRead(): Promise<void> {
   await axiosClient.put("/notifications/read-all");
 }
+
+export async function deleteNotification(id: string): Promise<void> {
+  await axiosClient.delete(`/notifications/${id}`);
+}

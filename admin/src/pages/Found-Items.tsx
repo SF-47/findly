@@ -112,10 +112,12 @@ function FoundItems() {
     });
   }, [filters, foundItems]);
 
-  const previewFoundItems = foundItems.slice(0, 3);
+  const previewFoundItems = [...foundItems]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 3);
   const today = new Date().toDateString();
   const todayItems = foundItems.filter(
-    (item) => new Date(item.foundDate).toDateString() === today,
+    (item) => new Date(item.createdAt).toDateString() === today,
   );
 
   function clearFilters() {
@@ -163,21 +165,21 @@ function FoundItems() {
       subtitle: "Reports",
       value: foundItems.length,
       icon: <ClipboardCheck />,
-      bgColor: "bg-teal-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Open Reports",
       subtitle: "Active",
       value: openStatusItems.length,
       icon: <Clock />,
-      bgColor: "bg-emerald-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Today",
       subtitle: "New Reports",
       value: todayItems.length,
       icon: <CalendarDays />,
-      bgColor: "bg-teal-500",
+      bgColor: "bg-blue-600",
     },
   ];
 

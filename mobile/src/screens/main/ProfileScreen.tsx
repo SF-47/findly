@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -11,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { useState, useEffect } from "react";
+import CustomAlert from "../../components/CustomAlert";
 import {
   getCurrentStudent,
   updateCurrentStudent,
@@ -86,7 +86,44 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     universityCardImageUrl: "",
     createdAt: "",
   });
+  const [initialData, setInitialData] = useState({
+    fullName: "",
+    phoneNumber: "",
+  });
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    type: "success" | "error" | "info";
+    title: string;
+    message: string;
+    onClose: () => void;
+  }>({
+    visible: false,
+    type: "info",
+    title: "",
+    message: "",
+    onClose: () => {},
+  });
+
+  function showCustomAlert(
+    type: "success" | "error" | "info",
+    title: string,
+    message: string,
+    onCloseCallback?: () => void
+  ) {
+    setAlertConfig({
+      visible: true,
+      type,
+      title,
+      message,
+      onClose: () => {
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        if (onCloseCallback) onCloseCallback();
+      },
+    });
+  }
 
   async function fetchStudentData() {
     try {
@@ -106,6 +143,10 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         isVerified: student.isVerified ?? null,
         universityCardImageUrl: student.universityCardImageUrl || "",
         createdAt: student.createdAt || "",
+      });
+      setInitialData({
+        fullName: student.fullName || "",
+        phoneNumber: student.phoneNumber || "",
       });
     } catch (error: any) {
       console.log("PROFILE ERROR:", {
@@ -135,14 +176,15 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
     const phoneNumber = studentData.phoneNumber.trim();
 
     if (fullName.length < 3) {
-      Alert.alert("Invalid name", "Full name must be at least 3 characters.");
+      showCustomAlert("error", "Invalid name", "Full name must be at least 3 characters.");
       return;
     }
 
     if (!/^(03|70|71|76|78|79|81)\d{6}$/.test(phoneNumber)) {
-      Alert.alert(
+      showCustomAlert(
+        "error",
         "Invalid phone number",
-        "Enter a valid Lebanese mobile number.",
+        "Enter a valid Lebanese mobile number."
       );
       return;
     }
@@ -155,12 +197,21 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         phoneNumber,
       });
 
+      const nextName = updatedStudent.fullName || studentData.fullName;
+      const nextPhone = updatedStudent.phoneNumber || studentData.phoneNumber;
+
       setStudentData((current) => ({
         ...current,
-        fullName: updatedStudent.fullName || current.fullName,
-        phoneNumber: updatedStudent.phoneNumber || current.phoneNumber,
+        fullName: nextName,
+        phoneNumber: nextPhone,
       }));
-      Alert.alert("Profile updated", "Your changes were saved successfully.");
+
+      setInitialData({
+        fullName: nextName,
+        phoneNumber: nextPhone,
+      });
+
+      showCustomAlert("success", "Profile updated", "Your changes were saved successfully.");
     } catch (error: any) {
       const responseData = error?.response?.data;
       const message =
@@ -168,11 +219,15 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         responseData?.message ||
         "Could not update your profile. Please try again.";
 
-      Alert.alert("Update failed", message);
+      showCustomAlert("error", "Update failed", message);
     } finally {
       setIsLoading(false);
     }
   }
+
+  const hasChanges =
+    studentData.fullName.trim() !== initialData.fullName.trim() ||
+    studentData.phoneNumber.trim() !== initialData.phoneNumber.trim();
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
@@ -321,8 +376,10 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
         </View>
 
         <Pressable
-          className="mt-6 h-14 items-center justify-center rounded-xl bg-blue-600"
-          disabled={isLoading}
+          className={`mt-6 h-14 items-center justify-center rounded-xl bg-blue-600 ${
+            isLoading || !hasChanges ? "opacity-60" : ""
+          }`}
+          disabled={isLoading || !hasChanges}
           onPress={handleSave}
         >
           <Text className="text-base font-bold text-white">Save changes</Text>
@@ -336,6 +393,15 @@ export default function ProfileScreen({ navigation }: ProfileScreenProps) {
           </View>
         </View>
       ) : null}
+
+      {/* Custom Modal Alert Overlay */}
+      <CustomAlert
+        visible={alertConfig.visible}
+        type={alertConfig.type}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={alertConfig.onClose}
+      />
     </SafeAreaView>
   );
 }

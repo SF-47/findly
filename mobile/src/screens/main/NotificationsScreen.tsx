@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, Pressable, Text, View, ActivityIndicator } from "react-native";
+import {
+  FlatList,
+  Pressable,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NotificationsScreenProps } from "../../navigation/types";
-import { getMyNotifications, markAsRead, markAllAsRead, NotificationItem } from "../../services/notificationService";
+import {
+  getMyNotifications,
+  markAsRead,
+  markAllAsRead,
+  deleteNotification,
+  NotificationItem,
+} from "../../services/notificationService";
 
 export default function NotificationsScreen({ navigation }: NotificationsScreenProps) {
   // insets removed
@@ -56,6 +68,16 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
       }
     } catch (e) {
       console.error("Failed to mark notification as read", e);
+    }
+  }
+
+  async function handleDeleteNotification(id: string) {
+    try {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      await deleteNotification(id);
+    } catch (e) {
+      console.error("Failed to delete notification", e);
+      fetchNotifications();
     }
   }
 
@@ -155,7 +177,7 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
                 <View className="flex-1">
                   <View className="flex-row items-start justify-between">
                     <Text
-                      className={`flex-1 text-base font-bold ${
+                      className={`flex-1 text-base font-bold pr-2 ${
                         item.isRead
                           ? "text-slate-900 dark:text-white"
                           : "text-blue-900 dark:text-blue-100"
@@ -163,9 +185,18 @@ export default function NotificationsScreen({ navigation }: NotificationsScreenP
                     >
                       {item.title}
                     </Text>
-                    {!item.isRead && (
-                      <View className="ml-2 h-2.5 w-2.5 rounded-full bg-blue-600 dark:bg-blue-500 mt-1.5" />
-                    )}
+                    <View className="flex-row items-center">
+                      {!item.isRead && (
+                        <View className="h-2.5 w-2.5 rounded-full bg-blue-600 dark:bg-blue-500 mr-2 mt-0.5" />
+                      )}
+                      <Pressable
+                        onPress={() => handleDeleteNotification(item.id)}
+                        className="h-6 w-6 items-center justify-center rounded-full bg-slate-100 dark:bg-zinc-850 hover:bg-slate-200 dark:hover:bg-zinc-800"
+                        hitSlop={8}
+                      >
+                        <Ionicons name="close" size={14} color="#64748b" />
+                      </Pressable>
+                    </View>
                   </View>
 
                   <Text

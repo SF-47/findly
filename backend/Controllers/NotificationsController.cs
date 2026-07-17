@@ -67,5 +67,25 @@ namespace backend.Controllers
             await _db.SaveChangesAsync();
             return NoContent();
         }
+
+        // DELETE: /notifications/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteNotification(Guid id)
+        {
+            var studentIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(studentIdStr, out var studentId))
+                return Unauthorized();
+
+            var notification = await _db.Notifications.FindAsync(id);
+            if (notification == null)
+                return NotFound();
+
+            if (notification.StudentId != studentId)
+                return Forbid();
+
+            _db.Notifications.Remove(notification);
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

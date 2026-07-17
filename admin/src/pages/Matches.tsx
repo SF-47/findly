@@ -12,6 +12,7 @@ import MatchCard from "../components/Matches/MatchCard";
 import MatchCardSkeleton from "../components/Matches/MatchCardSkeleton";
 import MatchesFilter from "../components/Matches/MatchesFilters";
 import MatchStatsCard from "../components/Matches/MatchStatsCard";
+import AllMatches from "../components/Matches/AllMatches";
 //! TS CHANGE : Imported core types for items matches and components
 import { ItemsMatch, LostItem, FoundItem } from "../types";
 
@@ -36,6 +37,7 @@ function Matches() {
   const [matches, setMatches] = useState<ExtendedItemsMatch[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showAllMatches, setShowAllMatches] = useState<boolean>(false);
   const [filters, setFilters] = useState({
     search: "",
     status: "",
@@ -43,21 +45,21 @@ function Matches() {
     createdDate: "",
   });
 
-  useEffect(() => {
-    async function fetchMatches() {
-      try {
-        setIsLoading(true);
-        //! TS CHANGE : Cast return array to ExtendedItemsMatch[] since basic getMatches doesn't declare the custom extended UI fields natively
-        const data = await getMatches() as ExtendedItemsMatch[];
-        setMatches(data);
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to load matches.");
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchMatches = async () => {
+    try {
+      setIsLoading(true);
+      //! TS CHANGE : Cast return array to ExtendedItemsMatch[] since basic getMatches doesn't declare the custom extended UI fields natively
+      const data = await getMatches() as ExtendedItemsMatch[];
+      setMatches(data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load matches.");
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchMatches();
   }, []);
 
@@ -99,6 +101,12 @@ function Matches() {
       return matchesSearch && matchesStatus && matchesPercentage && matchesDate;
     });
   }, [filters, matches]);
+
+  const sortedMatches = useMemo(() => {
+    return [...filteredMatches].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [filteredMatches]);
 
   function clearFilters() {
     setFilters({
@@ -152,30 +160,51 @@ function Matches() {
       subtitle: "Generated",
       value: matches.length,
       icon: <Search />,
-      bgColor: "bg-purple-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Pending Matches",
       subtitle: "Review",
       value: countByStatus("pending"),
       icon: <RefreshCw />,
-      bgColor: "bg-yellow-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Confirmed",
       subtitle: "Accepted",
       value: countByStatus("confirmed"),
       icon: <CircleCheck />,
-      bgColor: "bg-green-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Rejected",
       subtitle: "Closed",
       value: countByStatus("rejected"),
       icon: <CircleX />,
-      bgColor: "bg-red-500",
+      bgColor: "bg-blue-600",
     },
   ];
+
+  if (showAllMatches) {
+    return (
+      <AllMatches
+        matches={sortedMatches}
+        onStatusChange={handleStatusChange}
+        onDelete={handleDeleteMatch}
+        onRefresh={fetchMatches}
+        isLoading={isLoading}
+        onBack={() => {
+          setShowAllMatches(false);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        filters={filters}
+        setFilters={setFilters as any}
+        clearFilters={clearFilters}
+      />
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -191,24 +220,16 @@ function Matches() {
         </div>
 
         <div className="flex gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowFilters((prev) => !prev)}
-              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-3 font-semibold text-gray-700 shadow-sm transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
-            >
-              <SlidersHorizontal />
-              Filter
-            </button>
-
-            {showFilters && (
-              <MatchesFilter
-                filters={filters}
-                onChange={setFilters as any}
-                onClear={clearFilters}
-                onClose={() => setShowFilters(false)}
-              />
-            )}
-          </div>
+          <button
+            type="button"
+            onClick={fetchMatches}
+            disabled={isLoading}
+            className="flex w-fit cursor-pointer items-center gap-3 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-5 py-3 font-semibold text-white shadow-lg duration-300 hover:from-blue-600 hover:to-indigo-700 disabled:cursor-not-allowed disabled:opacity-60 text-sm"
+            title="Refresh Matches"
+          >
+            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
+            {isLoading ? "Refreshing..." : "Refresh"}
+          </button>
         </div>
       </div>
 
@@ -269,15 +290,29 @@ function Matches() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          {filteredMatches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match as any}
-              onStatusChange={handleStatusChange}
-              onDelete={handleDeleteMatch}
-            />
-          ))}
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+            {sortedMatches.slice(0, 2).map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match as any}
+                onStatusChange={handleStatusChange}
+                onDelete={handleDeleteMatch}
+              />
+            ))}
+          </div>
+
+          {sortedMatches.length > 2 && (
+            <div className="flex justify-center pt-4">
+              <button
+                type="button"
+                onClick={() => setShowAllMatches(true)}
+                className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-6 py-3.5 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 cursor-pointer"
+              >
+                View all possible matches
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

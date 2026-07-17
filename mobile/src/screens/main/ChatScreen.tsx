@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -21,6 +22,14 @@ interface FormattedMessage {
   content: string;
   createdAt: string;
 }
+
+const QUICK_REPLIES = [
+  "Hello! 👋",
+  "Where can we meet? 📍",
+  "I am at the university reception. 🏫",
+  "I have the item with me. ✔️",
+  "Thank you! 🙌",
+];
 
 export default function ChatScreen({ route, navigation }: ChatScreenProps) {
   const insets = useSafeAreaInsets();
@@ -115,21 +124,52 @@ export default function ChatScreen({ route, navigation }: ChatScreenProps) {
 
       // Prevent duplicates if Realtime appended it first, and normalize property casing
       setMessages((prev) => {
-        const responseId = response.id || response.Id || (response as any).ID;
+        const res = response as any;
+        const responseId = res.id || res.Id || res.ID;
         if (prev.some((m) => m.id === responseId)) {
           return prev;
         }
 
         const formatted: FormattedMessage = {
           id: responseId,
-          senderId: response.senderId || response.SenderId || (response as any).senderid,
-          content: response.content || response.Content,
-          createdAt: response.createdAt || response.CreatedAt || (response as any).createdat,
+          senderId: res.senderId || res.SenderId || res.senderid,
+          content: res.content || res.Content,
+          createdAt: res.createdAt || res.CreatedAt || res.createdat,
         };
         return [formatted, ...prev];
       });
     } catch (error) {
       console.error("Failed to send message:", error);
+    } finally {
+      setIsSending(false);
+    }
+  }
+
+  async function handleSendQuickReply(text: string) {
+    setIsSending(true);
+    try {
+      const response = await sendMessage(matchId, {
+        content: text,
+        receiverId: receiverId,
+      });
+
+      setMessages((prev) => {
+        const res = response as any;
+        const responseId = res.id || res.Id || res.ID;
+        if (prev.some((m) => m.id === responseId)) {
+          return prev;
+        }
+
+        const formatted: FormattedMessage = {
+          id: responseId,
+          senderId: res.senderId || res.SenderId || res.senderid,
+          content: res.content || res.Content,
+          createdAt: res.createdAt || res.CreatedAt || res.createdat,
+        };
+        return [formatted, ...prev];
+      });
+    } catch (error) {
+      console.error("Failed to send quick reply:", error);
     } finally {
       setIsSending(false);
     }
@@ -199,20 +239,43 @@ export default function ChatScreen({ route, navigation }: ChatScreenProps) {
             item.id?.toString() || index.toString()
           }
           renderItem={renderMessage}
-          contentContainerStyle={{ padding: 20, paddingTop: 10 }}
+          contentContainerStyle={{ flexGrow: 1, padding: 20, paddingTop: 10 }}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text
-              className="mt-10 text-center text-slate-500"
-              style={{ transform: [{ scaleY: -1 }] }}
+            <View
+              className="flex-1 items-center justify-center"
             >
-              No messages yet. Say hi!
-            </Text>
+              <Ionicons name="chatbubble-ellipses-outline" size={44} color="#94a3b8" />
+              <Text className="mt-3 text-center text-slate-400 dark:text-zinc-500 text-base font-medium">
+                No messages yet. Say hi!
+              </Text>
+            </View>
           }
         />
       )}
+      {/* Quick Replies Row */}
+      <View className="bg-slate-50 dark:bg-zinc-950 px-4 py-2 border-t border-slate-100 dark:border-zinc-800">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8, paddingRight: 16 }}
+        >
+          {QUICK_REPLIES.map((reply, idx) => (
+            <Pressable
+              key={idx}
+              onPress={() => handleSendQuickReply(reply)}
+              className="rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 px-4 py-2 shadow-xs active:opacity-75"
+            >
+              <Text className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                {reply}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
+
       {/* Input Area */}
       <View
         className="flex-row items-center border-t border-slate-200 bg-white px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900"

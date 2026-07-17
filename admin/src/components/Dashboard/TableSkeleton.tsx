@@ -58,6 +58,33 @@ function TableSkeleton({
   type,
   isLoading = false,
 }: TableSkeletonProps) {
+  const sortedData = [...data];
+  if (type === "lost") {
+    sortedData.sort((a, b) => {
+      const dateA = new Date(a.lostDate || (a as any).createdAt || 0).getTime();
+      const dateB = new Date(b.lostDate || (b as any).createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+  } else if (type === "found") {
+    sortedData.sort((a, b) => {
+      const dateA = new Date(a.foundDate || (a as any).createdAt || 0).getTime();
+      const dateB = new Date(b.foundDate || (b as any).createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+  } else if (type === "matches") {
+    sortedData.sort((a, b) => {
+      const dateA = new Date(a.createdAt || 0).getTime();
+      const dateB = new Date(b.createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+  } else if (type === "students") {
+    sortedData.sort((a, b) => {
+      const dateA = new Date((a as any).createdAt || 0).getTime();
+      const dateB = new Date((b as any).createdAt || 0).getTime();
+      return dateB - dateA;
+    });
+  }
+
   function formatDate(date?: string) {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString();
@@ -221,7 +248,7 @@ function TableSkeleton({
                 </td>
               </tr>
             ) : (
-              data.slice(0, 3).map((item) => (
+              sortedData.slice(0, 3).map((item) => (
                 <tr
                   key={item.id}
                   className="border-b border-gray-200/80 text-sm transition hover:bg-gray-50 dark:border-zinc-700/80 dark:hover:bg-zinc-800"

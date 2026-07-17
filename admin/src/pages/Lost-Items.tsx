@@ -109,10 +109,12 @@ function LostItems() {
     });
   }, [filters, lostItems]);
 
-  const previewLostItems = lostItems.slice(0, 3);
+  const previewLostItems = [...lostItems]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 3);
   const today = new Date().toDateString();
   const todayItems = lostItems.filter(
-    (item) => new Date(item.lostDate).toDateString() === today,
+    (item) => new Date(item.createdAt).toDateString() === today,
   );
 
   function clearFilters() {
@@ -160,21 +162,21 @@ function LostItems() {
       subtitle: "Reports",
       value: lostItems.length,
       icon: <PackageOpen />,
-      bgColor: "bg-red-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Open Reports",
       subtitle: "Active",
       value: openStatusItems.length,
       icon: <Clock />,
-      bgColor: "bg-orange-500",
+      bgColor: "bg-blue-600",
     },
     {
       title: "Today",
       subtitle: "New Reports",
       value: todayItems.length,
       icon: <CalendarDays />,
-      bgColor: "bg-red-500",
+      bgColor: "bg-blue-600",
     },
   ];
 

@@ -63,7 +63,10 @@ function MatchCard({ match, onStatusChange, onDelete }: MatchCardProps) {
 
   return (
     <>
-      <div className="group flex h-full flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+      <div
+        onClick={() => navigate(`/matches/${match.id}`)}
+        className="group flex h-full flex-col rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-purple-400 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-900 cursor-pointer"
+      >
         <div className="flex items-start justify-between">
           <div>
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}>
@@ -77,27 +80,44 @@ function MatchCard({ match, onStatusChange, onDelete }: MatchCardProps) {
           <div className="relative">
             <button
               type="button"
-              onClick={() => setShowMenu((prev) => !prev)}
-              className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu((prev) => !prev);
+              }}
+              className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
             >
               <MoreVertical size={14} />
             </button>
             {showMenu && (
-              <div className="absolute right-0 top-10 z-50 w-36 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                className="absolute right-0 top-10 z-50 w-36 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+              >
                 <button
                   type="button"
-                  onClick={() => { setShowMenu(false); navigate(`/matches/${match.id}`); }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowMenu(false);
+                    navigate(`/matches/${match.id}`);
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-zinc-700 cursor-pointer"
                 >
                   <Eye size={13} /> View
                 </button>
                 <ConfirmDialog
                   title="Delete match?"
                   description="Are you sure you want to delete this match?"
-                  onConfirm={() => { setShowMenu(false); onDelete(match.id); }}
+                  onConfirm={() => {
+                    setShowMenu(false);
+                    onDelete(match.id);
+                  }}
                   onCancel={() => setShowMenu(false)}
                 >
-                  <button type="button" className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-650 dark:text-red-400 dark:hover:bg-red-950/40">
+                  <button 
+                    type="button" 
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-650 dark:text-red-400 dark:hover:bg-red-950/40 cursor-pointer"
+                  >
                     <Trash2 size={13} /> Delete
                   </button>
                 </ConfirmDialog>
@@ -156,22 +176,32 @@ function MatchCard({ match, onStatusChange, onDelete }: MatchCardProps) {
             <div className="mt-6 flex gap-3">
               <button
                 type="button"
-                onClick={() => handleStatusChange("Confirmed")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStatusChange("Confirmed");
+                }}
                 disabled={isUpdatingStatus || normalizedStatus === "confirmed"}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-60"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700 disabled:opacity-60 cursor-pointer"
               >
                 <CircleCheck size={16} /> Confirm
               </button>
               <button
                 type="button"
-                onClick={() => handleStatusChange("Rejected")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStatusChange("Rejected");
+                }}
                 disabled={isUpdatingStatus || normalizedStatus === "rejected"}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-60 cursor-pointer"
               >
                 <CircleX size={16} /> Reject
               </button>
             </div>
           )}
+
+          <p className="mt-4 text-center text-xs text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors flex items-center justify-center gap-1 font-medium">
+            Click card to view detailed match analysis & chat history <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
+          </p>
         </div>
       </div>
     </>

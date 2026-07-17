@@ -580,9 +580,18 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var studentIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(studentIdStr, out var studentId))
+        {
+            return Unauthorized();
+        }
+
         var lostItems = await _lostItemsService.GetAllByUniversityId(uniId);
 
-        var response = lostItems.Select(lostItem => ToFullLostResponse(lostItem));
+        var response = lostItems
+            .Where(item => item.Status == "open" || item.StudentId == studentId)
+            .Select(lostItem => ToFullLostResponse(lostItem));
+
         return Ok(response);
     }
 
@@ -597,9 +606,18 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var studentIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(studentIdStr, out var studentId))
+        {
+            return Unauthorized();
+        }
+
         var foundItems = await _foundItemsService.GetAllByUniversityId(uniId);
 
-        var response = foundItems.Select(foundItem => ToFullFoundResponse(foundItem));
+        var response = foundItems
+            .Where(item => item.Status == "open" || item.StudentId == studentId)
+            .Select(foundItem => ToFullFoundResponse(foundItem));
+
         return Ok(response);
     }
 

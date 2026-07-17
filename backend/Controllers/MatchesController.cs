@@ -120,6 +120,20 @@ public class MatchesController : ControllerBase
 
         // ... existing assignment and saving logic ...
         match.Status = status;
+        
+        var lostItem = await _db.LostItems.FirstOrDefaultAsync(l => l.Id == match.LostItemId);
+        var foundItem = await _db.FoundItems.FirstOrDefaultAsync(f => f.Id == match.FoundItemId);
+
+        if (status == "Confirmed")
+        {
+            if (lostItem != null) lostItem.Status = "Confirmed";
+            if (foundItem != null) foundItem.Status = "Confirmed";
+        }
+        else
+        {
+            if (lostItem != null) lostItem.Status = "open";
+            if (foundItem != null) foundItem.Status = "open";
+        }
         await _db.SaveChangesAsync();
 
         // Check if it was just confirmed

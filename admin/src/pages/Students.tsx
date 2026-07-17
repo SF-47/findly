@@ -221,21 +221,21 @@ function Students() {
       subtitle: "Approved",
       value: verifiedStudents.length,
       icon: <UserCheck />,
-      bgColor: "bg-green-500",
+      bgColor: "bg-blue-500",
     },
     {
       title: "Pending",
       subtitle: "Review",
       value: unVerifiedStudents.length,
       icon: <Clock3 />,
-      bgColor: "bg-yellow-500",
+      bgColor: "bg-blue-500",
     },
     {
       title: "New Today",
       subtitle: "Today",
       value: todayStudents.length,
       icon: <CalendarDays />,
-      bgColor: "bg-purple-500",
+      bgColor: "bg-blue-500",
     },
   ];
 
