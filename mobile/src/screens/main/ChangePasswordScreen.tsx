@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable, ScrollView, Text, TextInput, View, Alert } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View, ActivityIndicator, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChangePasswordScreenProps } from "../../navigation/types";
+import { changePassword } from "../../services/studentService";
+import CustomAlert from "../../components/CustomAlert";
 
 interface PasswordFieldProps {
   label: string;
@@ -12,6 +14,8 @@ interface PasswordFieldProps {
 }
 
 function PasswordField({ label, placeholder, value, onChangeText }: PasswordFieldProps) {
+  const [isSecure, setIsSecure] = useState<boolean>(true);
+
   return (
     <View className="mb-5">
       <Text className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
@@ -23,44 +27,103 @@ function PasswordField({ label, placeholder, value, onChangeText }: PasswordFiel
           className="ml-3 flex-1 text-base text-slate-900 dark:text-white"
           placeholder={placeholder}
           placeholderTextColor="#94a3b8"
-          secureTextEntry
+          secureTextEntry={isSecure}
           value={value}
           onChangeText={onChangeText}
+          autoCapitalize="none"
+          autoCorrect={false}
         />
+        <Pressable
+          onPress={() => setIsSecure((prev) => !prev)}
+          className="p-1"
+        >
+          <Ionicons
+            name={isSecure ? "eye-off-outline" : "eye-outline"}
+            size={20}
+            color="#94a3b8"
+          />
+        </Pressable>
       </View>
     </View>
   );
 }
 
 export default function ChangePasswordScreen({ navigation }: ChangePasswordScreenProps) {
-  // insets removed
   const [currentPassword, setCurrentPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  function handleSavePassword() {
+  // Custom Alert State
+  const [alertConfig, setAlertConfig] = useState<{
+    visible: boolean;
+    type: "success" | "error" | "info";
+    title: string;
+    message: string;
+    onClose: () => void;
+  }>({
+    visible: false,
+    type: "info",
+    title: "",
+    message: "",
+    onClose: () => {},
+  });
+
+  function showCustomAlert(
+    type: "success" | "error" | "info",
+    title: string,
+    message: string,
+    onCloseCallback?: () => void
+  ) {
+    setAlertConfig({
+      visible: true,
+      type,
+      title,
+      message,
+      onClose: () => {
+        setAlertConfig((prev) => ({ ...prev, visible: false }));
+        if (onCloseCallback) onCloseCallback();
+      },
+    });
+  }
+
+  async function handleSavePassword() {
+    Keyboard.dismiss();
     if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all password fields.");
+      showCustomAlert("error", "Error", "Please fill in all password fields.");
       return;
     }
     if (newPassword.length < 8) {
-      Alert.alert("Error", "New password must be at least 8 characters long.");
+      showCustomAlert("error", "Error", "New password must be at least 8 characters long.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "New password and confirmation do not match.");
+      showCustomAlert("error", "Error", "New password and confirmation do not match.");
       return;
     }
 
-    // Since there's no endpoint in ENDPOINTS, we alert the placeholder behavior
-    Alert.alert(
-      "Service Offline",
-      "Password change capability is currently restricted. Please contact support."
-    );
+    try {
+      setIsLoading(true);
+      await changePassword(currentPassword, newPassword);
+      showCustomAlert(
+        "success",
+        "Success",
+        "Your password has been changed successfully.",
+        () => navigation.goBack()
+      );
+    } catch (error: any) {
+      const msg =
+        error?.response?.data?.message ||
+        "Failed to change password. Please verify your current password.";
+      showCustomAlert("error", "Incorrect Password", msg);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50 dark:bg-zinc-950" edges={["top", "bottom"]}>
+      {/* Header */}
       <View
         className="px-5 pt-4 pb-4 bg-slate-50 dark:bg-zinc-950 border-b border-slate-200 dark:border-zinc-800"
         style={{ zIndex: 10 }}
@@ -100,8 +163,7 @@ export default function ChangePasswordScreen({ navigation }: ChangePasswordScree
                 Keep it secure
               </Text>
               <Text className="mt-1 text-sm leading-5 text-slate-600 dark:text-slate-300">
-                Use at least 8 characters with a mix of letters, numbers, and
-                symbols.
+                Use at least 8 characters with a mix of letters, numbers, and symbols.
               </Text>
             </View>
           </View>
@@ -127,12 +189,26 @@ export default function ChangePasswordScreen({ navigation }: ChangePasswordScree
         />
 
         <Pressable
-          className="mt-2 h-14 items-center justify-center rounded-xl bg-blue-600"
+          className={`mt-2 h-14 items-center justify-center rounded-xl bg-blue-600 ${isLoading ? "opacity-60" : ""}`}
           onPress={handleSavePassword}
+          disabled={isLoading}
         >
-          <Text className="text-base font-bold text-white">Save password</Text>
+          {isLoading ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Text className="text-base font-bold text-white">Save password</Text>
+          )}
         </Pressable>
       </ScrollView>
+
+      {/* Custom Modal Alert Overlay */}
+      <CustomAlert
+        visible={alertConfig.visible}
+        type={alertConfig.type}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onClose={alertConfig.onClose}
+      />
     </SafeAreaView>
   );
 }
