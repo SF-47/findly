@@ -7,6 +7,10 @@
     "icon": "./assets/icon.jpg",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#2563eb"
+    },
     "ios": {
       "supportsTablet": true
     },
