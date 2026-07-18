@@ -43,7 +43,7 @@ function AdminsManagement({ onBack }: AdminsManagementProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [universities, setUniversities] = useState<University[]>([]);
   const [page, setPage] = useState(1);
-  const rowsPerPage = 4;
+  const rowsPerPage = 3;
 
   const adminLoggedInString = localStorage.getItem("admin") || sessionStorage.getItem("admin");
   const adminLoggedIn: Admin | null = adminLoggedInString ? JSON.parse(adminLoggedInString) : null;

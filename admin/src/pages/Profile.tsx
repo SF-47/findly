@@ -5,10 +5,7 @@ import ProfileSecurityCard from "../components/Profile/ProfileSecurityCard";
 import AdminsManagement from "../components/Profile/AdminsManagement";
 
 function Profile() {
-  //! TS CHANGE : Typed state with string generic parameter
   const [activeView, setActiveView] = useState<string>("profile");
-
-  //! TS CHANGE : Typed view parameter as string
   function changeView(view: string) {
     setActiveView(view);
     window.scrollTo({ top: 0, behavior: "smooth" });
