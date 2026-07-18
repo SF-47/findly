@@ -7,7 +7,11 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { getMatches, updateMatchStatus, deleteMatch } from "../services/matchService";
+import {
+  getMatches,
+  updateMatchStatus,
+  deleteMatch,
+} from "../services/matchService";
 import MatchCard from "../components/Matches/MatchCard";
 import MatchCardSkeleton from "../components/Matches/MatchCardSkeleton";
 import MatchesFilter from "../components/Matches/MatchesFilters";
@@ -27,7 +31,10 @@ interface ExtendedFoundItem extends FoundItem {
 }
 
 //! TS CHANGE : Used Omit<> to pick all items from ItemsMatch except 'lostItem' and 'foundItem', replacing them with their Extended types
-interface ExtendedItemsMatch extends Omit<ItemsMatch, "lostItem" | "foundItem"> {
+interface ExtendedItemsMatch extends Omit<
+  ItemsMatch,
+  "lostItem" | "foundItem"
+> {
   lostItem: ExtendedLostItem;
   foundItem: ExtendedFoundItem;
 }
@@ -49,7 +56,7 @@ function Matches() {
     try {
       setIsLoading(true);
       //! TS CHANGE : Cast return array to ExtendedItemsMatch[] since basic getMatches doesn't declare the custom extended UI fields natively
-      const data = await getMatches() as ExtendedItemsMatch[];
+      const data = (await getMatches()) as ExtendedItemsMatch[];
       setMatches(data);
     } catch (error) {
       console.log(error);
@@ -68,7 +75,8 @@ function Matches() {
       const search = filters.search.trim().toLowerCase();
       const createdDate = new Date(match.createdAt);
       const now = new Date();
-      const daysDiff = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+      const daysDiff =
+        (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
 
       const matchesSearch =
         !search ||
@@ -104,7 +112,8 @@ function Matches() {
 
   const sortedMatches = useMemo(() => {
     return [...filteredMatches].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     );
   }, [filteredMatches]);
 
@@ -306,7 +315,10 @@ function Matches() {
             <div className="flex justify-center pt-4">
               <button
                 type="button"
-                onClick={() => setShowAllMatches(true)}
+                onClick={() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  setShowAllMatches(true);
+                }}
                 className="flex items-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 px-6 py-3.5 font-semibold text-white shadow-md transition hover:from-blue-600 hover:to-indigo-700 cursor-pointer"
               >
                 View all possible matches

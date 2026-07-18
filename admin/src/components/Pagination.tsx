@@ -7,12 +7,16 @@ interface PaginationProps {
   setPage: (page: number) => void;
 }
 
-function Pagination({ page, totalItems, rowsPerPage, setPage }: PaginationProps) {
+function Pagination({
+  page,
+  totalItems,
+  rowsPerPage,
+  setPage,
+}: PaginationProps) {
   const totalPages = Math.max(1, Math.ceil(totalItems / rowsPerPage));
 
   function handlePageChange(nextPage: number) {
     setPage(nextPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
