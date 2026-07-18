@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, CircleCheck, CircleX, RefreshCw, SlidersHorizontal, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, CircleCheck, CircleX, MoreVertical, RefreshCw, SlidersHorizontal, Sparkles, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MatchesFilter from "./MatchesFilters";
 import ConfirmDialog from "../ConfirmDialog";
@@ -40,6 +40,8 @@ function CompactMatchCard({ match, onStatusChange, onDelete }: {
     ? { text: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/20" }
     : { text: "text-yellow-600 dark:text-yellow-400", bg: "bg-yellow-50 dark:bg-yellow-950/20" };
 
+  const [showMenu, setShowMenu] = useState(false);
+
   async function handleStatusChange(status: string) {
     try {
       setIsUpdatingStatus(true);
@@ -59,10 +61,48 @@ function CompactMatchCard({ match, onStatusChange, onDelete }: {
         <span className={`rounded-full px-3 py-0.5 font-semibold text-xs ${statusColors.bg} ${statusColors.text}`}>
           {match.status} Match
         </span>
-        <span className="font-semibold text-gray-500 dark:text-zinc-400 flex items-center gap-1">
-          <Sparkles size={14} className="text-blue-500" />
-          {match.confidenceLevel}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-gray-500 dark:text-zinc-400 flex items-center gap-1">
+            <Sparkles size={14} className="text-blue-500" />
+            {match.confidenceLevel}
+          </span>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowMenu((prev) => !prev);
+              }}
+              className="rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-zinc-800 dark:hover:text-white cursor-pointer"
+            >
+              <MoreVertical size={14} />
+            </button>
+            {showMenu && (
+              <div 
+                onClick={(e) => e.stopPropagation()}
+                className="absolute right-0 top-8 z-50 w-32 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800"
+              >
+                <ConfirmDialog
+                  title="Delete match?"
+                  description="Are you sure you want to delete this match?"
+                  onConfirm={() => {
+                    setShowMenu(false);
+                    onDelete(match.id);
+                  }}
+                  onCancel={() => setShowMenu(false)}
+                >
+                  <button 
+                    type="button" 
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-650 dark:text-red-400 dark:hover:bg-red-950/40 cursor-pointer"
+                  >
+                    <Trash2 size={13} /> Delete
+                  </button>
+                </ConfirmDialog>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* 3-Column Comparison Layout (Lost -> Match % -> Found) */}

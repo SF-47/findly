@@ -25,27 +25,15 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/splash-icon.jpg",
-          "imageWidth": 180,
-          "resizeMode": "contain",
-          "backgroundColor": "#2563eb",
-          "dark": {
-            "image": "./assets/splash-icon.jpg",
-            "backgroundColor": "#18181b"
-          }
-        }
-      ],
       "expo-font",
       "@react-native-community/datetimepicker",
       "expo-secure-store"
     ],
     "extra": {
       "eas": {
-        "projectId": "20f96abd-be9f-40e6-b0e8-ce8a84054799"
+        "projectId": "f35213fa-d575-4025-9d21-08537929d68d"
       }
-    }
+    },
+    "owner": "xami111613"
   }
 }

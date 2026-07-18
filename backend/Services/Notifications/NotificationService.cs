@@ -19,7 +19,7 @@ public class NotificationService : INotificationService
 
         try
         {
-            var payload = new { to = pushToken, sound = "default", title, body, data };
+            var payload = new { to = pushToken, sound = "default", title, body, data, channelId = "default" };
             var response = await _httpClient.PostAsJsonAsync("https://exp.host/--/api/v2/push/send", payload);
 
             if (!response.IsSuccessStatusCode)
