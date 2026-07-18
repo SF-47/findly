@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CircleCheck,
   Clock3,
@@ -17,17 +18,28 @@ interface StatPillProps {
   label: string;
   value: string | number;
   iconClass: string;
+  onClick?: () => void;
 }
 
-function StatPill({ icon, label, value, iconClass }: StatPillProps) {
+function StatPill({ icon, label, value, iconClass, onClick }: StatPillProps) {
+  const Component = onClick ? "button" : "div";
+
   return (
-    <div className="rounded-2xl border border-gray-200 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-800/40">
+    <Component
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
+      className={`rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left dark:border-zinc-800 dark:bg-zinc-800/40 ${
+        onClick
+          ? "cursor-pointer transition hover:border-indigo-300 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:hover:border-indigo-500/60 dark:hover:bg-indigo-500/10"
+          : ""
+      }`}
+    >
       <div className={`mb-2 flex h-8 w-8 items-center justify-center rounded-lg ${iconClass}`}>
         {icon}
       </div>
       <p className="text-xl font-bold text-gray-900 dark:text-zinc-100">{value}</p>
       <p className="mt-1 text-sm font-semibold text-gray-500 dark:text-zinc-400">{label}</p>
-    </div>
+    </Component>
   );
 }
 
@@ -38,6 +50,7 @@ interface UniversityDetailsModalProps {
 }
 
 function UniversityDetailsModal({ isOpen, onClose, university }: UniversityDetailsModalProps) {
+  const navigate = useNavigate();
   const [students, setStudents] = useState<Student[]>([]);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,6 +96,10 @@ function UniversityDetailsModal({ isOpen, onClose, university }: UniversityDetai
   const adminFullName = filteredAdmin?.fullName;
   const adminEmail = filteredAdmin?.email;
   const adminRole = filteredAdmin?.role;
+
+  function handleViewStudents() {
+    navigate(`/students?uniId=${encodeURIComponent(university.id)}`);
+  }
 
   return (
     <div className="admin-modal-overlay fixed inset-y-0 right-0 z-50 flex items-center justify-center bg-black/55 px-4 backdrop-blur-sm">
@@ -163,6 +180,7 @@ function UniversityDetailsModal({ isOpen, onClose, university }: UniversityDetai
                   label="Students"
                   value={filteredStudents.length}
                   iconClass="bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400"
+                  onClick={handleViewStudents}
                 />
                 <StatPill
                   icon={<CircleCheck size={16} />}

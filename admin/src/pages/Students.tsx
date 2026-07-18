@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { CalendarDays, Plus, UserCheck, Clock3, Users } from "lucide-react";
 import { getAllStudents } from "../services/studentService";
 import { getAllUniversities } from "../services/universitiesService";
@@ -76,13 +77,15 @@ interface StoredAdmin {
 }
 
 function Students() {
+  const [searchParams] = useSearchParams();
+  const selectedUniversityId = searchParams.get("uniId") || "";
   const [showAddStudent, setShowAddStudent] = useState<boolean>(false);
   const [universities, setUniversities] = useState<University[]>([]);
   const [students, setStudents] = useState<ExtendedStudent[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState({
     search: "",
-    uniId: "",
+    uniId: selectedUniversityId,
     verificationStatus: "",
     registeredDate: "",
   });
@@ -121,6 +124,13 @@ function Students() {
   useEffect(() => {
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      uniId: selectedUniversityId,
+    }));
+  }, [selectedUniversityId]);
 
   const filteredStudents = students.filter((s) => {
     if (
