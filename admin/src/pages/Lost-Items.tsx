@@ -11,7 +11,7 @@ import ItemCardSkeleton from "../components/Items/ItemCardSkeleton";
 import ItemStatsCardSkeleton from "../components/Items/ItemStatsCardSkeleton";
 import AllLostItems from "../components/Items/AllLostItems";
 //! TS CHANGE : Imported basic entity types
-import { LostItem, Student, Category } from "../types";
+import { LostItem, ExtendedStudent, Category } from "../types";
 
 //! TS CHANGE : Used Interface Inheritance ('extends') to attach flattened, display-only fields to the basic LostItem structure
 interface ExtendedLostItem extends LostItem {
@@ -22,7 +22,7 @@ interface ExtendedLostItem extends LostItem {
 function LostItems() {
   //! TS CHANGE : Constrained state arrays using Generics to guarantee safety during iteration
   const [lostItems, setlostItems] = useState<ExtendedLostItem[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<ExtendedStudent[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
@@ -33,6 +33,7 @@ function LostItems() {
     category: "" as string | number, //! TS CHANGE : Cast value as string or number using "as" operator
     status: "",
     date: "",
+    universityId: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -79,6 +80,8 @@ function LostItems() {
       const itemDate = new Date(item.lostDate);
       const now = new Date();
       const daysDiff = (now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+      const student = students.find((s) => s.id === item.studentId);
+      const itemUniversityId = item.student?.universityId || student?.universityId;
 
       const matchesSearch =
         !search ||
@@ -93,6 +96,8 @@ function LostItems() {
         !filters.category || item.categoryId === Number(filters.category);
       const matchesStatus =
         !filters.status || item.status?.toLowerCase() === filters.status;
+      const matchesUniversity =
+        !filters.universityId || itemUniversityId === filters.universityId;
       const yesterday = new Date();
       yesterday.setDate(now.getDate() - 1);
 
@@ -105,9 +110,15 @@ function LostItems() {
         (filters.date === "week" && daysDiff <= 7) ||
         (filters.date === "month" && daysDiff <= 31);
 
-      return matchesSearch && matchesCategory && matchesStatus && matchesDate;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesStatus &&
+        matchesUniversity &&
+        matchesDate
+      );
     });
-  }, [filters, lostItems]);
+  }, [filters, lostItems, students]);
 
   const previewLostItems = [...lostItems]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -116,15 +127,6 @@ function LostItems() {
   const todayItems = lostItems.filter(
     (item) => new Date(item.createdAt).toDateString() === today,
   );
-
-  function clearFilters() {
-    setFilters({
-      search: "",
-      category: "",
-      status: "",
-      date: "",
-    });
-  }
 
   async function handleCreateLostItem(requestBody: any) {
     try {
@@ -190,7 +192,7 @@ function LostItems() {
         filters={filters}
         setFilters={setFilters as any}
         categories={categories}
-        clearFilters={clearFilters}
+        students={students}
         onDelete={handleDeleteLostItem}
         onBack={() => {
           setShowAll(false);

@@ -11,7 +11,7 @@ import ItemStatsCardSkeleton from "../components/Items/ItemStatsCardSkeleton";
 import AllFoundItems from "../components/Items/AllFoundItems";
 import CreateNewItem from "../components/Items/CreateNewItem";
 //! TS CHANGE : Imported basic entity types
-import { FoundItem, Student, Category } from "../types";
+import { FoundItem, ExtendedStudent, Category } from "../types";
 
 //! TS CHANGE : Used Interface Inheritance ('extends') to attach flattened, display-only fields to the basic FoundItem structure
 interface ExtendedFoundItem extends FoundItem {
@@ -22,7 +22,7 @@ interface ExtendedFoundItem extends FoundItem {
 function FoundItems() {
   //! TS CHANGE : Constrained state arrays using Generics to guarantee safety during iteration
   const [foundItems, setFoundItems] = useState<ExtendedFoundItem[]>([]);
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<ExtendedStudent[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
@@ -32,6 +32,7 @@ function FoundItems() {
     category: "" as string | number, //! TS CHANGE : Cast value as string or number using "as" operator
     status: "",
     date: "",
+    universityId: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -85,6 +86,8 @@ function FoundItems() {
       const itemDate = new Date(item.foundDate);
       const now = new Date();
       const daysDiff = (now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+      const student = students.find((s) => s.id === item.studentId);
+      const itemUniversityId = item.student?.universityId || student?.universityId;
 
       const matchesSearch =
         !search ||
@@ -98,6 +101,8 @@ function FoundItems() {
       const matchesCategory = !filters.category || item.categoryId === Number(filters.category);
       const matchesStatus =
         !filters.status || item.status?.toLowerCase() === filters.status;
+      const matchesUniversity =
+        !filters.universityId || itemUniversityId === filters.universityId;
       const yesterday = new Date();
       yesterday.setDate(now.getDate() - 1);
 
@@ -108,9 +113,15 @@ function FoundItems() {
         (filters.date === "week" && daysDiff <= 7) ||
         (filters.date === "month" && daysDiff <= 31);
 
-      return matchesSearch && matchesCategory && matchesStatus && matchesDate;
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesStatus &&
+        matchesUniversity &&
+        matchesDate
+      );
     });
-  }, [filters, foundItems]);
+  }, [filters, foundItems, students]);
 
   const previewFoundItems = [...foundItems]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -119,15 +130,6 @@ function FoundItems() {
   const todayItems = foundItems.filter(
     (item) => new Date(item.createdAt).toDateString() === today,
   );
-
-  function clearFilters() {
-    setFilters({
-      search: "",
-      category: "",
-      status: "",
-      date: "",
-    });
-  }
 
   async function handleCreateFoundItem(requestBody: any) {
     try {
@@ -193,7 +195,7 @@ function FoundItems() {
         filters={filters}
         setFilters={setFilters as any}
         categories={categories}
-        clearFilters={clearFilters}
+        students={students}
         onDelete={handleDeleteFoundItem}
         onBack={() => {
           setShowAll(false);

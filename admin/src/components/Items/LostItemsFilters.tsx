@@ -1,6 +1,6 @@
-import { PackageOpen, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import PrimeDropdown from "../PrimeDropdown";
-import { Category } from "../../types";
+import { Category, ExtendedStudent } from "../../types";
 
 interface LostItemsFilterProps {
   filters: {
@@ -8,24 +8,45 @@ interface LostItemsFilterProps {
     category: string | number | null | undefined;
     status: string | null | undefined;
     date: string | null | undefined;
+    universityId: string | null | undefined;
   };
   categories: Category[];
+  students: ExtendedStudent[];
   onChange: (filters: LostItemsFilterProps["filters"]) => void;
-  onClear: () => void;
   onClose: () => void;
 }
 
 function LostItemsFilter({
   filters,
   categories,
+  students,
   onChange,
-  onClear,
   onClose,
 }: LostItemsFilterProps) {
   const categoryOptions = categories.map((category) => ({
     value: category.id,
     label: category.name,
   }));
+
+  const universityOptions = Array.from(
+    new Map(
+      students
+        .filter((student) => student.universityId)
+        .map((student) => {
+          const shortName =
+            student.universityShortName || student.university?.shortName || "University";
+          const branch = student.universityBranch || student.university?.branch;
+
+          return [
+            student.universityId,
+            {
+              value: student.universityId,
+              label: [shortName, branch].filter(Boolean).join(" - "),
+            },
+          ];
+        }),
+    ).values(),
+  );
 
   return (
     <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
@@ -76,6 +97,19 @@ function LostItemsFilter({
 
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
+            University
+          </label>
+
+          <PrimeDropdown
+            value={filters.universityId}
+            onChange={(value) => onChange({ ...filters, universityId: value })}
+            placeholder="All Universities"
+            options={universityOptions}
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-600 dark:text-gray-300">
             Status
           </label>
 
@@ -110,24 +144,6 @@ function LostItemsFilter({
         </div>
       </div>
 
-      <div className="mt-6 flex gap-3">
-        <button
-          type="button"
-          onClick={onClear}
-          className="w-full rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700"
-        >
-          Clear
-        </button>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:from-blue-600 hover:to-indigo-700"
-        >
-          <PackageOpen />
-          Apply
-        </button>
-      </div>
     </div>
   );
 }

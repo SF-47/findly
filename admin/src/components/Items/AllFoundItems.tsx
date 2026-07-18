@@ -16,10 +16,10 @@ interface AllFoundItemsProps {
     category: string | number | null | undefined;
     status: string | null | undefined;
     date: string | null | undefined;
+    universityId: string | null | undefined;
   };
   setFilters: (filters: AllFoundItemsProps["filters"]) => void;
   categories: Category[];
-  clearFilters: () => void;
 }
 
 function AllFoundItems({
@@ -32,7 +32,6 @@ function AllFoundItems({
   filters,
   setFilters,
   categories,
-  clearFilters,
 }: AllFoundItemsProps) {
   return (
     <div className="space-y-8">
@@ -77,8 +76,8 @@ function AllFoundItems({
               <FoundItemsFilter
                 filters={filters}
                 categories={categories}
+                students={students}
                 onChange={setFilters}
-                onClear={clearFilters}
                 onClose={() => setShowFilters(false)}
               />
             )}
