@@ -277,7 +277,7 @@ function Matches() {
                 setFilters((prev) => ({ ...prev, search: e.target.value }))
               }
               placeholder="Search matches..."
-              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-purple-500"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition focus:border-purple-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:focus:border-purple-500 dark:focus:bg-zinc-800"
             />
           </div>
         </div>
