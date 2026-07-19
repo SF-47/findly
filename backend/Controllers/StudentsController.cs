@@ -343,6 +343,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var phoneNbExists = await _studentService.PhoneNbExistsForAnotherStudent(
             request.PhoneNumber,
             studentId
@@ -374,6 +380,12 @@ public class StudentController : ControllerBase
         if (!Guid.TryParse(studentIdValue, out var studentId))
         {
             return Unauthorized();
+        }
+
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
         }
 
         var errors = LostItemsValidator.ValidateCreateByStudent(request);
@@ -422,6 +434,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var errors = FoundItemsValidator.ValidateCreateByStudent(request);
         if (errors.Count > 0)
         {
@@ -464,6 +482,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var errors = LostItemsValidator.ValidateUpdate(request);
         if (errors.Count > 0)
         {
@@ -502,6 +526,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var result = await _lostItemsService.DeleteLostItemByStudent(studentId, id);
         if (!result)
         {
@@ -520,6 +550,12 @@ public class StudentController : ControllerBase
         if (!Guid.TryParse(studentIdValue, out var studentId))
         {
             return Unauthorized();
+        }
+
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
         }
 
         var errors = FoundItemsValidator.ValidateUpdate(request);
@@ -560,6 +596,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var result = await _foundItemsService.DeleteFoundItemByStudent(studentId, id);
         if (!result)
         {
@@ -584,6 +626,12 @@ public class StudentController : ControllerBase
         if (!Guid.TryParse(studentIdStr, out var studentId))
         {
             return Unauthorized();
+        }
+
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
         }
 
         var lostItems = await _lostItemsService.GetAllByUniversityId(uniId);
@@ -612,6 +660,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var foundItems = await _foundItemsService.GetAllByUniversityId(uniId);
 
         var response = foundItems
@@ -632,6 +686,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var lostItems = await _lostItemsService.GetAllLostItemsCreatedByStudent(studentId);
 
         var response = lostItems.Select(lostItem => ToFullLostResponse(lostItem));
@@ -649,6 +709,12 @@ public class StudentController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var foundItems = await _foundItemsService.GetAllFoundItemsCreatedByStudent(studentId);
 
         var response = foundItems.Select(foundItem => ToFullFoundResponse(foundItem));
@@ -664,6 +730,12 @@ public class StudentController : ControllerBase
         if (!Guid.TryParse(studentIdValue, out var studentId))
         {
             return Unauthorized();
+        }
+
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
         }
 
         var matches = await _matchService.GetMatchesForStudent(studentId);
@@ -752,6 +824,23 @@ public class StudentController : ControllerBase
         }
 
         return Forbid();
+    }
+
+    private async Task<IActionResult?> CheckVerifiedStudentAccess(Guid studentId)
+    {
+        var student = await _studentService.GetCurrentStudent(studentId);
+
+        if (student is null)
+        {
+            return Unauthorized();
+        }
+
+        if (!student.IsVerified)
+        {
+            return StatusCode(403, "Student account is not verified yet.");
+        }
+
+        return null;
     }
 
     [Authorize(Roles = "Student")]

@@ -267,6 +267,12 @@ public class MatchesController : ControllerBase
             return Unauthorized();
         }
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var match = await _db.Matches
             .Include(m => m.LostItem)
             .Include(m => m.FoundItem)
@@ -289,5 +295,22 @@ public class MatchesController : ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok(new { message = "Match and reported items resolved successfully." });
+    }
+
+    private async Task<IActionResult?> CheckVerifiedStudentAccess(Guid studentId)
+    {
+        var student = await _db.Students.FindAsync(studentId);
+
+        if (student is null)
+        {
+            return Unauthorized();
+        }
+
+        if (!student.IsVerified)
+        {
+            return StatusCode(403, "Student account is not verified yet.");
+        }
+
+        return null;
     }
 }

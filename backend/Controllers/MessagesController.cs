@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using backend.Data;
 using backend.Requests.Messages;
 using backend.Services.Messages;
 using Microsoft.AspNetCore.Authorization;
@@ -12,15 +13,29 @@ namespace backend.Controllers;
 public class MessagesController : ControllerBase
 {
     private readonly IMessageService _messageService;
+    private readonly AppDbContext _db;
 
-    public MessagesController(IMessageService messageService)
+    public MessagesController(IMessageService messageService, AppDbContext db)
     {
         _messageService = messageService;
+        _db = db;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetChatHistory(Guid matchId)
     {
+        var studentIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(studentIdStr, out var studentId))
+        {
+            return Unauthorized();
+        }
+
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(studentId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var messages = await _messageService.GetChatHistoryAsync(matchId);
         return Ok(messages);
     }
@@ -35,7 +50,30 @@ public class MessagesController : ControllerBase
         if (!Guid.TryParse(senderIdStr, out var senderId))
             return Unauthorized();
 
+        var verifiedAccessResult = await CheckVerifiedStudentAccess(senderId);
+        if (verifiedAccessResult is not null)
+        {
+            return verifiedAccessResult;
+        }
+
         var message = await _messageService.SendMessageAsync(matchId, senderId, request);
         return Ok(message);
+    }
+
+    private async Task<IActionResult?> CheckVerifiedStudentAccess(Guid studentId)
+    {
+        var student = await _db.Students.FindAsync(studentId);
+
+        if (student is null)
+        {
+            return Unauthorized();
+        }
+
+        if (!student.IsVerified)
+        {
+            return StatusCode(403, "Student account is not verified yet.");
+        }
+
+        return null;
     }
 }
