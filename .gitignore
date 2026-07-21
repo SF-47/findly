@@ -6,12 +6,14 @@ obj/
 *.suo
 *.rsuser
 
-# User secrets should never be committed
+# ASP.NET local config
+appsettings.Development.json
 secrets.json
 
 # Environment files
 .env
 .env.*
+*.env
 !.env.example
 
 # Node / React / React Native
@@ -20,6 +22,19 @@ dist/
 build/
 .expo/
 .expo-shared/
+web-build/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Python / virtual env
+.venv/
+
+# Firebase / Google config
+google-services.json
+GoogleService-Info.plist
 
 # Logs
 *.log
@@ -33,4 +48,5 @@ Thumbs.db
 .vscode/*
 !.vscode/settings.json
 
+# Personal notes
 notes.txt
