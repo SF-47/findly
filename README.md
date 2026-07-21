@@ -319,8 +319,6 @@ Findly
 
 ## Screenshots
 
-Add screenshots here after creating a `screenshots` folder in the repository root.
-
 ### Admin Dashboard
 
 ![Admin Dashboard](screenshots/admin-dashboard.png)
@@ -331,11 +329,11 @@ Add screenshots here after creating a `screenshots` folder in the repository roo
 
 ### Mobile Home
 
-![Mobile Home](screenshots/mobile-home.png)
+![Mobile Home](screenshots/mobile-home.jpg)
 
 ### Report Item Screen
 
-![Report Item](screenshots/report-item.png)
+![Report Item](screenshots/report-item.jpg)
 
 ### Match Review
 
@@ -343,13 +341,13 @@ Add screenshots here after creating a `screenshots` folder in the repository roo
 
 ### Chat Screen
 
-![Chat Screen](screenshots/chat-screen.png)
+![Chat Screen](screenshots/chat-screen.jpg)
 
 ---
 
 ## Demo Video
 
-Demo Video: Coming soon
+Demo Video: https://drive.google.com/file/d/1v0SOa4yqmMoDwy0Iu_RnM6rnAb1L9V1M/view?usp=sharing
 
 ---
 
@@ -403,27 +401,6 @@ Examples:
 - Gemini API key
 
 Do not commit real secret keys to GitHub.
-
----
-
-## Screenshots Folder
-
-Create this folder inside the project root:
-
-```text
-screenshots
-```
-
-Add screenshots with these exact names:
-
-```text
-admin-dashboard.png
-student-verification.png
-mobile-home.png
-report-item.png
-match-review.png
-chat-screen.png
-```
 
 ---
 
