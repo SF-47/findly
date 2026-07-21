@@ -1,5 +1,13 @@
 # Findly — AI-Powered Lost & Found System for University Campuses
 
+![ASP.NET Core](https://img.shields.io/badge/Backend-ASP.NET%20Core-blue)
+![React](https://img.shields.io/badge/Admin-React-61DAFB)
+![React Native](https://img.shields.io/badge/Mobile-React%20Native-61DAFB)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791)
+![Supabase](https://img.shields.io/badge/Storage-Supabase-3ECF8E)
+![n8n](https://img.shields.io/badge/Automation-n8n-orange)
+![Gemini AI](https://img.shields.io/badge/AI-Gemini-purple)
+
 Findly is a full-stack lost and found platform designed for university campuses. It helps students report lost and found items, uses AI to suggest possible matches, allows admins to review matches, and enables students to communicate safely after a match is confirmed.
 
 The system includes a web admin dashboard, a mobile student application, an ASP.NET Core backend API, PostgreSQL database, Supabase Storage, Supabase Realtime chat, n8n workflow automation, and Gemini AI matching.
@@ -20,6 +28,14 @@ Findly solves this problem by centralizing lost and found reports and supporting
 - Push notifications
 - Private realtime chat
 - Report resolution after item recovery
+
+---
+
+## Project Status
+
+This project was developed as a final-year computer science graduation project.
+
+The system is complete as a working prototype and includes the main web, mobile, backend, database, AI matching, notification, image storage, authentication, authorization, and realtime chat workflows.
 
 ---
 
@@ -353,7 +369,21 @@ Findly
 
 ## Demo Video
 
-Demo Video: https://drive.google.com/file/d/1v0SOa4yqmMoDwy0Iu_RnM6rnAb1L9V1M/view?usp=sharing
+[Watch the Findly demo video](https://drive.google.com/file/d/1v0SOa4yqmMoDwy0Iu_RnM6rnAb1L9V1M/view?usp=sharing)
+
+---
+
+## Prerequisites
+
+Before running the project locally, make sure you have:
+
+- .NET SDK installed
+- Node.js and npm installed
+- Expo CLI / Expo Go for mobile testing
+- PostgreSQL database or Supabase project
+- Supabase Storage configured
+- n8n workflow configured
+- Gemini API key configured
 
 ---
 
@@ -394,19 +424,75 @@ npx expo start
 
 ## Environment Variables
 
-Create environment configuration files for backend, admin, and mobile.
+The project requires local environment configuration for the backend, admin dashboard, and mobile app.
 
-Examples:
+Real secrets are not committed to this repository. Use the example files as templates.
 
-- Database connection string
-- JWT secret key
-- Supabase URL
-- Supabase anon key
-- n8n webhook URL
-- n8n secret
-- Gemini API key
+### Backend
 
-Do not commit real secret keys to GitHub.
+Create local backend configuration using `.NET User Secrets` or a local development configuration file.
+
+Required backend values:
+
+```text
+ConnectionStrings:SupabaseDb
+Jwt:Key
+N8n:WebhookUrl
+N8n:Secret
+Gemini:ApiKey
+```
+
+Example file:
+
+```text
+backend/appsettings.example.json
+```
+
+### Admin Dashboard
+
+Create:
+
+```text
+admin/.env
+```
+
+Required values:
+
+```env
+VITE_SUPABASE_URL=YOUR_SUPABASE_URL
+VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+### Mobile App
+
+Create:
+
+```text
+mobile/.env
+```
+
+Required values:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+```
+
+Do not commit real secret keys, database passwords, JWT signing keys, Gemini API keys, or n8n secrets.
+
+---
+
+## Security Note
+
+Real secrets, API keys, database passwords, JWT signing keys, n8n secrets, Gemini API keys, and local environment files are not committed to this repository.
+
+The repository includes only safe placeholder configuration files such as:
+
+- `backend/appsettings.example.json`
+- `admin/.env.example`
+- `mobile/.env.example`
+
+Private values should be stored locally using `.NET User Secrets`, `.env` files, or deployment environment variables.
 
 ---
 
@@ -428,5 +514,5 @@ Do not commit real secret keys to GitHub.
 
 Sami Farhat  
 Computer Science Graduate  
-GitHub: https://github.com/SF-47  
-LinkedIn: www.linkedin.com/in/sami-farhat-46692641a
+GitHub: [SF-47](https://github.com/SF-47)  
+LinkedIn: [sami-farhat-46692641a](https://www.linkedin.com/in/sami-farhat-46692641a)
