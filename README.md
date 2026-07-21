@@ -515,4 +515,5 @@ Private values should be stored locally using `.NET User Secrets`, `.env` files,
 Sami Farhat  
 Computer Science Graduate  
 GitHub: [SF-47](https://github.com/SF-47)  
+Repository: [Findly](https://github.com/SF-47/findly)
 LinkedIn: [sami-farhat-46692641a](https://www.linkedin.com/in/sami-farhat-46692641a)
