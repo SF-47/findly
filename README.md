@@ -329,11 +329,15 @@ Findly
 
 ### Mobile Home
 
-![Mobile Home](screenshots/mobile-home.jpg)
+<p align="center">
+  <img src="screenshots/mobile-home.jpg" alt="Mobile Home" width="250"/>
+</p>
 
 ### Report Item Screen
 
-![Report Item](screenshots/report-item.jpg)
+<p align="center">
+  <img src="screenshots/report-item.jpg" alt="Report Item Screen" width="250"/>
+</p>
 
 ### Match Review
 
@@ -341,7 +345,9 @@ Findly
 
 ### Chat Screen
 
-![Chat Screen](screenshots/chat-screen.jpg)
+<p align="center">
+  <img src="screenshots/chat-screen.jpg" alt="Chat Screen" width="250"/>
+</p>
 
 ---
 
