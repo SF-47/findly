@@ -141,3 +141,309 @@ Backend saves message → Supabase Realtime detects INSERT → Mobile chat updat
 
 AI Matching Flow:
 Backend creates item → n8n webhook → Candidate search → Gemini AI → Save pending match → Admin review
+```
+
+---
+
+## Main Workflow
+
+```text
+Student registers
+→ Admin verifies student
+→ Student reports lost or found item
+→ Image is uploaded to Supabase Storage
+→ Backend saves report
+→ Backend triggers n8n workflow
+→ n8n gets filtered candidates from backend
+→ Gemini compares item details
+→ Strong matches are saved as Pending
+→ Admin confirms or rejects the match
+→ Students receive notifications
+→ Students chat privately
+→ Student resolves the case after item recovery
+```
+
+---
+
+## Matching Workflow
+
+The matching process uses two filtering stages.
+
+### Backend Candidate Filtering
+
+Before sending items to AI, the backend filters candidates using:
+
+- Opposite item type
+- Same university
+- Same category
+- Open status
+- Different student
+- Close date range
+- Candidate limit
+
+### n8n and Gemini Filtering
+
+After candidates are retrieved:
+
+- n8n checks if candidates exist
+- Gemini compares item name, description, color, location, date, category, and image URL if useful
+- n8n keeps only possible matches with similarity score greater than or equal to 70%
+- Backend validates the match again before saving it as Pending
+
+---
+
+## Authentication and Authorization
+
+Findly uses JWT authentication.
+
+After login:
+
+```text
+Backend verifies credentials
+→ Backend generates JWT
+→ Frontend stores token
+→ Axios sends token in Authorization header
+→ Backend validates token using [Authorize]
+```
+
+The JWT contains important claims such as:
+
+- User ID
+- Email
+- Role
+- University ID
+- Student verification status
+
+Role-based authorization separates access between Owner, University Admin, and Student.
+
+---
+
+## Image Storage
+
+Findly does not store image files directly in PostgreSQL.
+
+Instead:
+
+```text
+User selects image
+→ Image is uploaded to Supabase Storage
+→ Supabase returns public URL
+→ Backend stores URL in database
+```
+
+Examples:
+
+| Image Type | Stored In |
+|---|---|
+| University card image | Supabase Storage |
+| Lost item image | Supabase Storage |
+| Found item image | Supabase Storage |
+
+Database stores only URLs such as:
+
+- `UniversityCardImageUrl`
+- `ImageUrl`
+
+---
+
+## Realtime Chat
+
+Chat becomes available after an admin confirms a match.
+
+Message flow:
+
+```text
+Student sends message
+→ Backend saves message in Messages table
+→ Backend creates notification
+→ Supabase Realtime detects new message insert
+→ Mobile chat screen updates live
+```
+
+Supabase Realtime is used only for live UI updates. The backend still controls message saving and validation.
+
+---
+
+## Notifications
+
+Findly supports two types of notifications:
+
+| Notification Type | Description |
+|---|---|
+| Database Notification | Saved in the database and shown in the mobile app |
+| Expo Push Notification | Sent to the student’s phone through Expo |
+
+Push notification flow:
+
+```text
+Student allows notifications
+→ Mobile app gets Expo push token
+→ Token is sent to backend
+→ Backend stores token
+→ Match/message event happens
+→ Backend sends request to Expo
+→ Student receives phone notification
+```
+
+---
+
+## Project Structure
+
+```text
+Findly
+├── backend
+│   ├── Controllers
+│   ├── Services
+│   ├── Models
+│   ├── Data
+│   ├── Validators
+│   └── Migrations
+│
+├── admin
+│   ├── src
+│   │   ├── pages
+│   │   ├── components
+│   │   ├── services
+│   │   └── api
+│
+└── mobile
+    ├── src
+    │   ├── screens
+    │   ├── services
+    │   ├── api
+    │   ├── navigation
+    │   └── storage
+```
+
+---
+
+## Screenshots
+
+Add screenshots here after creating a `screenshots` folder in the repository root.
+
+### Admin Dashboard
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+### Student Verification
+
+![Student Verification](screenshots/student-verification.png)
+
+### Mobile Home
+
+![Mobile Home](screenshots/mobile-home.png)
+
+### Report Item Screen
+
+![Report Item](screenshots/report-item.png)
+
+### Match Review
+
+![Match Review](screenshots/match-review.png)
+
+### Chat Screen
+
+![Chat Screen](screenshots/chat-screen.png)
+
+---
+
+## Demo Video
+
+Demo Video: Coming soon
+
+---
+
+## Setup Instructions
+
+### Backend Setup
+
+```bash
+cd backend
+dotnet restore
+dotnet ef database update
+dotnet run
+```
+
+Backend runs on:
+
+```text
+http://localhost:5192
+```
+
+### Admin Setup
+
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+### Mobile Setup
+
+```bash
+cd mobile
+npm install
+npx expo start
+```
+
+---
+
+## Environment Variables
+
+Create environment configuration files for backend, admin, and mobile.
+
+Examples:
+
+- Database connection string
+- JWT secret key
+- Supabase URL
+- Supabase anon key
+- n8n webhook URL
+- n8n secret
+- Gemini API key
+
+Do not commit real secret keys to GitHub.
+
+---
+
+## Screenshots Folder
+
+Create this folder inside the project root:
+
+```text
+screenshots
+```
+
+Add screenshots with these exact names:
+
+```text
+admin-dashboard.png
+student-verification.png
+mobile-home.png
+report-item.png
+match-review.png
+chat-screen.png
+```
+
+---
+
+## Future Improvements
+
+- Deploy backend and admin dashboard online
+- Add refresh tokens
+- Add stronger backend checks for unverified students
+- Add stricter message participant validation
+- Improve AI matching with weighted scoring
+- Add read receipts for chat
+- Add advanced notification settings
+- Improve image privacy and access rules
+- Add analytics dashboard
+
+---
+
+## Author
+
+Sami Farhat  
+Computer Science Graduate  
+GitHub: https://github.com/SF-47  
+LinkedIn: www.linkedin.com/in/sami-farhat-46692641a
