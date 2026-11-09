@@ -36,6 +36,12 @@ public class MessagesController : ControllerBase
             return verifiedAccessResult;
         }
 
+        var access = await _messageService.CheckChatAccessAsync(matchId, studentId);
+        if (ToErrorResult(access) is { } denied)
+        {
+            return denied;
+        }
+
         var messages = await _messageService.GetChatHistoryAsync(matchId);
         return Ok(messages);
     }
@@ -56,9 +62,41 @@ public class MessagesController : ControllerBase
             return verifiedAccessResult;
         }
 
-        var message = await _messageService.SendMessageAsync(matchId, senderId, request);
-        return Ok(message);
+        var content = request.Content?.Trim() ?? string.Empty;
+        if (content.Length == 0 || content.Length > MessageService.MaxContentLength)
+        {
+            return BadRequest(new { message = $"Message must be between 1 and {MessageService.MaxContentLength} characters." });
+        }
+
+        var access = await _messageService.CheckChatAccessAsync(matchId, senderId);
+        if (ToErrorResult(access) is { } denied)
+        {
+            return denied;
+        }
+
+        // The receiver is always the other student of the match. request.ReceiverId is ignored,
+        // so a client cannot send messages or push notifications to anyone else.
+        var message = await _messageService.SendMessageAsync(matchId, senderId, access.OtherStudentId!.Value, content);
+
+        // Same shape as the chat history. Returning the entity would serialize the tracked
+        // Sender/Receiver students, including password hashes and phone numbers.
+        return Ok(new
+        {
+            message.Id,
+            message.SenderId,
+            message.Content,
+            message.CreatedAt,
+        });
     }
+
+    private IActionResult? ToErrorResult(ChatAccess access) =>
+        access.Result switch
+        {
+            ChatAccessResult.Allowed => null,
+            ChatAccessResult.MatchNotFound => NotFound(new { message = "Match not found." }),
+            ChatAccessResult.NotParticipant => StatusCode(403, new { message = "You are not part of this match." }),
+            _ => StatusCode(403, new { message = "Chat opens after an admin confirms the match." }),
+        };
 
     private async Task<IActionResult?> CheckVerifiedStudentAccess(Guid studentId)
     {

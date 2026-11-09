@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
+  AppState,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getMessages, sendMessage } from "../../services/messages";
-import { supabase } from "../../api/supabaseClient";
+import { useFocusEffect } from "@react-navigation/native";
 import { ChatScreenProps } from "../../navigation/types";
 
 interface FormattedMessage {
@@ -22,6 +23,8 @@ interface FormattedMessage {
   content: string;
   createdAt: string;
 }
+
+const POLL_INTERVAL_MS = 4000;
 
 const QUICK_REPLIES = [
   "Hello! 👋",
@@ -39,65 +42,28 @@ export default function ChatScreen({ route, navigation }: ChatScreenProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSending, setIsSending] = useState<boolean>(false);
   const flatListRef = useRef<FlatList<FormattedMessage>>(null);
+  const isFetchingRef = useRef(false);
 
-  useEffect(() => {
-    fetchMessages();
-
-    const channel = supabase
-      .channel("messages-channel")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "Messages",
-        },
-        (payload: any) => {
-          console.log(
-            "Realtime payload received! FULL PAYLOAD:",
-            JSON.stringify(payload),
-          );
-          const newMessage = payload.new;
-
-          // Postgres column casing can be tricky (MatchId vs matchid vs matchId)
-          const actualMatchId =
-            newMessage.MatchId || newMessage.matchId || newMessage.matchid;
-
-          if (actualMatchId !== matchId) {
-            console.log("Message is for a different match. Ignoring.");
-            return;
-          }
-
-          const formattedMessage: FormattedMessage = {
-            id: newMessage.Id || newMessage.id,
-            senderId:
-              newMessage.SenderId || newMessage.senderId || newMessage.senderid,
-            content: newMessage.Content || newMessage.content,
-            createdAt:
-              newMessage.CreatedAt ||
-              newMessage.createdAt ||
-              newMessage.createdat,
-          };
-
-          setMessages((prev) => {
-            // Prevent duplicating the message if we just sent it
-            if (prev.some((m) => m.id === formattedMessage.id)) {
-              return prev;
-            }
-            return [formattedMessage, ...prev];
-          });
-        },
-      )
-      .subscribe((status: string) => {
-        console.log("Supabase Realtime Connection Status:", status);
+  // New messages are polled from the API while this screen is focused. The API checks that the
+  // student belongs to the match. (Supabase Realtime was removed: it streamed every student's
+  // messages to any client holding the public anon key.)
+  useFocusEffect(
+    useCallback(() => {
+      fetchMessages();
+      const timer = setInterval(fetchMessages, POLL_INTERVAL_MS);
+      const appState = AppState.addEventListener("change", (state) => {
+        if (state === "active") fetchMessages();
       });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      return () => {
+        clearInterval(timer);
+        appState.remove();
+      };
+    }, [matchId]),
+  );
 
   async function fetchMessages() {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     try {
       const response = await getMessages(matchId);
       // Reverse array so the latest messages appear at the bottom
@@ -105,6 +71,7 @@ export default function ChatScreen({ route, navigation }: ChatScreenProps) {
     } catch (error) {
       console.error("Failed to fetch messages:", error);
     } finally {
+      isFetchingRef.current = false;
       setIsLoading(false);
     }
   }
@@ -122,7 +89,7 @@ export default function ChatScreen({ route, navigation }: ChatScreenProps) {
         receiverId: receiverId,
       });
 
-      // Prevent duplicates if Realtime appended it first, and normalize property casing
+      // Prevent duplicates if a poll already added it, and normalize property casing
       setMessages((prev) => {
         const res = response as any;
         const responseId = res.id || res.Id || res.ID;
