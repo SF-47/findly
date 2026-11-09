@@ -36,3 +36,11 @@ export async function verifyStudent(id: string): Promise<Student> {
   const response = await axiosClient.put<Student>(`${ENDPOINTS.students}/${id}/verify`);
   return response.data;
 }
+
+/** Short-lived signed link to the student's university card (the bucket is private). */
+export async function getUniversityCardUrl(id: string): Promise<string> {
+  const response = await axiosClient.get<{ url: string; expiresInSeconds: number }>(
+    `${ENDPOINTS.students}/${id}/university-card`,
+  );
+  return response.data.url;
+}

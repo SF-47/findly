@@ -12,6 +12,7 @@ using backend.Services.FoundItems;
 using backend.Services.LostItems;
 using backend.Services.Matches;
 using backend.Services.N8n;
+using backend.Services.Storage;
 using backend.Services.Students;
 using backend.Validators.FoundItems;
 using backend.Validators.LostItems;
@@ -32,13 +33,15 @@ public class StudentController : ControllerBase
     private readonly IFoundItemService _foundItemsService;
     private readonly IN8nMatchingService _n8nMatchingService;
     private readonly IMatchService _matchService;
+    private readonly IStorageUrlSigner _storageUrlSigner;
 
     public StudentController(
         IStudentServices studentServices,
         ILostItemsService lostItemsService,
         IFoundItemService foundItemService,
         IN8nMatchingService n8nMatchingService,
-        IMatchService matchService
+        IMatchService matchService,
+        IStorageUrlSigner storageUrlSigner
     )
     {
         _studentService = studentServices;
@@ -46,6 +49,7 @@ public class StudentController : ControllerBase
         _foundItemsService = foundItemService;
         _n8nMatchingService = n8nMatchingService;
         _matchService = matchService;
+        _storageUrlSigner = storageUrlSigner;
     }
 
     // ! ADMIN PANEL ONLY
@@ -123,6 +127,35 @@ public class StudentController : ControllerBase
         var response = ToFullStudentResponse(student);
 
         return Ok(response);
+    }
+
+    // ! ADMIN PANEL ONLY
+    // ID cards are in a private bucket: admins get a link that expires after a few minutes.
+    [HttpGet("{id:guid}/university-card")]
+    public async Task<IActionResult> GetUniversityCard(Guid id)
+    {
+        var student = await _studentService.GetById(id);
+
+        if (student is null)
+        {
+            return NotFound("Student not found.");
+        }
+
+        var accessResult = CheckStudentAccess(student);
+
+        if (accessResult is not null)
+        {
+            return accessResult;
+        }
+
+        var url = await _storageUrlSigner.SignUniversityCardAsync(student.UniversityCardImageUrl);
+
+        if (url is null)
+        {
+            return NotFound("University card image is not available.");
+        }
+
+        return Ok(new { url, expiresInSeconds = (int)StorageUrlSigner.LinkLifetime.TotalSeconds });
     }
 
     // ! ADMIN PANEL ONLY

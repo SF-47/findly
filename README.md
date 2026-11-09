@@ -2,7 +2,7 @@
 
 Findly is a full-stack lost and found platform designed for university campuses. It helps students report lost and found items, uses AI to suggest possible matches, allows admins to review matches, and enables students to communicate safely after a match is confirmed.
 
-The system includes a web admin dashboard, a mobile student application, an ASP.NET Core backend API, PostgreSQL database, Supabase Storage, Supabase Realtime chat, n8n workflow automation, and Gemini AI matching.
+The system includes a web admin dashboard, a mobile student application, an ASP.NET Core backend API, PostgreSQL database, Supabase Storage, private in-app chat, n8n workflow automation, and Gemini AI matching.
 
 ---
 
@@ -66,7 +66,6 @@ Findly solves this problem by centralizing lost and found reports and supporting
 
 - Supabase PostgreSQL
 - Supabase Storage
-- Supabase Realtime
 
 ### AI and Automation
 
@@ -134,10 +133,10 @@ Admin React Dashboard
 ASP.NET Core Backend API
 
 Image Upload Flow:
-Mobile/Web → Supabase Storage → Public URL → Backend → Database
+Mobile/Web → Supabase Storage → Object link → Backend → Database
 
-Realtime Chat Flow:
-Backend saves message → Supabase Realtime detects INSERT → Mobile chat updates live
+Chat Flow:
+Backend checks match access → saves message → push notification → chat screen polls the API
 
 AI Matching Flow:
 Backend creates item → n8n webhook → Candidate search → Gemini AI → Save pending match → Admin review
@@ -227,17 +226,14 @@ Instead:
 ```text
 User selects image
 → Image is uploaded to Supabase Storage
-→ Supabase returns public URL
-→ Backend stores URL in database
+→ The object's link is stored in the database
 ```
 
-Examples:
-
-| Image Type | Stored In |
-|---|---|
-| University card image | Supabase Storage |
-| Lost item image | Supabase Storage |
-| Found item image | Supabase Storage |
+| Image Type | Bucket | Access |
+|---|---|---|
+| University card image | `universities-cards` | Private. Admins get a 5-minute signed link from `GET /students/{id}/university-card`, only for students they manage |
+| Lost item image | `items` | Public |
+| Found item image | `items` | Public |
 
 Database stores only URLs such as:
 
@@ -246,7 +242,7 @@ Database stores only URLs such as:
 
 ---
 
-## Realtime Chat
+## Chat
 
 Chat becomes available after an admin confirms a match.
 
@@ -254,13 +250,23 @@ Message flow:
 
 ```text
 Student sends message
-→ Backend saves message in Messages table
-→ Backend creates notification
-→ Supabase Realtime detects new message insert
-→ Mobile chat screen updates live
+→ Backend checks the student belongs to the match and the match is Confirmed or Resolved
+→ Backend saves message in Messages table (the receiver is always the other student)
+→ Backend creates notification and sends a push notification
+→ The other student's open chat screen picks it up on its next poll (every 4 seconds)
 ```
 
-Supabase Realtime is used only for live UI updates. The backend still controls message saving and validation.
+Messages are only ever read through the API. Supabase Realtime is not used for chat: students do not have Supabase accounts, so Supabase could not limit a subscription to one student's matches.
+
+---
+
+## Security Setup
+
+The anon key ships inside the mobile and admin apps, so anything it can reach is public.
+
+1. **Row level security.** The `EnableRowLevelSecurity` migration turns RLS on for every Findly table with no policies, so the anon key cannot read or write them through Supabase's REST or Realtime APIs. The API is unaffected because it connects as the tables' owner. Apply it with `dotnet ef database update` using the same database user as the API; it refuses to run if that user does not own the tables.
+2. **Private ID cards.** Set `Supabase__Url` and `Supabase__ServiceRoleKey` on the API host, deploy, then run [`supabase/private-university-cards.sql`](supabase/private-university-cards.sql) in the Supabase SQL editor. The service-role key bypasses all Supabase security: keep it on the server only, never in an app.
+3. **Secrets.** `Jwt:Key`, `N8n:Secret` and the database connection string come from environment variables or user secrets, never from committed files. Use at least 32 random bytes for each secret (`openssl rand -base64 48`).
 
 ---
 

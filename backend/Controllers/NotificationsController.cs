@@ -38,9 +38,16 @@ namespace backend.Controllers
         [HttpPut("{id}/read")]
         public async Task<IActionResult> MarkAsRead(Guid id)
         {
+            var studentIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(studentIdStr, out var studentId))
+                return Unauthorized();
+
             var notification = await _db.Notifications.FindAsync(id);
             if (notification == null)
                 return NotFound();
+
+            if (notification.StudentId != studentId)
+                return Forbid();
 
             notification.IsRead = true;
             await _db.SaveChangesAsync();

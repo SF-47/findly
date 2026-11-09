@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using backend.Data;
 using backend.Models;
-using backend.Requests.Messages;
 using backend.Services.Notifications;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +11,8 @@ namespace backend.Services.Messages
 {
     public class MessageService : IMessageService
     {
+        public const int MaxContentLength = 2000;
+
         private readonly AppDbContext _context;
         private readonly INotificationService _notificationService;
 
@@ -19,6 +20,33 @@ namespace backend.Services.Messages
         {
             _context = context;
             _notificationService = notificationService;
+        }
+
+        private static readonly string[] OpenStatuses = ["confirmed", "resolved"];
+
+        public async Task<ChatAccess> CheckChatAccessAsync(Guid matchId, Guid studentId)
+        {
+            var match = await _context
+                .Matches.Where(m => m.Id == matchId)
+                .Select(m => new
+                {
+                    m.Status,
+                    LostStudentId = m.LostItem.StudentId,
+                    FoundStudentId = m.FoundItem.StudentId,
+                })
+                .FirstOrDefaultAsync();
+
+            if (match is null)
+                return new ChatAccess(ChatAccessResult.MatchNotFound);
+
+            if (studentId != match.LostStudentId && studentId != match.FoundStudentId)
+                return new ChatAccess(ChatAccessResult.NotParticipant);
+
+            if (!OpenStatuses.Contains(match.Status.ToLowerInvariant()))
+                return new ChatAccess(ChatAccessResult.ChatNotOpen);
+
+            var other = studentId == match.LostStudentId ? match.FoundStudentId : match.LostStudentId;
+            return new ChatAccess(ChatAccessResult.Allowed, other);
         }
 
         public async Task<IEnumerable<object>> GetChatHistoryAsync(Guid matchId)
@@ -39,15 +67,16 @@ namespace backend.Services.Messages
         public async Task<Message> SendMessageAsync(
             Guid matchId,
             Guid senderId,
-            SendMessageRequest request
+            Guid receiverId,
+            string content
         )
         {
             var message = new Message
             {
                 MatchId = matchId,
                 SenderId = senderId,
-                ReceiverId = request.ReceiverId,
-                Content = request.Content,
+                ReceiverId = receiverId,
+                Content = content,
             };
 
             _context.Messages.Add(message);
@@ -55,7 +84,7 @@ namespace backend.Services.Messages
             
             try
             {
-                var receiver = await _context.Students.FindAsync(request.ReceiverId);
+                var receiver = await _context.Students.FindAsync(receiverId);
                 var sender = await _context.Students.FindAsync(senderId);
 
                 if (receiver != null)
@@ -65,7 +94,7 @@ namespace backend.Services.Messages
                         await _notificationService.SendPushNotificationAsync(
                             receiver.ExpoPushToken,
                             $"New message from {sender?.FullName ?? "Student"}",
-                            request.Content,
+                            content,
                             new { matchId = matchId, type = "Message" }
                         );
                     }
@@ -74,7 +103,7 @@ namespace backend.Services.Messages
                     {
                         StudentId = receiver.Id,
                         Title = $"New message from {sender?.FullName ?? "Student"}",
-                        Message = request.Content,
+                        Message = content,
                         Type = "Message",
                         IsRead = false,
                         CreatedAt = DateTime.UtcNow,

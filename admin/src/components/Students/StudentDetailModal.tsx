@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Calendar,
   CircleCheck,
@@ -13,7 +13,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import { updateStudent, deleteStudent, verifyStudent } from "../../services/studentService";
+import { updateStudent, deleteStudent, verifyStudent, getUniversityCardUrl } from "../../services/studentService";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../ConfirmDialog";
 import PrimeDropdown from "../PrimeDropdown";
@@ -128,6 +128,29 @@ function StudentDetailsModal({
     phoneNumberError: "",
     universityCardImageUrlError: "",
   });
+
+  // The card bucket is private: ask the API for a short-lived signed link to display.
+  const [signedCard, setSignedCard] = useState<{ source: string; url: string | null; failed: boolean } | null>(null);
+  const studentId = student?.id;
+  const storedCardUrl = student?.universityCardImageUrl;
+
+  useEffect(() => {
+    if (!studentId || !storedCardUrl) return;
+    let cancelled = false;
+    getUniversityCardUrl(studentId)
+      .then((url) => {
+        if (!cancelled) setSignedCard({ source: storedCardUrl, url, failed: false });
+      })
+      .catch(() => {
+        if (!cancelled) setSignedCard({ source: storedCardUrl, url: null, failed: true });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [studentId, storedCardUrl]);
+
+  // Ignore a link fetched for an older value of the stored URL.
+  const cardLink = signedCard?.source === storedCardUrl ? signedCard : null;
 
   if (!student) return null;
   const activeStudent = student;
@@ -583,19 +606,25 @@ function StudentDetailsModal({
                 </label>
 
                 <div className="mx-auto max-w-xs overflow-hidden rounded-xl border border-gray-200 bg-gray-50 dark:border-zinc-700 dark:bg-zinc-800">
-                  {formData.universityCardImageUrl ? (
+                  {formData.universityCardImageUrl && cardLink?.failed ? (
+                    <div className="flex h-28 items-center justify-center px-4 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Couldn't load the university card. Try reopening this student.
+                    </div>
+                  ) : formData.universityCardImageUrl ? (
                     <div className="relative overflow-hidden w-full min-h-28">
-                      {cardImageLoading && (
+                      {(cardImageLoading || !cardLink?.url) && (
                         <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-zinc-700 h-28" />
                       )}
+                      {cardLink?.url && (
                       <a
-                        href={formData.universityCardImageUrl}
+                        href={cardLink.url}
                         target="_blank"
                         rel="noreferrer"
                         className="block"
+                        title="Link expires after a few minutes"
                       >
                         <img
-                          src={formData.universityCardImageUrl}
+                          src={cardLink.url}
                           alt={`${formData.fullName}'s university card`}
                           onLoad={() => setCardImageLoading(false)}
                           onError={() => setCardImageLoading(false)}
@@ -604,6 +633,7 @@ function StudentDetailsModal({
                           }`}
                         />
                       </a>
+                      )}
                     </div>
                   ) : (
                     <div className="flex h-28 items-center justify-center px-4 text-sm font-medium text-gray-500 dark:text-gray-400">
